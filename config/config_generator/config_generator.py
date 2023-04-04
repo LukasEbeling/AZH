@@ -117,7 +117,7 @@ class ConfigFactory():
         step_dir = self.output_dirs[self.step]
         output_dir = os.path.join(
             CMSSW_BASE,
-            "src/UHH2/2HDM/data",
+            "src/UHH2/AZH/data",
             step_dir,
             self.data_type,
             self.year
@@ -147,7 +147,7 @@ class ConfigFactory():
         # else the step is "Reconstruction"
         input_path = os.path.join(
             CMSSW_BASE,
-            "src/UHH2/2HDM/data",
+            "src/UHH2/AZH/data",
             "output_01_preselection",
             self.data_type,
             self.year
@@ -336,7 +336,7 @@ class ConfigFactory():
         if name == "jersmear_direction":
             value = self.jer_variation
         if name == "BTagMCEffFile":
-            mc_path = "src/UHH2/2HDM/data/output_01_preselection/MC/"
+            mc_path = "src/UHH2/AZH/data/output_01_preselection/MC/"
             fname = "BTagMCEfficiencyHists.root"
             value = os.path.join(CMSSW_BASE, mc_path, self.year, fname)
         if name == "BTagScaleFactorCSV":
