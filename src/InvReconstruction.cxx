@@ -58,7 +58,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
   sf_QCDScaleVar.reset(new MCScaleVariation(ctx));
 }
 
-bool CLASS::process(Event& event){
+bool InvReconstruction::process(Event& event){
   event.weight = event.get(handle_weight);//Wozu? 
 
   //pdf_weights->process(event);
@@ -89,7 +89,7 @@ bool CLASS::process(Event& event){
   return true;
 }
 
-bool CLASS::assign_region(Event& event){
+bool InvReconstruction::assign_region(Event& event){
   Region region = Region::Invalid;
 
   //bool has_six_jets = s_njet_six->passes(event);
