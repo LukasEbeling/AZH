@@ -21,7 +21,6 @@
 #include "UHH2/AZH/include/NormalisationTools.h"
 #include "UHH2/AZH/include/RochesterCorrections.h"
 #include "UHH2/AZH/include/ScaleFactors.h"
-#include "UHH2/AZH/include/Triggers.h"
 #include "UHH2/AZH/include/Utils.h"
 #include "UHH2/common/include/ElectronIds.h"
 #include "UHH2/common/include/MuonIds.h"
