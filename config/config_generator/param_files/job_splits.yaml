@@ -1,0 +1,14 @@
+Preselection:
+  MC:
+    n_events_break: "0"
+    file_split: "65"
+  DATA:
+    n_events_break: "0"
+    file_split: "70"
+Reconstruction:
+  MC:
+    n_events_break: "10000"
+    file_split: "0"
+  DATA:
+    n_events_break: "2500"
+    file_split: "0"

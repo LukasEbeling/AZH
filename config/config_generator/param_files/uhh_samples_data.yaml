@@ -1,0 +1,9 @@
+MET:
+  MET_RunA: ["UL18"]
+  MET_RunB: ["UL16preVFP", "UL17", "UL18"]
+  MET_RunC: ["UL16preVFP", "UL17", "UL18"]
+  MET_RunD: ["UL16preVFP", "UL17", "UL18"]
+  MET_RunE: ["UL16preVFP", "UL17"]
+  MET_RunF: ["UL16preVFP", "UL16postVFP", "UL17"]
+  MET_RunG: ["UL16postVFP"]
+  MET_RunH: ["UL16postVFP"]

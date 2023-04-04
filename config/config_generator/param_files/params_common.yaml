@@ -1,0 +1,52 @@
+analysis_name: "AZHTo2NuTTbar"
+
+# Source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM, in units of [pb-1]
+target_lumis:
+  UL18: "59830"
+  UL17: "41480"
+  UL16postVFP: "19500" # "36330"
+  UL16preVFP: "16800" # "36330"
+
+config_parse:
+  mail: "lukas@me.com"
+  notification: "Error"
+
+cycle:
+  name: "uhh2::AnalysisModuleRunner"
+  output_subdirs:
+    Preselection: "output_inv_01_preselection/"
+    Reconstruction: "output_inv_02_reconstruction/"
+
+user_config:
+  PrimaryVertexCollection: "offlineSlimmedPrimaryVertices"
+  ElectronCollection: "slimmedElectronsUSER"
+  MuonCollection: "slimmedMuonsUSER"
+  JetCollection: "jetsAk4CHS"
+  GenParticleCollection: "GenParticles"
+  GenJetCollection: "slimmedGenJets"
+  METName: "slimmedMETs"
+  use_sframe_weight: "false"
+  jersmear_direction: "nominal"
+  jecsmear_direction: "nominal"
+  is_puppy: "true"
+  Sys_PU: "central"
+  lumihists_lumi_per_bin: "500.0"
+  gen_level: "false"
+  PrimaryDataset: ""
+  ScaleVariationMuF: "nominal"
+  ScaleVariationMuR: "nominal"
+  VJetsReweighting_do_EWK: "true"
+  VJetsReweighting_do_QCD_EWK: "false"
+  VJetsReweighting_do_QCD_NLO: "true"
+  VJetsReweighting_do_QCD_NNLO: "false"
+  apply_TopPtReweighting: "true"
+  # Custom key-value pairs: further processed in generator
+  BTagMCEffFile: ""
+  BTagScaleFactorCSV: ""
+  lumi_file: ""
+  additionalBranches:
+    - "b_region"
+    - "tight_b"
+    - "event_weight"
+    - "channel"
+    - "region"
