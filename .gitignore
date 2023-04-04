@@ -1,3 +1,5 @@
 obj/*
 *.xml
 *.root
+mystuff/*
+.vscode/*
