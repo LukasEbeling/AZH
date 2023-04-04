@@ -14,8 +14,8 @@ config_parse:
 cycle:
   name: "uhh2::AnalysisModuleRunner"
   output_subdirs:
-    Preselection: "output_inv_01_preselection/"
-    Reconstruction: "output_inv_02_reconstruction/"
+    Preselection: "output_01_preselection/"
+    Reconstruction: "output_02_reconstruction/"
 
 user_config:
   PrimaryVertexCollection: "offlineSlimmedPrimaryVertices"
@@ -45,7 +45,6 @@ user_config:
   BTagScaleFactorCSV: ""
   lumi_file: ""
   additionalBranches:
-    - "b_region"
     - "tight_b"
     - "event_weight"
     - "channel"

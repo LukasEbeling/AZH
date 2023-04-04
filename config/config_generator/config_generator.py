@@ -350,7 +350,7 @@ class ConfigFactory():
         return value
 
     @property
-    def analysis_module(self): return f"InvAtoZH{self.step}"
+    def analysis_module(self): return f"Inv{self.step}"
 
     def generate_user_config(self):
         user_config = etree.SubElement(self.config.xml_cycle, 'UserConfig')
