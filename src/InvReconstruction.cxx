@@ -1,5 +1,3 @@
-#define CLASS InvAtoZHReconstruction
-
 #include <iostream>
 #include <memory>
 
@@ -18,9 +16,9 @@
 using namespace std;
 using namespace uhh2;
 
-class InvAtoZHReconstruction : public AnalysisModule{
+class InvReconstruction : public AnalysisModule{
   public:
-  explicit InvAtoZHReconstruction(Context& ctx);
+  explicit InvReconstruction(Context& ctx);
   virtual bool process(Event& event) override;
 
   private:
@@ -44,7 +42,7 @@ class InvAtoZHReconstruction : public AnalysisModule{
   unique_ptr<MCScaleVariation> sf_QCDScaleVar;
 };
 
-CLASS::InvAtoZHReconstruction(Context& ctx){
+InvReconstruction::InvReconstruction(Context& ctx){
   handle_region = ctx.declare_event_output<int>("region");
   handle_sum_pt = ctx.declare_event_output<double>("HT");
   handle_weight = ctx.get_handle<double>("event_weight");
@@ -107,4 +105,4 @@ bool CLASS::assign_region(Event& event){
   return true;
 }
 
-UHH2_REGISTER_ANALYSIS_MODULE(InvAtoZHReconstruction)
+UHH2_REGISTER_ANALYSIS_MODULE(InvReconstruction)

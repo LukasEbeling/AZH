@@ -36,9 +36,9 @@ using namespace uhh2;
 // Prefix handle_ denotes handle
 
 
-class InvAtoZHPreselection: public AnalysisModule {
+class InvPreselection: public AnalysisModule {
   public:
-    explicit InvAtoZHPreselection(Context & ctx);
+    explicit InvPreselection(Context & ctx);
     virtual bool process(Event & event) override;
 
   private:
@@ -85,7 +85,7 @@ class InvAtoZHPreselection: public AnalysisModule {
 }; 
 
 
-InvAtoZHPreselection::InvAtoZHPreselection(Context & ctx){
+InvPreselection::InvPreselection(Context & ctx){
   year = extract_year(ctx);
   is_mc = ctx.get("dataset_type") == "MC";
   // Cleaners
@@ -141,7 +141,7 @@ InvAtoZHPreselection::InvAtoZHPreselection(Context & ctx){
   clnr_jetpuid.reset(new JetCleaner(ctx, JetPUID(JetPUID::WP_TIGHT)));
 }
 
-bool InvAtoZHPreselection::process(Event & event) {
+bool InvPreselection::process(Event & event) {
 
   if (is_mc) h_unc_norm->fill(event);
 
@@ -214,5 +214,5 @@ bool InvAtoZHPreselection::process(Event & event) {
   return true;
 }
 
-UHH2_REGISTER_ANALYSIS_MODULE(InvAtoZHPreselection)
+UHH2_REGISTER_ANALYSIS_MODULE(InvPreselection)
 
