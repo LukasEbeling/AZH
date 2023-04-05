@@ -10,12 +10,12 @@ using namespace uhh2;
 CLASS::HiggsReconstructor(Context & ctx) {
     reconstruction_hypothesis_builder.reset(new ReconstructionHypothesisBuilder(ctx));
     handle_ttbar_reco_hypotheses_fixedb = ctx.get_handle<vector<ReconstructionHypothesis>>("ttbar_reco_hypothese_fixedb");
-    handle_H_m = ctx.declare_event_output<double>("h_mass");
+    handle_H_m = ctx.declare_event_output<double>("H_m");
     handle_met = ctx.declare_event_output<double>("MET");
     handle_A_mt = ctx.declare_event_output<double>("A_mt");
     handle_H_mt = ctx.declare_event_output<double>("H_mt");
     handle_W_m = ctx.declare_event_output<double>("W_m");
-    handle_gen_A_mt = ctx.declare_event_output<double>("gen_A_mt");
+    handle_gen_A_mt = ctx.declare_event_output<double>("A_mt_gen");
 }
 
 bool CLASS::process(Event & event) {
