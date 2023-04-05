@@ -17,6 +17,8 @@ AtoZHHists::AtoZHHists(Context & ctx, const string & dirname): Hists(ctx, dirnam
 
   book<TH1F>("N_Events", "N_{Events}", 1, -1, 1);  
   book<TH1F>("missing_pt","Missing pt", 200, 0, 1000);
+  book<TH1F>("N_jets", "N_{jets}", 20, 0, 20);
+  book<TH1F>("n_bjets_tight", "N_{b jets, tight}", 10, 0, 10);  
 }
 
 
@@ -30,9 +32,28 @@ void AtoZHHists::fill(const Event & event){
   double weight = event.weight;
   hist("N_Events")->Fill(0., weight);
   hist("missing_pt")->Fill(event.met->pt(), weight);
-  //hist("n_bjets_loose")->Fill(n_btag_jets_loose, weight);
-  //hist("n_bjets_medium")->Fill(n_btag_jets_medium, weight);
-  //hist("n_bjets_tight")->Fill(n_btag_jets_tight, weight);
+
+
+  std::vector<Jet>* jets = event.jets;
+
+  const BTag::algo btag_algo = BTag::DEEPJET;
+  const JetId btag_id_loose = BTag(btag_algo, BTag::WP_LOOSE);
+  const JetId btag_id_medium = BTag(btag_algo, BTag::WP_MEDIUM);
+  const JetId btag_id_tight = BTag(btag_algo, BTag::WP_TIGHT);
+
+  int n_btag_jets_loose = 0;
+  int n_btag_jets_medium = 0;
+  int n_btag_jets_tight = 0;
+  for(const Jet & jet : *event.jets) {
+    if(btag_id_loose(jet, event)) ++n_btag_jets_loose;
+    if(btag_id_medium(jet, event)) ++n_btag_jets_medium;
+    if(btag_id_tight(jet, event)) ++n_btag_jets_tight;
+  }
+
+  hist("N_jets")->Fill(jets->size(), weight);
+  hist("n_bjets_loose")->Fill(n_btag_jets_loose, weight);
+  hist("n_bjets_medium")->Fill(n_btag_jets_medium, weight);
+  hist("n_bjets_tight")->Fill(n_btag_jets_tight, weight);
 }
 
 AtoZHHists::~AtoZHHists(){}
