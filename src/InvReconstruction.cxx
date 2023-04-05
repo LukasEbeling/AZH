@@ -11,6 +11,7 @@
 #include "UHH2/AZH/include/ScaleFactors.h"
 #include "UHH2/AZH/include/Utils.h"//for region
 #include "UHH2/AZH/include/HiggsReco.h"
+#include "UHH2/AZH/include/AtoZHHists.h"
 
 
 using namespace std;
@@ -41,7 +42,7 @@ class InvReconstruction : public AnalysisModule{
   unique_ptr<PSWeights> ps_weights;
   unique_ptr<MCScaleVariation> sf_QCDScaleVar;
 
-  //std::unique_ptr<Hists> h_kinematics;
+  std::unique_ptr<Hists> h_kinematics;
 };
 
 InvReconstruction::InvReconstruction(Context& ctx){
@@ -59,7 +60,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
   sf_mtop.reset(new TopPtReweighting(ctx, string2bool(ctx.get("apply_TopPtReweighting"))));
   sf_QCDScaleVar.reset(new MCScaleVariation(ctx));
 
-  //h_kinematics.reset(new RecoHists(ctx, "Kinematics"));
+  h_kinematics.reset(new RecoHists(ctx, "Kinematics"));
 }
 
 bool InvReconstruction::process(Event& event){
@@ -108,7 +109,7 @@ bool InvReconstruction::assign_region(Event& event){
   //if(has_six_jets && has_two_b && met_window) region = Region::SignalRegion;
   region = Region::SignalRegion;
   event.set(handle_region, (int) region);
-  //h_kinematics->fill(event);
+  h_kinematics->fill(event);
 
   return true;
 }
