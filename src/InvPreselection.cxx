@@ -124,12 +124,12 @@ InvPreselection::InvPreselection(Context & ctx){
   common_modules->init(ctx);
 
   // Histograms
-  h_baseline.reset(new AtoZHHists(ctx, "CutFlow_Baseline"));
-  h_six_jets.reset(new AtoZHHists(ctx, "CutFlow_SixJets"));
-  h_no_leptons.reset(new AtoZHHists(ctx, "CutFlow_LeptonVeto"));
-  h_met_cut.reset(new AtoZHHists(ctx, "CutFlow_MissingPT"));
-  h_delta_cut.reset(new AtoZHHists(ctx, "CutFlow_deltaphi"));
-  h_bjet_two.reset(new AtoZHHists(ctx, "CutFlow_TwoB"));
+  h_baseline.reset(new PreHists(ctx, "CutFlow_Baseline"));
+  h_six_jets.reset(new PreHists(ctx, "CutFlow_SixJets"));
+  h_no_leptons.reset(new PreHists(ctx, "CutFlow_LeptonVeto"));
+  h_met_cut.reset(new PreHists(ctx, "CutFlow_MissingPT"));
+  h_delta_cut.reset(new PreHists(ctx, "CutFlow_deltaphi"));
+  h_bjet_two.reset(new PreHists(ctx, "CutFlow_TwoB"));
   
   h_btag_eff.reset(new BTagMCEfficiencyHists(ctx, "2_BTagMCEff", bmedium));
   h_unc_norm.reset(new NormalisationHists(ctx, "UncNorms"));

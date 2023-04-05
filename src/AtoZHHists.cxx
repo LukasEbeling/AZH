@@ -13,7 +13,7 @@ using namespace uhh2;
 using namespace pdgIdUtils;
 
 
-AtoZHHists::AtoZHHists(Context & ctx, const string & dirname): Hists(ctx, dirname){
+PreHists::PreHists(Context & ctx, const string & dirname): Hists(ctx, dirname){
 
   book<TH1F>("N_Events", "N_{Events}", 1, -1, 1);  
   book<TH1F>("missing_pt","Missing pt", 200, 0, 1000);
@@ -22,7 +22,7 @@ AtoZHHists::AtoZHHists(Context & ctx, const string & dirname): Hists(ctx, dirnam
 }
 
 
-void AtoZHHists::fill(const Event & event){
+void PreHists::fill(const Event & event){
   // fill the histograms. Please note the comments in the header file:
   // 'hist' is used here a lot for simplicity, but it will be rather
   // slow when you have many histograms; therefore, better
@@ -56,7 +56,7 @@ void AtoZHHists::fill(const Event & event){
   hist("n_bjets_tight")->Fill(n_btag_jets_tight, weight);
 }
 
-AtoZHHists::~AtoZHHists(){}
+PreHists::~PreHists(){}
 
 
 RecoHists::RecoHists(Context & ctx, const string & dirname): Hists(ctx, dirname){

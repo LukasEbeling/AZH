@@ -13,14 +13,14 @@
  * pointers as member data instead, like in 'common/include/ElectronHists.h'.
  */
 
-class AtoZHHists: public uhh2::Hists {
+class PreHists: public uhh2::Hists {
   public:
     // use the same constructor arguments as Hists for forwarding:
-    AtoZHHists(uhh2::Context & ctx, const std::string & dirname);
+    PreHists(uhh2::Context & ctx, const std::string & dirname);
 
     // Methods
     virtual void fill(const uhh2::Event & event) override;
-    virtual ~AtoZHHists();
+    virtual ~PreHists();
 };
 
 class RecoHists: public uhh2::Hists {
