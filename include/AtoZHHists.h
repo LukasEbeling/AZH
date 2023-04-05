@@ -22,3 +22,13 @@ class AtoZHHists: public uhh2::Hists {
     virtual void fill(const uhh2::Event & event) override;
     virtual ~AtoZHHists();
 };
+
+class RecoHists: public uhh2::Hists {
+    public:
+    // use the same constructor arguments as Hists for forwarding:
+    RecoHists(uhh2::Context & ctx, const std::string & dirname);
+
+    // Methods
+    virtual void fill(const uhh2::Event & event) override;
+    virtual ~RecoHists();
+};
