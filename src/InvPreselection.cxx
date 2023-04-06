@@ -62,7 +62,9 @@ class InvPreselection: public AnalysisModule {
     //std::unique_ptr<Hists> h_bjet_none;
     //std::unique_ptr<Hists> h_bjet_one;
     std::unique_ptr<Hists> h_bjet_two;
-    std::unique_ptr<Hists> h_met_cut;
+    std::unique_ptr<Hists> h_met_050;
+    std::unique_ptr<Hists> h_met_100;
+    std::unique_ptr<Hists> h_met_150;
     std::unique_ptr<Hists> h_delta_cut;
 
 
@@ -127,7 +129,9 @@ InvPreselection::InvPreselection(Context & ctx){
   h_baseline.reset(new PreHists(ctx, "CutFlow_Baseline"));
   h_six_jets.reset(new PreHists(ctx, "CutFlow_SixJets"));
   h_no_leptons.reset(new PreHists(ctx, "CutFlow_LeptonVeto"));
-  h_met_cut.reset(new PreHists(ctx, "CutFlow_MissingPT"));
+  h_met_050.reset(new PreHists(ctx, "CutFlow_MET>50"));
+  h_met_100.reset(new PreHists(ctx, "CutFlow_MET>100"));
+  h_met_150.reset(new PreHists(ctx, "CutFlow_MET>150"));
   h_delta_cut.reset(new PreHists(ctx, "CutFlow_deltaphi"));
   h_bjet_two.reset(new PreHists(ctx, "CutFlow_TwoB"));
   
@@ -168,7 +172,16 @@ bool InvPreselection::process(Event & event) {
   // Cut on missing transvers momentum
   double met = event.met->pt();
   if ( met<50 ) { return false; }
-  h_met_cut->fill(event);  
+  h_met_050->fill(event);  
+  if ( met<100 ) { return false; }
+  h_met_100->fill(event);  
+  if ( met<150 ) { return false; }
+  h_met_150->fill(event);  
+
+  // Jet Selection
+  bool has_six_jets = s_njet_six->passes(event);
+  if (!has_six_jets) { return false; }
+  h_six_jets->fill(event);
 
   // MET isolation cut  
   bool has_two_jets = s_njet_two->passes(event);
@@ -181,11 +194,6 @@ bool InvPreselection::process(Event & event) {
   if (diff_lead>2 && diff_sub<1) {return false;}
   if (diff_sub>2 && diff_lead<1) {return false;}
   h_delta_cut->fill(event);
-
-  // Jet Selection
-  bool has_six_jets = s_njet_six->passes(event);
-  if (!has_six_jets) { return false; }
-  h_six_jets->fill(event);
 
   // Histogram for BTagging efficiencye
   if ( !event.isRealData ) { h_btag_eff->fill(event); }
