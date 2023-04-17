@@ -1,15 +1,15 @@
 # DrellYan:
   # DYJetsToNuNu not NTuplized yet. TODO!
-#QCD:
-#  - QCD_HT50to100
-#  - QCD_HT100to200
-#  - QCD_HT200to300
-#  - QCD_HT300to500
-#  - QCD_HT500to700
-#  - QCD_HT700to1000
-#  - QCD_HT1000to1500
-#  - QCD_HT1500to2000
-#  - QCD_HT2000toInf
+QCD:
+  - QCD_HT50to100
+  - QCD_HT100to200
+  - QCD_HT200to300
+  - QCD_HT300to500
+  - QCD_HT500to700
+  - QCD_HT700to1000
+  - QCD_HT1000to1500
+  - QCD_HT1500to2000
+  - QCD_HT2000toInf
 SingleTop:
   - ST_s-channel_4f_leptonDecays  # hdamp not centrally available - no powheg?
   - ST_t-channel_antitop_4f_InclusiveDecays  # hdamp centrally available, but not produced
@@ -20,6 +20,10 @@ TT:
   - {nominal: TTToHadronic, hdampUp: TTToHadronic_hdampUP, hdampDn: TTToHadronic_hdampDOWN, tuneUp: TTToHadronic_TuneCP5up, tuneDown: TTToHadronic_TuneCP5down}
   - {nominal: TTToSemiLeptonic, hdampUp: TTToSemiLeptonic_hdampUP, hdampDn: TTToSemiLeptonic_hdampDOWN, tuneUp: TTToSemiLeptonic_TuneCP5up, tuneDown: TTToSemiLeptonic_TuneCP5down}
   - {nominal: TTTo2L2Nu, hdampUp: TTTo2L2Nu_hdampUP, hdampDn: TTTo2L2Nu_hdampDOWN, tuneUp: TTTo2L2Nu_TuneCP5up, tuneDown: TTTo2L2Nu_TuneCP5down}
+TT:
+  - TTToHadronic
+  - TTTo2L2Nu
+  - TTToSemiLeptonic
 TTV:
   - TTZToLLNuNu_M-10_TuneCP5
   - TTZToQQ_TuneCP5
