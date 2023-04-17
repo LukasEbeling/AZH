@@ -86,6 +86,16 @@ class InvPreselection: public AnalysisModule {
     std::unique_ptr<Selection> s_bjet_one;
     std::unique_ptr<Selection> s_btight_none;
     std::unique_ptr<Selection> s_btight_one;
+
+    // Event Weighting
+    unique_ptr<HEMSelection> sel_hem;
+    unique_ptr<MCLumiWeight> sf_lumi;
+    unique_ptr<MCPileupReweight> sf_pileup;
+    unique_ptr<AnalysisModule> sf_l1prefiring;
+    unique_ptr<AnalysisModule> sf_vjets;
+    unique_ptr<AnalysisModule> sf_mtop;
+    unique_ptr<PSWeights> ps_weights;
+    unique_ptr<MCScaleVariation> sf_QCDScaleVar;
 }; 
 
 
@@ -113,6 +123,15 @@ InvPreselection::InvPreselection(Context & ctx){
   s_bjet_one.reset(new NJetSelection(1,1,bmedium));
   s_btight_none.reset(new NJetSelection(-1,0,btight));
   s_btight_one.reset(new NJetSelection(1,1,btight));
+
+  // Event Weighting
+  sel_hem.reset(new HEMSelection(ctx));
+  sf_lumi.reset(new MCLumiWeight(ctx));
+  sf_pileup.reset(new MCPileupReweight(ctx));
+  sf_l1prefiring.reset(new L1PrefiringWeight(ctx));
+  sf_vjets.reset(new VJetsReweighting(ctx));
+  sf_mtop.reset(new TopPtReweighting(ctx, string2bool(ctx.get("apply_TopPtReweighting"))));
+  sf_QCDScaleVar.reset(new MCScaleVariation(ctx));
 
   // Handles
   handle_event_weight = ctx.declare_event_output<double>("event_weight");
@@ -164,6 +183,14 @@ bool InvPreselection::process(Event & event) {
   // Apply Jet corrections
   bool passes_common = common_modules->process(event);
   if (!passes_common) { return false; }
+
+  // Event Weighting
+  sf_lumi->process(event);
+  sf_pileup->process(event);
+  sf_l1prefiring->process(event);
+  sf_vjets->process(event);
+  sf_mtop->process(event);  
+  sf_QCDScaleVar->process(event);
 
   h_baseline->fill(event);
 
