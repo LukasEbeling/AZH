@@ -15,6 +15,9 @@
 #include "UHH2/common/include/NSelections.h"
 #include "UHH2/common/include/Utils.h"
 
+#include "UHH2/common/include/MCWeight.h"
+#include "UHH2/common/include/PSWeights.h"
+
 #include "UHH2/AZH/include/AtoZHHists.h"
 #include "UHH2/AZH/include/JetCleaner.h"
 #include "UHH2/AZH/include/MetFilters.h"
@@ -74,7 +77,7 @@ class InvPreselection: public AnalysisModule {
     // Rochester corrections and leptons ID+ISO collections
     std::unique_ptr<AnalysisModule> rochester;
 
-    // Other Modules
+    // Selection
     std::unique_ptr<CommonModules> common_modules;
     std::unique_ptr<AnalysisModule> clnr_jetpuid;
     std::unique_ptr<Selection> s_njet_two;
