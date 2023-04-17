@@ -62,7 +62,6 @@ InvReconstruction::InvReconstruction(Context& ctx){
 
 bool InvReconstruction::process(Event& event){
   event.weight = event.get(handle_weight);//Wozu? 
-  double weight = event.weight;
 
   //pdf_weights->process(event);
   if(sel_hem->passes(event)) {
@@ -82,7 +81,6 @@ bool InvReconstruction::process(Event& event){
   bool valid_region = assign_region(event);
   if(!valid_region) return false;
 
-  event.weight = weight;
   higgs_reconstructor->process(event);
 
   double HT = 0;
