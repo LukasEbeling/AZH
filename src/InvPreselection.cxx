@@ -55,6 +55,7 @@ class InvPreselection: public AnalysisModule {
 
     // Handles
     uhh2::Event::Handle<double> handle_event_weight;
+    uhh2::Event::Handle<double> handle_origin_weight;
     uhh2::Event::Handle<int> handle_tight_b;
 
     // Histograms
@@ -69,7 +70,6 @@ class InvPreselection: public AnalysisModule {
     std::unique_ptr<Hists> h_met_100;
     std::unique_ptr<Hists> h_met_150;
     std::unique_ptr<Hists> h_delta_cut;
-
 
     // Histograms for BTagging efficiency measurements
     std::unique_ptr<BTagMCEfficiencyHists> h_btag_eff;
@@ -135,6 +135,7 @@ InvPreselection::InvPreselection(Context & ctx){
 
   // Handles
   handle_event_weight = ctx.declare_event_output<double>("event_weight");
+  handle_origin_weight = ctx.declare_event_output<double>("origin_weight");
   handle_tight_b = ctx.declare_event_output<int>("tight_b");
 
   // Common
@@ -185,6 +186,8 @@ bool InvPreselection::process(Event & event) {
   if (!passes_common) { return false; }
 
   // Event Weighting
+
+  event.set(handle_origin_weight,event.weight);
 
   if(sel_hem->passes(event)) {
     if(event.isRealData) return false;
