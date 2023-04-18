@@ -185,12 +185,19 @@ bool InvPreselection::process(Event & event) {
   if (!passes_common) { return false; }
 
   // Event Weighting
+
+  if(sel_hem->passes(event)) {
+    if(event.isRealData) return false;
+    else event.weight *= (1. - sel_hem->GetAffectedLumiFraction());
+  }
+
   sf_lumi->process(event);
   sf_pileup->process(event);
   sf_l1prefiring->process(event);
   sf_vjets->process(event);
   sf_mtop->process(event);  
   sf_QCDScaleVar->process(event);
+  //ps_weights->process(event); not working yet
 
   h_baseline->fill(event);
 
