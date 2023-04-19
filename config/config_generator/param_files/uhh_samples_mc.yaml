@@ -42,15 +42,11 @@ WJets:
   - WJetsToLNu_HT-800to1200
   - WJetsToLNu_HT-1200to2500
   - WJetsToLNu_HT-2500toInf
-#Zjets:
-#  - ZJetsToNuNu_HT-100To200
-#  - ZJetsToNuNu_HT-1200To2500
-#  - ZJetsToNuNu_HT-200To400
-#  - ZJetsToNuNu_HT-2500ToInf
-#  - ZJetsToNuNu_HT-400To600
-#  - ZJetsToNuNu_HT-600To800
-#  - ZJetsToNuNu_HT-800To1200
-#  - ZJetsToQQ_HT-200to400
-#  - ZJetsToQQ_HT-400to600
-#  - ZJetsToQQ_HT-600to800
-#  - ZJetsToQQ_HT-800toInf
+ZJets:
+  - "ZJetsToNuNu_HT-2500toInf"
+  - "ZJetsToNuNu_HT-1200to2500"
+  - "ZJetsToNuNu_HT-800to1200"
+  - "ZJetsToNuNu_HT-600to800"
+  - "ZJetsToNuNu_HT-400to600"
+  - "ZJetsToNuNu_HT-200to400"
+  - "ZJetsToNuNu_HT-100to200"
