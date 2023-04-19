@@ -4,6 +4,7 @@ from os.path import isfile, join, exists
 from os import environ, mkdir
 from datetime import datetime
 from itertools import product
+from progress.bar import IncrementalBar
 import uproot
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,7 +14,8 @@ import sys
 #plt.style.use(hep.style.CMS)
 
 CMSSW_BASE = environ.get('CMSSW_BASE')
-OUTPUT_PATH = join(CMSSW_BASE, "src/UHH2/AZH/data/output_01_preselection/MC/UL17/")
+FILES_PATH = join(CMSSW_BASE, "src/UHH2/AZH/data/output_01_preselection/MC/UL17/")
+OUTPUT_PATH = join(CMSSW_BASE,"src/UHH2/AZH/plots")
 BACKGROUNDS = ["QCD"]
 SIGNALS = ["1000_400","600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
 CUTS = ["base","veto","50met","100met","150met","6j","phi","2b"]
@@ -37,30 +39,30 @@ class DataLoader():
 
     def load_bkgs(self):
         for bkg in BACKGROUNDS: 
-            path = join(CMSSW_BASE,OUTPUT_PATH,f"MC.{bkg}_UL17.root")
+            path = join(CMSSW_BASE,FILES_PATH,f"MC.{bkg}_UL17.root")
             self.background[bkg] = self.load(path)
     
     def load_sign(self):
         for sig in SIGNALS: 
-            path = join(CMSSW_BASE,OUTPUT_PATH,f"MC.INV_{sig}_UL17.root")
+            path = join(CMSSW_BASE,FILES_PATH,f"MC.INV_{sig}_UL17.root")
             self.signal[sig] = self.load(path)
 
     def load(self, path):
-        cutflow = []
+        counts = []
         with uproot.open(path) as file:
             for cut in CUTS:
                 branch = BRANCH_MAP[cut]
                 events = file[branch]["N_Events"].to_numpy()
-                cutflow.append(events[0][0])
-        return cutflow/cutflow[0]
+                counts.append(float(events[0][0]))
+        return np.array(counts)
 
-def plot(axis,counts,name):
-    edges = np.linspace(1,len(counts)+1,len(counts)+1)
+def plot(axis,ratio,name):
+    edges = np.linspace(1,len(ratio)+1,len(ratio)+1)
     
-    axis.hist(edges[:-1], weights=counts, bins=edges, histtype='step',
+    axis.hist(edges[:-1], weights=ratio, bins=edges, histtype='step',
         label=name)
 
-    x_coordinates = np.arange(0, len(counts)) + 1.5
+    x_coordinates = np.arange(0, len(ratio)) + 1.5
     axis.xaxis.set_major_locator(plt.FixedLocator(x_coordinates))
     axis.xaxis.set_major_formatter(plt.FixedFormatter(CUTS))
     axis.set_yscale('log') 
@@ -68,30 +70,26 @@ def plot(axis,counts,name):
     plt.title("Cutflow")
 
 
+def make_figure(data,legend,title):
+    fig, ax = plt.subplots(figsize=(10,5))
+    doc = open(OUTPUT_PATH+f"/yields_{title}.txt", "w")
+
+    for name in legend:
+        counts = data[name]
+        plot(ax,counts/counts[0],name)
+        doc.write(name+" "+str(counts[-1])+"\n")
+        bar.next()
+
+    fig.savefig(join(OUTPUT_PATH,f"cutflow_{title}"))
+    plt.close(fig)
+    doc.close()
+
+
 if __name__ == "__main__":
     data_loader = DataLoader()
-    folder = join(CMSSW_BASE,"src/UHH2/AZH/plots")
-    f = open(folder+"/yields.txt", "w")
-
-    fig, ax = plt.subplots(figsize=(10,5))
-    for bkg in BACKGROUNDS:
-        counts = data_loader.background[bkg]
-        plot(ax,counts,bkg)
-        f.write(bkg+" "+str(counts[-1])+"\n")
-
-    fig.savefig(join(folder,"cutflow_bkg"))
-    plt.close(fig)
-
-    fig, ax = plt.subplots(figsize=(10,5))
-    for sig in SIGNALS:
-        counts = data_loader.signal[sig]
-        plot(ax,counts,sig)
-        f.write(sig+" "+str(counts[-1])+"\n")
-
-    fig.savefig(join(folder,"cutflow_sig"))
-    plt.close(fig)
-    f.close()
-
-
-
-
+    bar = IncrementalBar(f"Making Plots", max=len(BACKGROUNDS)+len(SIGNALS))
+    data = data_loader.background
+    make_figure(data,BACKGROUNDS,"bkg")
+    data = data_loader.signal
+    make_figure(data,SIGNALS,"sig")
+    bar.finish()
