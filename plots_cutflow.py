@@ -16,7 +16,7 @@ import sys
 CMSSW_BASE = environ.get('CMSSW_BASE')
 FILES_PATH = join(CMSSW_BASE, "src/UHH2/AZH/data/output_01_preselection/MC/UL17/")
 OUTPUT_PATH = join(CMSSW_BASE,"src/UHH2/AZH/plots")
-BACKGROUNDS = ["QCD"]
+BACKGROUNDS = ["QCD","SingleTop", "TT","TTZ", "WJets", "TTW", "VV","ZJets"]
 SIGNALS = ["1000_400","600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
 CUTS = ["base","veto","50met","100met","150met","6j","phi","2b"]
 BRANCH_MAP = {
