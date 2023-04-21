@@ -66,12 +66,12 @@ def plot(axis,ratio,name):
     axis.xaxis.set_major_locator(plt.FixedLocator(x_coordinates))
     axis.xaxis.set_major_formatter(plt.FixedFormatter(CUTS))
     axis.set_yscale('log') 
-    axis.legend()
+    axis.legend(loc='lower left')
     plt.title("Cutflow")
 
 
 def make_figure(data,legend,title):
-    fig, ax = plt.subplots(figsize=(10,5))
+    fig, ax = plt.subplots(figsize=(7,3))
     doc = open(OUTPUT_PATH+f"/yields_{title}.txt", "w")
 
     for name in legend:
