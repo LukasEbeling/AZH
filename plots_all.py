@@ -16,8 +16,8 @@ plt.style.use(hep.style.CMS)
 
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = os.path.join(ANALYSIS, "data/output_02_reconstruction/")
-BACKGROUNDS = ["QCD","SingleTop", "TT","TTZ", "WJets", "TTW", "VV"]
-SIGNALS = ["1000_400"] #["600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
+BACKGROUNDS = ["QCD", "SingleTop","TT", "TTW", "TT", "VV", "WJets", "ZJets"]
+SIGNALS = ["1000_400","600_400","700_450","750_400","750_650","800_400","1000_850"]
 REGIONS = [0] #0 corresponds to signalregion
 YEARS = ['UL17']
 YEAR_LUMI_MAP = {
@@ -162,7 +162,8 @@ def get_obs_labels(observable):
         "event_weight": (r"Event Weight","Weight"),
         "W_m": (r"best $W_m$ [GeV]","Wmass"),
         "HT": (r"$H_T$ [GeV]","HT"),
-        "tight_b": (r"tight b tags", "tightb"), 
+        "tight_b": (r"tight b tags", "tightb"),
+        "delta_phi": (r"min $\Delta\phi$ [rad]","DeltaPhi"),
         }
     return x[observable.replace("Puppi", "CHS")]
 
@@ -170,11 +171,13 @@ def get_obs_labels(observable):
 def plot_bkg_vs_sig(_year, _region, _signal, _binning=np.linspace(50, 750, 70), _obs='jetsAk4CHS/jetsAk4CHS.m_pt'):
 
     histograms, errors = loadMC(_year, _region, _binning, _obs)
-    np_histograms = np.array(list(histograms.values())) 
+    np_histograms = np.array(list(histograms.values()))
+    yields = sum(np.transpose(np_histograms))
+    yields = [int(y*10)*1.0/10 for y in yields] 
     
     sig, error = loadSignal(_year, _region, _signal, _binning, _obs)
-    sig = sig / sum(sig) * sum(sum(np_histograms))
-    error = error / sum(sig) * sum(sum(np_histograms))
+    #sig = sig / sum(sig) * sum(sum(np_histograms))
+    #error = error / sum(sig) * sum(sum(np_histograms))
 
     fig, axes = plt.subplots(
         nrows=2, 
@@ -188,16 +191,14 @@ def plot_bkg_vs_sig(_year, _region, _signal, _binning=np.linspace(50, 750, 70), 
 
     np_errors = np.array(list(errors.values()))
     labels = list(histograms.keys())
+    labels = [l+f" ({float(y)})" for l,y in zip(labels,yields)]
     hep.histplot(np_histograms, histtype='fill', w2=np_errors, bins=_binning, stack=True, label=labels, ax=axes[0])
     hep.histplot(sig, yerr=error, histtype='errorbar', bins=_binning, markersize=13, color='k', label='Signal', ax=axes[0])
 
     errors_bkg = np.sqrt(sum(np_errors)**2)
     errors_sig = np.sqrt(sig)
-    bkg = sum(np_histograms)
-    ratio = np.nan_to_num(sig / bkg)
-    errors = np.nan_to_num(ratio * np.sqrt((errors_bkg / bkg) ** 2 + (errors_sig / sig) ** 2))
 
-    axes[0].set_yscale('log')
+    #axes[0].set_yscale('log')
     axes[0].legend(ncol=2, title=f"{regionName(_region)}, {_year}", fontsize=18, 
         title_fontsize=18, frameon=True)
     axes[0].set_ylabel("Events")
@@ -206,7 +207,7 @@ def plot_bkg_vs_sig(_year, _region, _signal, _binning=np.linspace(50, 750, 70), 
     #axes[1].axhline(1, color='grey', linestyle='--') 
     #axes[1].set_ylabel('DATA/MC')
     #axes[1].set_ylim([0.5, 1.5])
-    #axes[1].set_xlabel(get_obs_labels(_obs)[0])
+    axes[1].set_xlabel(get_obs_labels(_obs)[0])
 
     # Save Plot
     folder = os.path.join(ANALYSIS,"plots",_signal)
@@ -231,24 +232,14 @@ if __name__ == "__main__":
         "jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
         "jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
         "jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21), 
-        "A_mt": np.linspace(300, 2000, 51),
-        "H_mt": np.linspace(300, 1500, 41),
-        "MET": np.linspace(0, 800, 21),
-        "event_weight": np.linspace(0,100,11),
-        "W_m": np.linspace(0,400,21),
+        "A_mt": np.linspace(300, 2000, 21),
+        "H_mt": np.linspace(300, 1500, 21),
+        "MET": np.linspace(0, 800, 41),
+        "event_weight": np.linspace(0,100,21),
+        #"W_m": np.linspace(0,400,21),
         "HT": np.linspace(100,2000,51),
         "tight_b": np.linspace(-0.25,2.25,6),
-        #"electrons_tight/electrons_tight.m_pt": np.concatenate([np.linspace(0,300,20),np.linspace(350, 800, 11)]),
-        #"muons_tight/muons_tight.m_pt": np.concatenate([np.linspace(0,300,20),np.linspace(350, 800, 11)]),
-        #"z_pt_reco": np.linspace(0, 650, 16),
-        #"a_minus_h_mass_dnn_fixedb": np.concatenate([np.linspace(80,600,20), np.linspace(700, 1300, 7)]),
-        #"a_minus_h_mass_chi_sq_fixedb": np.concatenate([np.linspace(80,600,20), np.linspace(700, 1300, 7)]),
-        #"h_mass_reco_dnn_fixedb": np.linspace(150, 3000, 50),
-        #"a_mass_dnn_fixedb": np.linspace(250, 3500, 50),
-        #"z_mass_reco": np.linspace(30, 150, 50),
-        #"jetsAk4CHS/jetsAk4CHS.m_btag_DeepFlavour_probb": np.linspace(0, 1, 50),
-        #"chi_sq_lowest": np.logspace(np.log(0.1), np.log(2500), 30, base=np.e),
-        #"dnn_score_highest": np.linspace(0, 1, 50),
+        "delta_phi": np.linspace(0,pi,20),
         }
 
     data_loader = DataLoader(observables)
