@@ -1,5 +1,9 @@
 #include <iostream>
 #include <memory>
+#include <cmath>
+
+#include "UHH2/common/include/JetIds.h"
+#include "UHH2/common/include/NSelections.h"
 
 #include "UHH2/core/include/AnalysisModule.h"
 #include "UHH2/core/include/Event.h"
@@ -7,10 +11,11 @@
 #include "UHH2/common/include/MCWeight.h"
 #include "UHH2/common/include/PSWeights.h"
 
-#include "UHH2/AZH/include/NormalisationTools.h"
+//#include "UHH2/AZH/include/NormalisationTools.h"
 #include "UHH2/AZH/include/ScaleFactors.h"
 #include "UHH2/AZH/include/Utils.h"//for region
 #include "UHH2/AZH/include/HiggsReco.h"
+#include "UHH2/AZH/include/AtoZHHists.h"
 
 
 using namespace std;
@@ -22,61 +27,59 @@ class InvReconstruction : public AnalysisModule{
   virtual bool process(Event& event) override;
 
   private:
+  unique_ptr<HiggsReconstructor> higgs_reconstructor;
+  
   //Methods
   bool assign_region(Event& event);
+  double delta_phi(Event& event);
 
   //Handles
   Event::Handle<int> handle_region;
   Event::Handle<double> handle_sum_pt;
   Event::Handle<double> handle_weight;
+  Event::Handle<double> handle_delta;
 
-  unique_ptr<HiggsReconstructor> higgs_reconstructor;
-  //unique_ptr<AnalysisModule> pdf_weights;
-  unique_ptr<HEMSelection> sel_hem;
-  unique_ptr<MCLumiWeight> sf_lumi;
-  unique_ptr<MCPileupReweight> sf_pileup;
-  unique_ptr<AnalysisModule> sf_l1prefiring;
-  unique_ptr<AnalysisModule> sf_vjets;
-  unique_ptr<AnalysisModule> sf_mtop;
-  unique_ptr<PSWeights> ps_weights;
-  unique_ptr<MCScaleVariation> sf_QCDScaleVar;
+  //Weights missing in preselection
+  std::unique_ptr<PSWeights> ps_weights;
+  std::unique_ptr<AnalysisModule> pdf_weights;
 
-  std::unique_ptr<Hists> h_kinematics;
+  //Histogram Pointers
+  std::unique_ptr<Hists> h_preselection;
+  std::unique_ptr<Hists> h_met_180;
+  std::unique_ptr<Hists> h_delta_phi;
 };
 
 InvReconstruction::InvReconstruction(Context& ctx){
   handle_region = ctx.declare_event_output<int>("region");
   handle_sum_pt = ctx.declare_event_output<double>("HT");
   handle_weight = ctx.get_handle<double>("event_weight");
+  handle_delta = ctx.declare_event_output<double>("delta_phi");
 
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
-  //pdf_weights.reset(new PDFWeightHandleProducer(ctx));
-  sel_hem.reset(new HEMSelection(ctx));
-  sf_lumi.reset(new MCLumiWeight(ctx));
-  sf_pileup.reset(new MCPileupReweight(ctx));
-  sf_l1prefiring.reset(new L1PrefiringWeight(ctx));
-  sf_vjets.reset(new VJetsReweighting(ctx));
-  sf_mtop.reset(new TopPtReweighting(ctx, string2bool(ctx.get("apply_TopPtReweighting"))));
-  sf_QCDScaleVar.reset(new MCScaleVariation(ctx));
+
+  //pdf_weights.reset(new PDFWeightHandleProducer(ctx)); not working yet
+  ps_weights.reset(new PSWeights(ctx));
+
+  h_preselection.reset(new PreHists(ctx, "CutFlow_Preselection"));
+  h_met_180.reset(new PreHists(ctx, "CutFlow_MET>180"));
+  h_delta_phi.reset(new PreHists(ctx, "CutFlow_deltaphi"));
 }
 
 bool InvReconstruction::process(Event& event){
-  event.weight = event.get(handle_weight);//Wozu? 
+  event.weight = event.get(handle_weight);
+  ///pdf_weights->process(event);
+  ps_weights->process(event);
 
-  //pdf_weights->process(event);
-  if(sel_hem->passes(event)) {
-    if(event.isRealData) return false;
-    else event.weight *= (1. - sel_hem->GetAffectedLumiFraction());
-  }
-  sf_lumi->process(event);
-  bool PUProfileCheck = sf_pileup->process(event);
-  sf_l1prefiring->process(event);
-  sf_vjets->process(event);
-  sf_mtop->process(event);
-  //ps_weights->process(event); not working yet
-  bool LHEWeightsCheck = sf_QCDScaleVar->process(event);
-  if (!event.isRealData && (!PUProfileCheck && !LHEWeightsCheck)) { throw std::invalid_argument("Failed checks on PU and LHE weights."); }
-  //To Do: Btag efficiency
+  h_preselection->fill(event);
+
+
+  if(event.met->pt()<180) return false;
+  h_met_180->fill(event);
+
+  double delta_min = delta_phi(event);
+  if(delta_min < 0.5) return false;
+  event.set(handle_delta,delta_min);
+  h_delta_phi->fill(event);
 
   bool valid_region = assign_region(event);
   if(!valid_region) return false;
@@ -90,6 +93,21 @@ bool InvReconstruction::process(Event& event){
   event.set(handle_weight, event.weight);
 
   return true;
+}
+
+double InvReconstruction::delta_phi(Event& event){
+  double phi_m = event.met->phi();
+  double min_diff = M_PI;
+
+  for (Jet jet: *event.jets){
+    if(jet.pt()<30) continue;
+    double phi_j = jet.phi();
+    double delta = abs(phi_m - phi_j);
+    if(delta > M_PI){delta = 2*M_PI - delta;}
+    if(delta < min_diff) min_diff = delta;
+  }
+
+  return min_diff;
 }
 
 bool InvReconstruction::assign_region(Event& event){
