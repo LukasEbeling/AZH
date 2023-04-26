@@ -225,7 +225,6 @@ class ConfigFactory():
             self.input_path,
             f"*{suffix}_{self.year}*.root"
         )
-        print(path)
         samples = glob.glob(path)
         samples = list(filter(root_file_not_empty, samples))
         samples = [s.split('/')[-1] for s in samples]
