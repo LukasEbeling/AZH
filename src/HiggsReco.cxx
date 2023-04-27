@@ -15,7 +15,10 @@ CLASS::HiggsReconstructor(Context & ctx) {
     handle_A_mt = ctx.declare_event_output<double>("A_mt");
     handle_H_mt = ctx.declare_event_output<double>("H_mt");
     handle_W_m = ctx.declare_event_output<double>("W_m");
+    handle_b_angle = ctx.declare_event_output<double>("b_angle");
+    handle_t_angle = ctx.declare_event_output<double>("t_angle");
     handle_gen_A_mt = ctx.declare_event_output<double>("A_mt_gen");
+
 }
 
 bool CLASS::process(Event & event) {
@@ -56,6 +59,8 @@ LorentzVector CLASS::ProcessMoreJets(Event & event){
     ReconstructionHypothesis best_hypothesis = BestHypothesis(hypotheses);
     
     event.set(handle_W_m,BestWMass(hypotheses));
+    event.set(handle_b_angle,BAngle(best_hypothesis));
+    event.set(handle_t_angle,TAngle(best_hypothesis));
 
     LorentzVector H_v4 = best_hypothesis.get_H_v4();
     LorentzVector t_v4 = best_hypothesis.get_t_v4();
@@ -91,13 +96,36 @@ double CLASS::ChiSquared(ReconstructionHypothesis hypothesis){
   return chi_sq;
 }
 
-double CLASS::BestWMass(vector<ReconstructionHypothesis> hypotheses){
-double best_w_mass = WMass(hypotheses.at(0));
-for (ReconstructionHypothesis hyp : hypotheses){
-  double w_mass = WMass(hyp);
-  if (abs(w_mass-80.38) < abs(best_w_mass-80.38)) best_w_mass = w_mass;
+LorentzVector CLASS::Projection(LorentzVector v){
+  const double pt = v.pt();
+  const double phi = v.phi();
+  const double m = v.M();  
+  return LorentzVector(pt,0,phi,sqrt(pow(m,2)+pow(pt,2)));
 }
-return best_w_mass;
+
+double CLASS::BestWMass(vector<ReconstructionHypothesis> hypotheses){
+  double best_w_mass = WMass(hypotheses.at(0));
+  for (ReconstructionHypothesis hyp : hypotheses){
+    double w_mass = WMass(hyp);
+    if (abs(w_mass-80.38) < abs(best_w_mass-80.38)) best_w_mass = w_mass;
+  }
+  return best_w_mass;
+}
+
+double CLASS::BAngle(ReconstructionHypothesis hypothesis){
+  LorentzVector b = hypothesis.get_t_b_v4();
+  LorentzVector bbar = hypothesis.get_tbar_b_v4();
+  double difference = abs(b.phi()-bbar.phi());
+  if (difference > M_PI) difference = 2*M_PI-difference;
+  return difference;
+}
+
+double CLASS::TAngle(ReconstructionHypothesis hypothesis){
+  LorentzVector t = hypothesis.get_t_v4();
+  LorentzVector tbar = hypothesis.get_tbar_v4();
+  double difference = abs(t.phi()-tbar.phi());
+  if (difference > M_PI) difference = 2*M_PI-difference;
+  return difference;
 }
 
 double CLASS::WMass(ReconstructionHypothesis hypothesis){
@@ -108,13 +136,6 @@ double CLASS::WMass(ReconstructionHypothesis hypothesis){
   double w1 = (q1+q2).M();
   double w2 = (q3+q4).M();
   return abs(w1-80.38) > abs(w2-80.38) ? w1 : w2;
-}
-
-LorentzVector CLASS::Projection(LorentzVector v){
-  const double pt = v.pt();
-  const double phi = v.phi();
-  const double m = v.M();  
-  return LorentzVector(pt,0,phi,sqrt(pow(m,2)+pow(pt,2)));
 }
 
 
@@ -129,17 +150,3 @@ double CLASS::TransMassAtGen(Event & event){
     z = Projection(z);
     return (h+z).M();
 }
-
-/*
-double CLASS::TransMassAtGen(Event & event){
-  LorentzVector H = {0,0,0,0};
-  LorentzVector Z = {0,0,0,0};
-  for(GenParticle P : *event.genparticles){
-      if (P.pdgId() == 23) Z = LorentzVector(P.pt(),P.eta(),P.phi(),P.energy());
-  }
-  for(GenJet jet : *event.genjets) H+=jet.v4();
-  //H = Projection(H);
-  //Z = Projection(Z);
-  return (H).M();
-}
-*/

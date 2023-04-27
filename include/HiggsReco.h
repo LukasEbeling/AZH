@@ -18,6 +18,8 @@ public:
     Event::Handle<double> handle_A_mt;
     Event::Handle<double> handle_H_mt;
     Event::Handle<double> handle_W_m;
+    Event::Handle<double> handle_b_angle;
+    Event::Handle<double> handle_t_angle;
     Event::Handle<double> handle_gen_A_mt;
 
 private:
@@ -31,6 +33,8 @@ private:
     double ChiSquared(ReconstructionHypothesis hypothesis);
     double TransMassAtGen(Event & event);
     double WMass(ReconstructionHypothesis hypothesis);
+    double BAngle(ReconstructionHypothesis hypothesis);
+    double TAngle(ReconstructionHypothesis hypothesis);
     double BestWMass(vector<ReconstructionHypothesis> hypotheses);
     LorentzVector ProcessFiveJets(Event & event);
     LorentzVector ProcessMoreJets(Event & event);
