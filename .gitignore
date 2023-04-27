@@ -4,4 +4,6 @@ obj/*
 mystuff/*
 .vscode/*
 *workdir*
-plots/*
+plots/*/*
+plots/yields*
+plots/cutflow*
