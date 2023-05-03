@@ -11,7 +11,7 @@ import utils
 
 
 config = Configurator()
-VARS = ["Amt","Hmt"]
+VARS = ["Amt","Hmt","met"]
 CHANNELS = ["inv"]
 REGIONS = ["SignalRegion"]
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds

@@ -40,7 +40,9 @@ class SampleSet():
         "slimmedMuonsUSER.m_pt_2": "Muon2Pt",
         "z_mass_reco": "ZMass",
         "A_mt": "Amt",
-        "h_mass": "Hm"
+        "H_mt": "Hmt",
+        "MET": "met",
+
     }
 
     def __init__(self, set_params: dict):
@@ -598,6 +600,7 @@ class Binner():
             "z_mass_reco": np.linspace(40, 140, 16),
             "A_mt": np.linspace(400, 2000, 16),
             "H_mt": np.linspace(200,1200,16),
+            "MET": np.linspace(200,1200,16),
         },
         "CRZMassSidebands": {
             "default": np.linspace(0, 5000, 2),
