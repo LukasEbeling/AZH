@@ -10,3 +10,4 @@ plots/cutflow*
 combine/cache/*
 combine/__pycache__/*
 *.dat
+*.log
