@@ -1,10 +1,7 @@
 years:
-  # - UL16
   - UL17
-  # - UL18
 
 backgrounds:
-  # - DYJets
   - TT
   - TTZ
   - SingleTop
@@ -16,67 +13,18 @@ backgrounds:
 
 svars:
   - A_mt
+  - H_mt
+  - MET
 
 branches:
   - event_weight
-  - A_mt
-  - H_mt
-  # - a_mass_chi_sq_fixedb
-  # - h_mass_reco_chi_sq_fixedb
-  # - chi_sq_lowest
-  # - event_weight
-  # - channel
-  # - region
-  # - passes_trigger
-  # - [jetsAk4CHS/jetsAk4CHS.m_phi, 1]
-  # - region_b_tight_medium
-  # - region_b_tight_tight
-  # - angle_ah
-  # - angle_max_tz
 
 region_branch: 
   - SignalRegion
 
 variations:
-  # weight_btag: ["_central", "_bc_up", "_bc_down"]
-  # weight_btag_: ["central", "light_up", "light_down"]
-  # weight_pu: ["", "_up", "_down"]
-  # weight_sfelec_reco: ["", "_up", "_down"]
-  # weight_sfelec_tight_id: ["", "_up", "_down"]
-  # weight_sfmu_isolation: ["", "_up", "_down"]
-  # weight_sfmu_tight_id: ["", "_up", "_down"]
-  # weight_trigger_sf_ee: ["", "_up", "_dn"]
-  # weight_trigger_sf_emu: ["", "_up", "_dn"]
-  # weight_trigger_sf_mumu: ["", "_up", "_dn"]
-  # weight_toppt_a: ["", "_up", "_down"]
-  # weight_toppt_b: ["", "_up", "_down"]
-  # weight_isr_2: ["_up", "_down"]
-  # weight_fsr_2: ["_up", "_down"]
-  # weight_muf: ["_noneup", "_nonedown"]
-  # weight_mur: ["_upnone", "_downnone"]
-  # weight_murmuf: ["_upup", "_downdown"]
-  # weight_pdf: ["", "_up", "_down"]
-  # weight_vjets_: ["EWK", "QCD_NLO", "applied"]
 
 sample_variations:
-  # JEC
-  # Total: ["_up", "_down"]
-  # Absolute: ["_up", "_down"]
-  # Absolute_YEAR: ["_up", "_down"]
-  # BBEC1: ["_up", "_down"]
-  # BBEC1_YEAR: ["_up", "_down"]
-  # EC2: ["_up", "_down"]
-  # EC2_YEAR: ["_up", "_down"]
-  # FlavorQCD: ["_up", "_down"]
-  # HF: ["_up", "_down"]
-  # HF_YEAR: ["_up", "_down"]
-  # RelativeBal: ["_up", "_down"]
-  # RelativeSample_YEAR: ["_up", "_down"]
-  # JER
-  # jer: ["_up", "_down"]
-  # Generator Level uncertainties
-  # hdamp: ["Up", "Down"]
-  # TuneCP5: ["Up", "Down"]
 
 sample_var_whitelist:
   Total: ["AtoZH", "DYJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
