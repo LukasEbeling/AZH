@@ -1,7 +1,7 @@
-#!/nfs/dust/cms/user/ebelingl/anaconda3/envs/py311/bin/python
+#!/nfs/dust/cms/user/hundhad/anaconda3/envs/py39/bin/python
 import argparse
 
-#from elliptical_hist_plotter import EllipticalHistPlotter
+from elliptical_hist_plotter import EllipticalHistPlotter
 from ntuple_loader import NTupleLoader
 import utils
 from utils import REGION_ID_MAP
@@ -18,6 +18,12 @@ class UHH2ToCombineFactory():
     the creation of all desired sample sets.
     """
 
+    CHANNELS_REGIONS = {
+        "diMuon": [x for x in REGION_ID_MAP.keys() if "Flavour" not in x],
+        "diElectron": [x for x in REGION_ID_MAP.keys() if "Flavour" not in x],
+        "ElectronMuon": ["CRDiffLeptonFlavours"]
+    }
+
     def __init__(self, signal: str = ""):
         config = Configurator()
         if signal:
@@ -27,10 +33,6 @@ class UHH2ToCombineFactory():
             self.loader = NTupleLoader(signal)
 
         svars = list(map(utils.collection_key, config.svars))
-        # create a dictionary containing a keys and SampleSets
-        channel = "inv"
-        region = "SignalRegion"
-
         self.sample_sets = {
             f"{year}_{channel}_{region}_{sgnl}_{svar}": SampleSet(
                 {
@@ -42,18 +44,36 @@ class UHH2ToCombineFactory():
                 }
             )
             for sgnl in config.signals
+            for channel in self.CHANNELS_REGIONS
+            for region in self.CHANNELS_REGIONS[channel]
             for year in config.years
-            for svar in svars
+            for svar in svars + ["ellipses"]
             if utils.is_valid_set(channel, region, svar)
         }
 
     def run_factory(self):
         # First iteration without 2D CRs
         for set_name, sample_set in self.sample_sets.items():
-            in_signal_region = sample_set.set_params["region"] == "SignalRegion"
-            if (in_signal_region):
+            elliptical_binning = sample_set.set_params["svar"] == "ellipses"
+            not_signal_region = sample_set.set_params["region"] != "SignalRegion"
+            if not (elliptical_binning and not_signal_region):
                 sample_set.set_sample_bins()
                 sample_set.create_hists_and_save_file()
+        # Second iteration only 2D CRs fetching the ellipses from
+        # SR sample sets that are already finished
+        for set_name, sample_set in self.sample_sets.items():
+            elliptical_binning = sample_set.set_params["svar"] == "ellipses"
+            not_signal_region = sample_set.set_params["region"] != "SignalRegion"
+            if (elliptical_binning and not_signal_region):
+                sr_set_name = set_name.replace(sample_set.set_params["region"], "SignalRegion")
+                ellipses = self.sample_sets[sr_set_name].set_binning
+                sample_set.set_sample_bins(ellipses)
+                sample_set.create_hists_and_save_file()
+
+    def plot_elliptical_binnings(self):
+        samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses"]
+        ell_hist_plotter = EllipticalHistPlotter(samples)
+        ell_hist_plotter.plot()
 
 
 if __name__ == "__main__":
@@ -64,4 +84,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     file_factory = UHH2ToCombineFactory(args.signal)
     file_factory.run_factory()
-
+    file_factory.plot_elliptical_binnings()
