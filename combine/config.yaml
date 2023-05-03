@@ -22,8 +22,10 @@ branches:
 region_branch: 
   - SignalRegion
 
+#based on scale factors
 variations:
 
+#hdamp, cptune
 sample_variations:
 
 sample_var_whitelist:
