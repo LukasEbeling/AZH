@@ -16,7 +16,7 @@ plt.style.use(hep.style.CMS)
 
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = os.path.join(ANALYSIS, "data/output_02_reconstruction/")
-BACKGROUNDS = ["VV", "TTW", "ZJets", "WJets", "QCD", "SingleTop","TT"]
+BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "WJets", "QCD", "SingleTop","TT"]
 SIGNALS = ["1000_400","600_400","700_450","750_400","750_650","800_400","1000_850"]
 REGIONS = [0] #0 corresponds to signalregion
 YEARS = ['UL17']
