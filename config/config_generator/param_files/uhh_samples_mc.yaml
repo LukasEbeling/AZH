@@ -20,10 +20,6 @@ TT:
   - {nominal: TTToHadronic, hdampUp: TTToHadronic_hdampUP, hdampDn: TTToHadronic_hdampDOWN, tuneUp: TTToHadronic_TuneCP5up, tuneDown: TTToHadronic_TuneCP5down}
   - {nominal: TTToSemiLeptonic, hdampUp: TTToSemiLeptonic_hdampUP, hdampDn: TTToSemiLeptonic_hdampDOWN, tuneUp: TTToSemiLeptonic_TuneCP5up, tuneDown: TTToSemiLeptonic_TuneCP5down}
   - {nominal: TTTo2L2Nu, hdampUp: TTTo2L2Nu_hdampUP, hdampDn: TTTo2L2Nu_hdampDOWN, tuneUp: TTTo2L2Nu_TuneCP5up, tuneDown: TTTo2L2Nu_TuneCP5down}
-TT:
-  - TTToHadronic
-  - TTTo2L2Nu
-  - TTToSemiLeptonic
 TTV:
   - TTZToLLNuNu_M-10_TuneCP5
   - TTZToQQ_TuneCP5
