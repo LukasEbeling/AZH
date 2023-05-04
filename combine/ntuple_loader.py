@@ -42,7 +42,7 @@ class NTupleLoader(BorgNTupleLoader):
 
         for s in self.samples:
             self.load_trees(s)
-            #self.load_sample_vars(s)
+            self.load_sample_vars(s)
         self.load_data()
 
         if "UL16" in self.config.years:
@@ -68,6 +68,7 @@ class NTupleLoader(BorgNTupleLoader):
                 self.nominal_trees[year]["data"][key] = pq_table["foo"].to_numpy()
 
     def load_sample_vars(self, sample):
+        if self.config.sample_variations is None: return #remove line later
 
         for year in self.sample_vars:
             print(f"Loading Jet Variations {year} {sample}")
@@ -99,21 +100,21 @@ class NTupleLoader(BorgNTupleLoader):
             self.nominal_trees[year][sample] = {}
             for x in self.vars_to_load:
                 key = self._tree_to_np_array(x)
-                #self.nominal_trees[year][sample][key] = branch
+                ## self.nominal_trees[year][sample][key] = branch
                 pq_table = pq.read_table(f"cache/mc_{year}_{sample}_nominal_{key}.parquet")
                 self.nominal_trees[year][sample][key] = pq_table["foo"].to_numpy()
 
             # Variations
-            #weights_to_load = [x + xvar for x, xvars in
-            #                   self.config.variations.items() for xvar in xvars]
+            weights_to_load = [x + xvar for x, xvars in
+                               self.config.variations.items() for xvar in xvars]
 
-            #for branch in itertools.chain(weights_to_load):
-            #    if(("pdf" in branch) and (("up" in branch) or ("down" in branch))):
-            #        continue
-            #    branch_name = re.sub(r"_mu[rf]{1}_", "_murmuf_", branch)
-            #    branch_name = re.sub(r"_[ab]{1}$", "", branch_name)
-            #    pq_table = pq.read_table(f"cache/mc_{year}_{sample}_variation_{branch}.parquet")
-            #    self.nominal_trees[year][sample][branch] = pq_table["foo"].to_numpy()
+            for branch in itertools.chain(weights_to_load):
+                if(("pdf" in branch) and (("up" in branch) or ("down" in branch))):
+                    continue
+                branch_name = re.sub(r"_mu[rf]{1}_", "_murmuf_", branch)
+                branch_name = re.sub(r"_[ab]{1}$", "", branch_name)
+                pq_table = pq.read_table(f"cache/mc_{year}_{sample}_variation_{branch}.parquet")
+                self.nominal_trees[year][sample][branch] = pq_table["foo"].to_numpy()
 
     def merge_16_pre_post(self):
 
@@ -149,4 +150,3 @@ class NTupleLoader(BorgNTupleLoader):
                     print(sample, variation, x)
                     pq_table = pq.read_table(f"cache/mc_UL16_{sample}_{variation}_{x}.parquet")
                     self.sample_vars["UL16"][sample][variation][x] = pq_table["foo"].to_numpy()
-
