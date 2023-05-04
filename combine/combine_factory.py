@@ -77,4 +77,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     file_factory = UHH2ToCombineFactory(args.signal)
     file_factory.run_factory()
-    #file_factory.plot_elliptical_binnings()
+    file_factory.plot_elliptical_binnings()
