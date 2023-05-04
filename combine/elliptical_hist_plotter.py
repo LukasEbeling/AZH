@@ -85,7 +85,7 @@ class EllipticalHistPlotter():
 
         ax.set_xlim(0)
         ax.set_ylim(50)
-        ax.set_xlabel(r"$p_{T,Z}$", size=25)
+        ax.set_xlabel(r"$missing p_{T}$", size=25)
         ax.set_ylabel(r"$\Delta m$", size=25)
         ax.legend(
             [ell.get_plt_patch(c) for ell, c in zip(sample_set.set_binning, self.ell_colors)],
