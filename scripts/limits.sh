@@ -9,6 +9,8 @@ run_asymptotic_limits() {
     combine -M AsymptoticLimits -m 125 --run blind -d ${path}INV_${1}_Hmt_inv_SignalRegion.dat | grep Expected &> ${path}AsymptoticLimits_AZHToInv_${1}_Hmt.log
     echo ${path}INV_${1}_met_inv_SignalRegion.dat
     combine -M AsymptoticLimits -m 125 --run blind -d ${path}INV_${1}_met_inv_SignalRegion.dat | grep Expected &> ${path}AsymptoticLimits_AZHToInv_${1}_met.log
+    echo ${path}INV_${1}_2DEllipses_inv_SignalRegion.dat
+    combine -M AsymptoticLimits -m 125 --run blind -d ${path}INV_${1}_2DEllipses_inv_SignalRegion.dat | grep Expected &> ${path}AsymptoticLimits_AZHToInv_${1}_2DEllipses.log
 
 }
 
