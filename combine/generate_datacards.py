@@ -309,7 +309,7 @@ if __name__ == "__main__":
     i = 0
     for svar, year, mass_point, channel, region in product(*ll):
         if not utils.is_valid_set(channel, region, svar):
-            continue
+            pass
         if (region == "CRDiffLeptonFlavours") != (channel == "ElectronMuon"):
             continue
         datacard = Datacard(year, mass_point, svar, channel, region, args)
