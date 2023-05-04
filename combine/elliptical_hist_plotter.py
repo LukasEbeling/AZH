@@ -5,12 +5,11 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 import numpy as np
 
-sys.path.append("../plots/")
 import plot_utils  # noqa
 
 
 CMSSW_BASE = os.environ.get("CMSSW_BASE")
-OUTPUT_PATH = os.path.join(CMSSW_BASE, "src/UHH2/2HDM/limits/plots/plot_output/elliptical_binnings")
+OUTPUT_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/plots/ellipses")
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 
 
@@ -37,13 +36,13 @@ class EllipticalHistPlotter():
 
     def _plot_plane_with_bins(self, sample_set):
         sgnl_raw = sample_set.samples['signal']._get_raw_twod_inputs()
-        bkg_zpt = []
+        bkg_met = []
         bkg_dm = []
         for sname, s_bkg in sample_set.samples.items():
             if sname in ["signal", "data"]:
                 continue
-            zpt, dm = s_bkg._get_raw_twod_inputs()
-            bkg_zpt.append(zpt)
+            met, dm = s_bkg._get_raw_twod_inputs()
+            bkg_met.append(met)
             bkg_dm.append(dm)
 
         fig = plt.figure(figsize=(11, 11), dpi=300)
@@ -117,7 +116,7 @@ class EllipticalHistPlotter():
 
         plot_meta = plot_utils.PlotMeta()
 
-        fig, ax = self._plot_skeleton(year=sample_set.set_params["year"])
+        fig, ax = self._plot_skeleton(sample_set.set_params["year"])
         ax2 = ax.twinx()
         ax2.hist(bins[:-1], bins=bins, weights=sgnl,
                  label=sample_set.samples["signal"].sample, histtype='step', linewidth=3,
