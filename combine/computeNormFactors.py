@@ -98,7 +98,7 @@ class NormComputer:
             for i in range(100):
                 pdf_variations[i].append(sum(_pdf_variations[i]))
 
-            return nominal, qcd_variations, pdf_variations
+        return nominal, qcd_variations, pdf_variations
 
     def get_sample_specifiers(self, sample):
         """
@@ -106,16 +106,15 @@ class NormComputer:
         into it's subsamples (TTToHadronic) or filename specifier
         (AToZHToLLTTbar_MA-900_MH-600).
         """
-        #if "INV" in sample:
-        #    split = [s for s in sample.split("_") if s]
-        #    return [f"MA-{split[1]}_MH-{split[2]}"]
-        if sample not in self.SAMPLE_SPECIFIERS:
-            sample = sample.replace("AZH", "AToZHToLLTTbar")
-            sample = sample.replace("mA", "MA-")
-            sample = sample.replace("mH", "MH-")
-            return [sample]
-        else:
+
+        if sample in self.SAMPLE_SPECIFIERS:
             return self.SAMPLE_SPECIFIERS[sample]
+        
+        if "INV" in sample:
+            split = [s for s in sample.split("_") if s]
+            return [f"MA-{split[1]}_MH-{split[2]}"] 
+        
+        return [sample]
 
     def _compute_pdf_norm_factors(self, nominal, pdf_variations):
         for key in pdf_variations:
@@ -140,14 +139,15 @@ class NormComputer:
         Compute the qcd and pdf norms for all samples
         as given by the config module and save to file.
         """
+
         for sample in self.config.samples:
             sample_specifiers = self.get_sample_specifiers(sample)
 
             nominal, qcd_variations, pdf_variations = self.variations_from_samples(sample_specifiers)
 
             norm_facts = {
-                #'PDF': self._compute_pdf_norm_factors(nominal, pdf_variations),
-                #'QCD': self._compute_qcd_norm_factors(nominal, qcd_variations)
+                'PDF': self._compute_pdf_norm_factors(nominal, pdf_variations),
+                'QCD': self._compute_qcd_norm_factors(nominal, qcd_variations)
             }
 
             os.makedirs("norm_facts", exist_ok=True)
