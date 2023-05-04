@@ -1,7 +1,7 @@
 #!/nfs/dust/cms/user/ebelingl/anaconda3/envs/py311/bin/python
 import argparse
 
-#from elliptical_hist_plotter import EllipticalHistPlotter
+from elliptical_hist_plotter import EllipticalHistPlotter
 from ntuple_loader import NTupleLoader
 import utils
 from utils import REGION_ID_MAP
@@ -48,29 +48,20 @@ class UHH2ToCombineFactory():
             for channel in self.CHANNELS_REGIONS
             for region in self.CHANNELS_REGIONS[channel]
             for year in config.years
-            for svar in svars
-            #for svar in svars + ["ellipses"]
-            if utils.is_valid_set(channel, region, svar)
+            for svar in svars + ["ellipses"]
+            #if utils.is_valid_set(channel, region, svar)
         }
 
     def run_factory(self):
         # First iteration without 2D CRs
         for set_name, sample_set in self.sample_sets.items():
             in_signal_region = sample_set.set_params["region"] == "SignalRegion"
-            elliptical = sample_set.set_params["svar"] == "ellipses"
-            if (in_signal_region and not elliptical):
+            if in_signal_region:
                 sample_set.set_sample_bins()
                 sample_set.create_hists_and_save_file()
-        # Second iteration only 2D CRs fetching the ellipses from
-        # SR sample sets that are already finished
-        #for set_name, sample_set in self.sample_sets.items():
-        #    elliptical = sample_set.set_params["svar"] == "ellipses"
-        #    not_signal_region = sample_set.set_params["region"] != "SignalRegion"
-        #    if (elliptical and not_signal_region):
-        #        sr_set_name = set_name.replace(sample_set.set_params["region"], "SignalRegion")
-        #        ellipses = self.sample_sets[sr_set_name].set_binning
-        #        sample_set.set_sample_bins(ellipses)
-        #        sample_set.create_hists_and_save_file()
+        #If binning exists already:
+        #ellipses = self.sample_sets[set_name].set_binning
+        #sample_set.set_sample_bins(ellipses)
 
     def plot_elliptical_binnings(self):
         samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses"]

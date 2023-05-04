@@ -60,19 +60,23 @@ class SampleSet():
     def create_hists_and_save_file(self):
         self._create_histograms()
 
-        is_sensitive_var_hist = self.set_params["svar"] in ["A_mt", "h_mass"]
-        if is_sensitive_var_hist:
+        is_sensitive_var_hist = self.set_params["svar"] in ["A_mt","H_mt","MET","ellipses"]
+        is_signal_channel = self.set_params["channel"] in ["inv"]
+        if is_sensitive_var_hist and is_signal_channel:
             self._assert_nonzero_backgrounds()
 
         self._save_output_file()
 
-    def set_sample_bins(self):
+    def set_sample_bins(self, ellipses: Ellipse = None):
         """
         Sets the binning to the binning obtained from
         the binner in all samples in the set.
-        """    
-        binner = Binner(self.samples["signal"], self.set_params)
-        self.set_binning = binner.get_binning()
+        """
+        if ellipses:
+            self.set_binning = ellipses
+        else:
+            binner = Binner(self.samples["signal"], self.set_params)
+            self.set_binning = binner.get_binning()
 
         for sample in self.samples.values():
             sample.bins = self.set_binning
@@ -96,7 +100,6 @@ class SampleSet():
             merged with the bin at idx_zero_bin
         idx_merged_bin: The index of the merged bin in the
             array resulting from the merge.
-
         Returns:
         A modified version of the input hist_tuple with the one less
         bin, due to the bin at index idx_zero_bin being merged with
@@ -170,8 +173,10 @@ class SampleSet():
         if not (bkg_vals > 0).all() and not is_signal_region:
             bkg_vals = self._merge_bins(bkg_vals)
 
-        assert (bkg_vals > 0).all(), f"Bin with no BKG for {self.set_params['svar']} in " \
-        + f"{self.set_params['region']} region and {self.set_params['channel']} channel."
+        assert (bkg_vals > 0).all(), (
+            f"Bin with no BKG for {self.set_params['svar']} in "
+            f"{self.set_params['region']} region and {self.set_params['channel']}."
+        )
 
     def _ntuple_var_to_combine_key(self, v: str, sname: str):
         """
@@ -227,14 +232,12 @@ class SampleSet():
         to get the statistical error for the fits. Simply
         writing a NumPy histogram via uproot will yield
         errant results.
-
         Arguments:
         hist_tuple[0] -- bin content of the histogram (yield)
         hist_tuple[1] -- bin content of the histogram built with
             weights=weights**2. This is equivalent to
             the per bin variance.
         hist_tuple[2] -- bin boundries of the histogram
-
         Returns:
         hist.Hist type histogram with correct
         """
@@ -281,18 +284,16 @@ class SampleSet():
         svar = self.OUTPUT_MAP[self.set_params["svar"]]
 
         base_path = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine", self.set_params["year"])
-        fpath_zpt = os.path.join(base_path, f"{sgnl}_{svar}_{channel}_{region}.root")
+        fpath_met = os.path.join(base_path, f"{sgnl}_{svar}_{channel}_{region}.root")
 
-        print(uproot.__file__)
-
-        with uproot.recreate(fpath_zpt) as f:
+        with uproot.recreate(fpath_met) as f:
             for sname, sample in self.samples.items():
                 if sname in ["data", "signal"]:
                     continue
                 if np.sum(sample.svar_hist[0]) > 0.5:
                     f[region + '/' + sname] = self._build_hist_object(sample.svar_hist)
                     #self._write_var_hists_to_file(f, sample.var_hists, region, sname)
-            f[region + "/data_obs"] = self._build_hist_object(self.samples["TT"].svar_hist)
+            f[region + "/data_obs"] = self._build_hist_object(self.samples["data"].svar_hist)
             f[region + "/AtoZH"] = self._build_hist_object(self.samples["signal"].svar_hist)
             #self._write_var_hists_to_file(f, self.samples["signal"].var_hists, region, "AtoZH")
 
@@ -394,7 +395,6 @@ class Sample():
         to filter the trees for channel, region and
         if specified fullfilment of angle, dnn_score requirements.
         """
-        
         #is_channel = self.tree["channel"] == CHANNEL_ID_MAP[self.sample_params["channel"]]
         #is_region = self.tree[self.config.region_branch] == REGION_ID_MAP[self.sample_params["region"]]
         #is_triggered = self.tree["passes_trigger"] == 1
@@ -437,9 +437,11 @@ class Sample():
                 self.var_sel[variation] = np.logical_and(self.var_sel[variation], pass_dnn)
 
     def _get_raw_twod_inputs(self):
-        zpt = self.tree["z_pt_reco"][self.sel]
-        deltam = self.tree[RECO_TYPE][self.sel]
-        return [zpt, deltam]
+        met = self.tree["MET"][self.sel]
+        amt = self.tree["A_mt"][self.sel]
+        hmt = self.tree["H_mt"][self.sel]
+        deltam = abs(amt-hmt)
+        return [met, deltam]
 
     def _build_histogram(self, inputs, weights, check_weights=False):
         if self.svar == "ellipses":
@@ -499,7 +501,7 @@ class Sample():
 
             w_up = self.weights[self.sel] / w_nom * self.tree[x + xvars[0]][self.sel]
             w_dn = self.weights[self.sel] / w_nom * self.tree[x + xvars[1]][self.sel]
-            
+
             if 'mur' in x or 'muf' in x:
                 with open(f"norm_facts/{self.sample}_{self.year}_norm.json") as f:
                     data = f.read()
@@ -524,9 +526,9 @@ class Sample():
             sel = self.var_sel[variation]
 
             if self.svar == "ellipses":
-                zpt = self.sample_vars[variation]["z_pt_reco"][sel]
+                met = self.sample_vars[variation]["MET"][sel]
                 deltam = self.sample_vars[variation][RECO_TYPE][sel]
-                inputs = [zpt, deltam]
+                inputs = [met, deltam]
             else:
                 inputs = self.sample_vars[variation][self.svar][sel]
 
@@ -586,7 +588,7 @@ class Binner():
     binning_map = {
         "stddevs_ellipses": np.array([0.5, 1, 1.5, 2, 2.5, 3]),
         "defaults": {
-            "z_pt_reco": np.linspace(0, 800, 16),
+            "z_pt_reco": np.linspace(0, 800, 14),
             RECO_TYPE: np.linspace(80, 1000, 3),
             "jetsAk4CHS/jetsAk4CHS.m_phi_1": np.linspace(-3, 3, 30),
             "jetsAk4CHS/jetsAk4CHS.m_pt_1": np.linspace(30, 650, 16),
@@ -604,19 +606,50 @@ class Binner():
         },
         "CRZMassSidebands": {
             "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 5000, 2), #14),
+        },
+        "CRZMassSidebands1BTagged": {
+            "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 5000, 2),
         },
         "CR1BTaggedJets": {
             "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 800, 14),
         },
         "CR0BTaggedJets": {
             "default": np.linspace(0, 5000, 2),
             "z_mass_reco": np.linspace(85, 97, 9),
+            "z_pt_reco": np.linspace(0, 5000, 2), #14),
         },
         "CRSameSignLeptons": {
             "default": np.linspace(0, 5000, 2)
         },
         "DiffFlavourRegion": {
             "default": np.linspace(0, 5000, 2)
+        },
+        "SRFiveJets": {
+            "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 800, 14),
+        },
+        "CRFiveJets1BTagged": {
+            "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 800, 14),
+        },
+        "CRFiveJets0BTagged": {
+            "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 5000, 2), #14),
+        },
+        "CRFiveJetsZMassSidebands": {
+            "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 5000, 2), #14),
+        },
+        "CRFiveJetsZMassSidebands0BTagged": {
+            "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 5000, 2), #14),
+        },
+        "CRFiveJetsZMassSidebands1BTagged": {
+            "default": np.linspace(0, 5000, 2),
+            "z_pt_reco": np.linspace(0, 5000, 2), #14),
         }
     }
 
@@ -670,14 +703,15 @@ class Binner():
 
         loader = NTupleLoader()
         sel = self.signal_sample.sel
-        zpt = loader.nominal_trees[self.year][self.signal]["z_pt_reco"][sel]
-        dm = loader.nominal_trees[self.year][self.signal][RECO_TYPE][sel]
-        weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel]
+        met = loader.nominal_trees[self.year][self.signal]["MET"][sel][0]
+        amt = loader.nominal_trees[self.year][self.signal]["A_mt"][sel][0]
+        hmt = loader.nominal_trees[self.year][self.signal]["H_mt"][sel][0]
+        dm = abs(amt - hmt)
+        weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel][0]
 
         ellipses = []
         for n_std in self.binning_map["stddevs_ellipses"]:
-            ell = self._fit_ellipse(zpt, dm, weights, n_std)
+            ell = self._fit_ellipse(met, dm, weights, n_std)
             ellipses.append(ell)
 
         return ellipses
-
