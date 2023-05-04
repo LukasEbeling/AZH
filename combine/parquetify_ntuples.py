@@ -111,19 +111,6 @@ class Parquetifier():
                     pa_table = pa.table({"foo": branch})
                     pq.write_table(pa_table, f"cache/mc_{year}_{sample}_nominal_{key}.parquet")
 
-                    
-    def load_trees_var(self, sample):
-
-        for year in self.ul_years:
-            print(f"Loading {year} {sample}")
-
-            mc_path = os.path.join(self.UHH_OUTPUT_PATH, "MC", year, f"MC.{sample}_{year}.root")
-            with uproot.open(mc_path) as f:
-                for x in self.vars_to_load:
-                    key, branch = self._tree_to_np_array(f, x)
-                    pa_table = pa.table({"foo": branch})
-                    pq.write_table(pa_table, f"cache/mc_{year}_{sample}_nominal_{key}.parquet")
-
                 # Variations
                 weights_to_load = [x + xvar for x, xvars in
                                    self.config.variations.items() for xvar in xvars]
