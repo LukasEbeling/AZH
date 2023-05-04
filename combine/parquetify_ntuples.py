@@ -38,7 +38,7 @@ class Parquetifier():
         else:
             for s in self.samples:
                 self.load_trees(s)
-                #self.load_sample_vars(s)
+                self.load_sample_vars(s)
 
         if "UL16" in self.config.years:
             self.merge_16_pre_post()
@@ -76,7 +76,7 @@ class Parquetifier():
                     pq.write_table(pa_table, f"cache/data_{year}_{key}.parquet")
 
     def load_sample_vars(self, sample):
-
+        if self.config.sample_variations is None: return #remove line later
         for year in self.ul_years:
             print(f"Loading Jet Variations {year} {sample}")
             relevant_vars = {
@@ -110,8 +110,8 @@ class Parquetifier():
                     key, branch = self._tree_to_np_array(f, x)
                     pa_table = pa.table({"foo": branch})
                     pq.write_table(pa_table, f"cache/mc_{year}_{sample}_nominal_{key}.parquet")
+
                     
-        
     def load_trees_var(self, sample):
 
         for year in self.ul_years:
@@ -176,4 +176,3 @@ if __name__ == "__main__":
                         "to run combine factory.")
     args = parser.parse_args()
     Parquetifier(args.sample)
-
