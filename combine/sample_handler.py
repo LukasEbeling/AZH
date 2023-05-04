@@ -42,7 +42,6 @@ class SampleSet():
         "A_mt": "Amt",
         "H_mt": "Hmt",
         "MET": "met",
-
     }
 
     def __init__(self, set_params: dict):
@@ -254,9 +253,9 @@ class SampleSet():
             for xvar in xvars if xvar and "central" not in xvar
         ]
         relevant_vars = {
-            x: y for x, y in
-            self.config.sample_variations.items() if
-            sname in self.config.sample_var_whitelist[x]
+            #x: y for x, y in
+            #self.config.sample_variations.items() if
+            #sname in self.config.sample_var_whitelist[x]
         }
         sample_variations = [
             x + xvar for x, xvars in relevant_vars.items()
@@ -292,10 +291,10 @@ class SampleSet():
                     continue
                 if np.sum(sample.svar_hist[0]) > 0.5:
                     f[region + '/' + sname] = self._build_hist_object(sample.svar_hist)
-                    #self._write_var_hists_to_file(f, sample.var_hists, region, sname)
+                    self._write_var_hists_to_file(f, sample.var_hists, region, sname)
             f[region + "/data_obs"] = self._build_hist_object(self.samples["data"].svar_hist)
             f[region + "/AtoZH"] = self._build_hist_object(self.samples["signal"].svar_hist)
-            #self._write_var_hists_to_file(f, self.samples["signal"].var_hists, region, "AtoZH")
+            self._write_var_hists_to_file(f, self.samples["signal"].var_hists, region, "AtoZH")
 
 
 class Sample():
@@ -333,10 +332,10 @@ class Sample():
 
         self._set_svar_selection_mask()
 
-        #if sample != "data":
-        #    self.sample_vars = sample_loader.sample_vars[self.year][sample]
-        #    self.sample_vars_signal = sample_loader.sample_vars[self.year][self.signal]
-        #    self._set_sample_vars_selection_masks()
+        if sample != "data": pass
+            #self.sample_vars = sample_loader.sample_vars[self.year][sample]
+            #self.sample_vars_signal = sample_loader.sample_vars[self.year][self.signal]
+            #self._set_sample_vars_selection_masks()
 
     def _cut_on_angle(self, signal_tree, sample_tree):
         """
@@ -401,13 +400,13 @@ class Sample():
         #self.sel = np.logical_and(is_channel, is_region, is_triggered)
         self.sel = True
 
-        #if self.config.angle_cut_on:
-        #    pass_angle = self._cut_on_angle(self.tree_signal, self.tree)
-        #    self.sel = np.logical_and(self.sel, pass_angle)
+        if self.config.angle_cut_on:
+            pass_angle = self._cut_on_angle(self.tree_signal, self.tree)
+            self.sel = np.logical_and(self.sel, pass_angle)
 
-        #if self.config.dnn_cut_on:
-        #    pass_dnn = self._cut_on_dnn(self.tree_signal, self.tree)
-        #    self.sel = np.logical_and(self.sel, pass_dnn)
+        if self.config.dnn_cut_on:
+            pass_dnn = self._cut_on_dnn(self.tree_signal, self.tree)
+            self.sel = np.logical_and(self.sel, pass_dnn)
 
     def _set_sample_vars_selection_masks(self):
         """
@@ -572,9 +571,9 @@ class Sample():
 
     def create_histograms(self):
         self._build_svar_hist()
-        #if not self.sample == "data":
+        if not self.sample == "data":
             #self._build_rms_hists()
-            #self._build_var_hists()
+            self._build_var_hists()
             #self._build_sample_var_hists()
 
 
