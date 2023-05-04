@@ -61,6 +61,7 @@ class NTupleLoader(BorgNTupleLoader):
 
         for year in self.nominal_trees:
             print(f"Loading {year} DATA")
+
             self.nominal_trees[year]["data"] = {}
             for x in self.vars_to_load:
                 key = self._tree_to_np_array(x)
@@ -100,7 +101,7 @@ class NTupleLoader(BorgNTupleLoader):
             self.nominal_trees[year][sample] = {}
             for x in self.vars_to_load:
                 key = self._tree_to_np_array(x)
-                ## self.nominal_trees[year][sample][key] = branch
+                # self.nominal_trees[year][sample][key] = branch
                 pq_table = pq.read_table(f"cache/mc_{year}_{sample}_nominal_{key}.parquet")
                 self.nominal_trees[year][sample][key] = pq_table["foo"].to_numpy()
 
