@@ -28,6 +28,7 @@ class InvReconstruction : public AnalysisModule{
 
   private:
   unique_ptr<HiggsReconstructor> higgs_reconstructor;
+  bool run_btag_sf;
   
   //Methods
   bool assign_region(Event& event);
@@ -42,6 +43,7 @@ class InvReconstruction : public AnalysisModule{
   //Weights missing in preselection
   std::unique_ptr<PSWeights> ps_weights;
   std::unique_ptr<AnalysisModule> pdf_weights;
+  std::unique_ptr<AnalysisModule> sf_btagging;
 
   //Histogram Pointers
   std::unique_ptr<Hists> h_preselection;
@@ -57,6 +59,11 @@ InvReconstruction::InvReconstruction(Context& ctx){
 
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
 
+  bool run_btag_sf = ctx.has("BTagMCEffFile");
+  if (run_btag_sf){
+    //sf_btagging.reset(new MCBTagScaleFactor(ctx, BTag::DEEPJET, BTag::WP_MEDIUM, "jets", "mujets", "incl","BTagMCEffFile"));
+  }
+
   //pdf_weights.reset(new PDFWeightHandleProducer(ctx)); not working yet
   ps_weights.reset(new PSWeights(ctx));
 
@@ -67,6 +74,9 @@ InvReconstruction::InvReconstruction(Context& ctx){
 
 bool InvReconstruction::process(Event& event){
   event.weight = event.get(handle_weight);
+
+  //if (run_btag_sf) sf_btagging->process(event);
+
   ///pdf_weights->process(event);
   ps_weights->process(event);
 
