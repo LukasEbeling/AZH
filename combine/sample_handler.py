@@ -332,10 +332,10 @@ class Sample():
 
         self._set_svar_selection_mask()
 
-        if sample != "data": pass
-            #self.sample_vars = sample_loader.sample_vars[self.year][sample]
-            #self.sample_vars_signal = sample_loader.sample_vars[self.year][self.signal]
-            #self._set_sample_vars_selection_masks()
+        if sample != "data":
+            self.sample_vars = sample_loader.sample_vars[self.year][sample]
+            self.sample_vars_signal = sample_loader.sample_vars[self.year][self.signal]
+            self._set_sample_vars_selection_masks()
 
     def _cut_on_angle(self, signal_tree, sample_tree):
         """
@@ -422,18 +422,20 @@ class Sample():
         sample_variations = [x + xvar for x, xvars in relevant_vars.items() for xvar in xvars]
         ch = CHANNEL_ID_MAP[self.sample_params["channel"]]
         for variation in sample_variations:
-            is_channel = self.sample_vars[variation]["channel"] == ch
-            is_region = self.sample_vars[variation][self.config.region_branch] == REGION_ID_MAP[self.sample_params["region"]]  # noqa
-            is_triggered = self.sample_vars[variation]["passes_trigger"] == 1
-            self.var_sel[variation] = np.logical_and(is_channel, is_region, is_triggered)
+            #is_channel = self.sample_vars[variation]["channel"] == ch
+            #is_region = self.sample_vars[variation][self.config.region_branch] == REGION_ID_MAP[self.sample_params["region"]]  # noqa
+            #is_triggered = self.sample_vars[variation]["passes_trigger"] == 1
+            #self.var_sel[variation] = np.logical_and(is_channel, is_region, is_triggered)
 
-            if self.config.angle_cut_on:
-                pass_angle = self._cut_on_angle(self.tree_signal, self.sample_vars[variation])
-                self.var_sel[variation] = np.logical_and(self.var_sel[variation], pass_angle)
+            #if self.config.angle_cut_on:
+            #    pass_angle = self._cut_on_angle(self.tree_signal, self.sample_vars[variation])
+            #    self.var_sel[variation] = np.logical_and(self.var_sel[variation], pass_angle)
 
-            if self.config.dnn_cut_on:
-                pass_dnn = self._cut_on_dnn(self.tree_signal, self.sample_vars[variation])
-                self.var_sel[variation] = np.logical_and(self.var_sel[variation], pass_dnn)
+            #if self.config.dnn_cut_on:
+            #    pass_dnn = self._cut_on_dnn(self.tree_signal, self.sample_vars[variation])
+            #    self.var_sel[variation] = np.logical_and(self.var_sel[variation], pass_dnn)
+
+            self.var_sel[variation] = True
 
     def _get_raw_twod_inputs(self):
         met = self.tree["MET"][self.sel]
