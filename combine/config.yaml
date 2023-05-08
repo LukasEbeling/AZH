@@ -43,9 +43,10 @@ variations:
   weight_murmuf: ["_upup", "_downdown"]
   #weight_pdf: ["", "_up", "_down"]
 
-#hdamp, cptune
 sample_variations:
   #Absolute: ["_up", "_down"]
+  hdamp: ["Up", "Down"]
+  #TuneCP5: ["Up", "Down"]
 
 sample_var_whitelist:
   Total: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]

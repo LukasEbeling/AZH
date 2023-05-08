@@ -30,5 +30,8 @@ hadd MC.VV_UL17.root *MC.WW* *MC.WZ* *MC.ZZ*
 hadd MC.WJets_UL17.root *MC.WJets*.root
 hadd MC.ZJets_UL17.root *MC.ZJets*.root
 
+hadd MC.TT_UL17_hdampUp.root *TTTo*hdampUP*.root
+hadd MC.TT_UL17_hdampDown.root *TTTo*hdampDOWN*.root
+
 
 cd $CMSSW_BASE/src/UHH2/AZH
