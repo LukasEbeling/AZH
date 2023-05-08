@@ -24,8 +24,8 @@ region_branch:
 
 #based on scale factors
 variations:
-  #weight_btag: ["_central", "_bc_up", "_bc_down"]
-  #weight_btag_: ["central", "light_up", "light_down"]
+  weight_btag: ["_central", "_bc_up", "_bc_down"]
+  weight_btag_: ["central", "light_up", "light_down"]
   #weight_pu: ["", "_up", "_down"]
   #weight_sfelec_reco: ["", "_up", "_down"]
   #weight_sfelec_tight_id: ["", "_up", "_down"]

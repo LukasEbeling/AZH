@@ -59,9 +59,9 @@ InvReconstruction::InvReconstruction(Context& ctx){
 
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
 
-  bool run_btag_sf = ctx.has("BTagMCEffFile");
+  run_btag_sf = ctx.has("BTagMCEffFile");
   if (run_btag_sf){
-    //sf_btagging.reset(new MCBTagScaleFactor(ctx, BTag::DEEPJET, BTag::WP_MEDIUM, "jets", "mujets", "incl","BTagMCEffFile"));
+    sf_btagging.reset(new MCBTagScaleFactor(ctx, BTag::DEEPJET, BTag::WP_MEDIUM, "jets", "mujets", "incl","BTagMCEffFile"));
   }
 
   //pdf_weights.reset(new PDFWeightHandleProducer(ctx)); not working yet
@@ -75,7 +75,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
 bool InvReconstruction::process(Event& event){
   event.weight = event.get(handle_weight);
 
-  //if (run_btag_sf) sf_btagging->process(event);
+  if (run_btag_sf) sf_btagging->process(event);
 
   ///pdf_weights->process(event);
   ps_weights->process(event);
