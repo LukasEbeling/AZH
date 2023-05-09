@@ -11,7 +11,7 @@
 #include "UHH2/common/include/MCWeight.h"
 #include "UHH2/common/include/PSWeights.h"
 
-//#include "UHH2/AZH/include/NormalisationTools.h"
+#include "UHH2/AZH/include/NormalisationTools.h"
 #include "UHH2/AZH/include/ScaleFactors.h"
 #include "UHH2/AZH/include/Utils.h"//for region
 #include "UHH2/AZH/include/HiggsReco.h"
@@ -64,7 +64,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
     sf_btagging.reset(new MCBTagScaleFactor(ctx, BTag::DEEPJET, BTag::WP_MEDIUM, "jets", "mujets", "incl","BTagMCEffFile"));
   }
 
-  //pdf_weights.reset(new PDFWeightHandleProducer(ctx)); not working yet
+  pdf_weights.reset(new PDFWeightHandleProducer(ctx)); 
   ps_weights.reset(new PSWeights(ctx));
 
   h_preselection.reset(new PreHists(ctx, "CutFlow_Preselection"));
@@ -77,7 +77,7 @@ bool InvReconstruction::process(Event& event){
 
   if (run_btag_sf) sf_btagging->process(event);
 
-  ///pdf_weights->process(event);
+  pdf_weights->process(event);
   ps_weights->process(event);
 
   h_preselection->fill(event);
