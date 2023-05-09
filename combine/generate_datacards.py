@@ -33,7 +33,8 @@ NUISANCES = {
       p: {"UL16": '-', "UL17": 1.006, "UL18": 1.002} for p in ALL_PROCESSES
     },
     # qcd scales: AN2019_094_v12
-    "QCDscale_ttbar": {"TTW": "0.836/1.255", "TTZ": "0.907/1.081", "SingleTop": "0.979/1.031"},  # "TT": "0.965/1.024",
+    "QCDscale_ttbar": {"TTW": "0.836/1.255", "TTZ": "0.907/1.081"},  # "TT": "0.965/1.024",
+    "QCDscale_ST": {"SingleTop": "0.979/1.031"},
     "QCDscale_VV": {"VV": 1.03}, 
     "QCDscale_V": {"WJets": 1.038},  # "DYJets": 1.02}, 
     # pdf scales: AN2019_094_v12
@@ -266,11 +267,11 @@ class Datacard():
       if N := self.args.autoMCStats:
             f.write(f"* autoMCStats {N}")
 
-    def add_bkg_rate_params(self, f, tt: bool, dy: bool):
+    def add_bkg_rate_params(self, f, tt: bool, zj: bool):
         if tt and "TT" in self.processes:
             f.write(f"rate_TT rateParam * TT 1")
-        if dy and "DYJets" in self.processes:
-            f.write(f"\nrate_DYJets rateParam * DYJets 1")
+        if zj and "ZJets" in self.processes:
+            f.write(f"\nrate_ZJets rateParam * ZJets 1")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
