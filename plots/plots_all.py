@@ -213,7 +213,7 @@ def plot_bkg_vs_sig(_year, _region, _signal, _binning=np.linspace(50, 750, 70), 
     bkg_labels = [l+f" ({data_loader.bkg_yield(year,l)})" for l in bkg_labels]
     sig_label = f"{_signal} ({data_loader.sig_yield(year,_signal)})"
     hep.histplot(np_histograms, histtype='fill', w2=np_errors, bins=_binning, stack=True, label=bkg_labels, ax=axes[0])
-    hep.histplot(sig, yerr=error, histtype='errorbar', bins=_binning, markersize=13, color='k', label=sig_label, ax=axes[0])
+    hep.histplot(sig, yerr=error, histtype='step', bins=_binning, color='k', label=sig_label, ax=axes[0])
 
     errors_bkg = np.sqrt(sum(np_errors)**2)
     errors_sig = np.sqrt(sig)
