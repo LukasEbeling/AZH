@@ -227,7 +227,7 @@ class ConfigFactory():
         )
         samples = glob.glob(path)
         samples = list(filter(root_file_not_empty, samples))
-        samples = [s.split('/')[-1] for s in samples]
+        samples = [s.split('/')[-1] for s in samples] #if "ZJets" in s
         samples = self.filter_samples_for_combined_variations(samples)
         return samples
 
