@@ -20,6 +20,7 @@ void NormalisationHists::init(Context & ctx){
 
   is_dy = ctx.get("dataset_version").find("DYJets") == 0;
   is_wjets = ctx.get("dataset_version").find("WJets") == 0;
+  is_zjets = ctx.get("dataset_version").find("ZJets") == 0;
   is_azh = (ctx.get("dataset_version").find("AZH") == 0) ||
            (ctx.get("dataset_version").find("AToZHToLLTTbar") == 0);
   is_mc = ctx.get("dataset_type") == "MC";
@@ -27,7 +28,7 @@ void NormalisationHists::init(Context & ctx){
   if(is_mc && !take_ntupleweights) m_pdfweights.reset(new PDFWeights(m_pdfname));
 
   pdf_idx = 9;
-  if(is_dy || is_wjets || is_azh) pdf_idx = 45;
+  if(is_dy || is_wjets || is_zjets || is_azh || is_qcd) pdf_idx = 45;
 
   sum_event_weights = book<TH1F>("sum_event_weights", "counting experiment", 1, 0.5, 1.5);
 
@@ -38,7 +39,7 @@ void NormalisationHists::init(Context & ctx){
   h_murmuf_downnone = book<TH1F>("h_murmuf_downnone", "h_murmuf_downnone", 1,0.5,1.5);
   h_murmuf_nonedown = book<TH1F>("h_murmuf_nonedown", "h_murmuf_nonedown", 1,0.5,1.5);
 
-  if (is_dy || is_wjets || is_azh)
+  if (is_dy || is_wjets || is_zjets || is_azh || is_qcd)
   {
     id_upup = 20;
     id_upnone = 5;
@@ -123,7 +124,9 @@ PDFWeightHandleProducer::PDFWeightHandleProducer(Context & ctx){
 
   is_mc = ctx.get("dataset_type") == "MC";
   is_dy = ctx.get("dataset_version").find("DYJets") == 0;
+  is_qcd = ctx.get("dataset_version").find("QCD") == 0;
   is_wjets = ctx.get("dataset_version").find("WJets") == 0;
+  is_zjets = ctx.get("dataset_version").find("ZJets") == 0;
   is_azh = (ctx.get("dataset_version").find("AZH") == 0) ||
            (ctx.get("dataset_version").find("AToZHToLLTTbar") == 0);
 
@@ -132,10 +135,10 @@ PDFWeightHandleProducer::PDFWeightHandleProducer(Context & ctx){
   // TO CLARIFY:
   // Alternatively : PDF4LHC15_nnlo_100
 
-  take_ntupleweights = !(m_oname.Contains("QCD"));
+  take_ntupleweights = !(m_oname.Contains("TEST"));
 
   pdf_idx = 9;
-  if(is_dy || is_wjets || is_azh) pdf_idx = 45;
+  if(is_dy || is_wjets || is_zjets || is_azh || is_qcd) pdf_idx = 47;
 
   if(is_mc && !take_ntupleweights) m_pdfweights.reset(new PDFWeights(m_pdfname));
   h_pdfweights = ctx.declare_event_output<vector<float>>("weight_pdf");
@@ -144,7 +147,6 @@ PDFWeightHandleProducer::PDFWeightHandleProducer(Context & ctx){
 
 bool PDFWeightHandleProducer::process(Event & event){
   vector<float> pdf_weights;
-
   if((!is_mc) || (event.genInfo->systweights().size()<9)){
     for(int i=0; i<100; i++){
       pdf_weights.emplace_back(1.);
@@ -154,15 +156,16 @@ bool PDFWeightHandleProducer::process(Event & event){
   }
 
   // if(event.genInfo->systweights().size() < 100 && take_ntupleweights) throw runtime_error("In NormalisationTools.cxx: Systweights in event.genInfo() is too small but ntupleweights shall be taken. Is this correct? In this case add exception to take_ntupleweights.");
-  if(event.genInfo->systweights().size() > 110 && (!take_ntupleweights)) throw runtime_error("In NormalisationTools.cxx: Systweights in event.genInfo() is NOT empty but take_ntupleweights is set to 'false'. Is this correct? In this case Thomas says the genInfo weight should be used. Add this sample to take_ntupleweights");
+  // if(event.genInfo->systweights().size() > 110 && (!take_ntupleweights)) throw runtime_error("In NormalisationTools.cxx: Systweights in event.genInfo() is NOT empty but take_ntupleweights is set to 'false'. Is this correct? In this case Thomas says the genInfo weight should be used. Add this sample to take_ntupleweights");
 
   double pdf_weight = 1.0;
   if(take_ntupleweights){
-    for(int i=0; i<100; i++){
-      if(event.genInfo->systweights().size() >= 9){
-          pdf_weight = event.genInfo->systweights().at(i+pdf_idx) / event.genInfo->originalXWGTUP();
+    //cout << event.genInfo->systweights().size() << "\n";
+    if(event.genInfo->systweights().size() >= (unsigned int)100 + pdf_idx) {
+      for(int i=0; i<100; i++){
+        pdf_weight = event.genInfo->systweights().at(i+pdf_idx) / event.genInfo->originalXWGTUP();
+        pdf_weights.emplace_back(pdf_weight);
       }
-      pdf_weights.emplace_back(pdf_weight);
     }
   }
   else{

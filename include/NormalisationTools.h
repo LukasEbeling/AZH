@@ -11,7 +11,7 @@ public:
 
 protected:
   void init(uhh2::Context & ctx);
-  bool is_mc, is_dy, is_wjets, is_azh, take_ntupleweights;
+  bool is_mc, is_dy, is_qcd, is_wjets, is_zjets, is_azh, take_ntupleweights;
 
   TH1F *sum_event_weights;
 
@@ -47,7 +47,7 @@ public:
 
 private:
   uhh2::Event::Handle<std::vector<float>> h_pdfweights;
-  bool is_mc, is_dy, is_wjets, is_azh, take_ntupleweights;
+  bool is_mc, is_dy, is_qcd, is_wjets, is_zjets, is_azh, take_ntupleweights;
   int pdf_idx;
   TString m_oname;
   std::unique_ptr<PDFWeights> m_pdfweights;
