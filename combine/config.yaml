@@ -18,6 +18,7 @@ svars:
 
 branches:
   - event_weight
+  - region
 
 region_branch: 
   - SignalRegion
@@ -41,7 +42,7 @@ variations:
   weight_muf: ["_noneup", "_nonedown"]
   weight_mur: ["_upnone", "_downnone"]
   weight_murmuf: ["_upup", "_downdown"]
-  #weight_pdf: ["", "_up", "_down"]
+  weight_pdf: ["", "_up", "_down"]
 
 sample_variations:
   #Absolute: ["_up", "_down"]
