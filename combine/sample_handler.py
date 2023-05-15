@@ -99,6 +99,7 @@ class SampleSet():
             merged with the bin at idx_zero_bin
         idx_merged_bin: The index of the merged bin in the
             array resulting from the merge.
+
         Returns:
         A modified version of the input hist_tuple with the one less
         bin, due to the bin at index idx_zero_bin being merged with
@@ -231,12 +232,14 @@ class SampleSet():
         to get the statistical error for the fits. Simply
         writing a NumPy histogram via uproot will yield
         errant results.
+
         Arguments:
         hist_tuple[0] -- bin content of the histogram (yield)
         hist_tuple[1] -- bin content of the histogram built with
             weights=weights**2. This is equivalent to
             the per bin variance.
         hist_tuple[2] -- bin boundries of the histogram
+
         Returns:
         hist.Hist type histogram with correct
         """
@@ -250,17 +253,28 @@ class SampleSet():
     def _write_var_hists_to_file(self, f, var_hists, region, sname):
         variations = [
             x + xvar for x, xvars in self.config.variations.items()
-            for xvar in xvars if xvar and "central" not in xvar
+            for xvar in xvars if xvar and "central" not in xvar and "vjets" not in x
         ]
-        relevant_vars = {
-            #x: y for x, y in
-            #self.config.sample_variations.items() if
-            #sname in self.config.sample_var_whitelist[x]
-        }
-        sample_variations = [
-            x + xvar for x, xvars in relevant_vars.items()
-            for xvar in xvars if xvar
+
+        vjet_vars = [
+            x + xvar for x, xvars in self.config.variations.items()
+            for xvar in xvars if "vjets" in x and xvar != ""
         ]
+        vjet_vars = [var + _dir for var in vjet_vars for _dir in ("_up", "_dn")]
+        variations = variations + vjet_vars
+
+        if self.config.sample_variations:
+            relevant_vars = {
+                x: y for x, y in
+                self.config.sample_variations.items() if
+                sname in self.config.sample_var_whitelist[x]
+            }
+            sample_variations = [
+                x + xvar for x, xvars in relevant_vars.items()
+                for xvar in xvars if xvar
+            ]
+        else:
+            sample_variations = []
 
         for v in variations + sample_variations:
             combine_key = self._ntuple_var_to_combine_key(v, sname)
@@ -332,7 +346,7 @@ class Sample():
 
         self._set_svar_selection_mask()
 
-        if sample != "data":
+        if sample != "data" and sample_loader.sample_vars[self.year]:
             self.sample_vars = sample_loader.sample_vars[self.year][sample]
             self.sample_vars_signal = sample_loader.sample_vars[self.year][self.signal]
             self._set_sample_vars_selection_masks()
@@ -394,19 +408,9 @@ class Sample():
         to filter the trees for channel, region and
         if specified fullfilment of angle, dnn_score requirements.
         """
-        #is_channel = self.tree["channel"] == CHANNEL_ID_MAP[self.sample_params["channel"]]
-        #is_region = self.tree[self.config.region_branch] == REGION_ID_MAP[self.sample_params["region"]]
+        is_region = self.tree["region"] == REGION_ID_MAP[self.sample_params["region"]]
         #is_triggered = self.tree["passes_trigger"] == 1
-        #self.sel = np.logical_and(is_channel, is_region, is_triggered)
-        self.sel = True
-
-        if self.config.angle_cut_on:
-            pass_angle = self._cut_on_angle(self.tree_signal, self.tree)
-            self.sel = np.logical_and(self.sel, pass_angle)
-
-        if self.config.dnn_cut_on:
-            pass_dnn = self._cut_on_dnn(self.tree_signal, self.tree)
-            self.sel = np.logical_and(self.sel, pass_dnn)
+        self.sel = is_region
 
     def _set_sample_vars_selection_masks(self):
         """
@@ -422,20 +426,21 @@ class Sample():
         sample_variations = [x + xvar for x, xvars in relevant_vars.items() for xvar in xvars]
         ch = CHANNEL_ID_MAP[self.sample_params["channel"]]
         for variation in sample_variations:
-            #is_channel = self.sample_vars[variation]["channel"] == ch
-            #is_region = self.sample_vars[variation][self.config.region_branch] == REGION_ID_MAP[self.sample_params["region"]]  # noqa
-            #is_triggered = self.sample_vars[variation]["passes_trigger"] == 1
-            #self.var_sel[variation] = np.logical_and(is_channel, is_region, is_triggered)
+            # Region and Channel Selection
+            is_channel = self.sample_vars[variation]["channel"] == ch
+            is_region = self.sample_vars[variation][self.config.region_branch] == 777
+            if isinstance(REGION_ID_MAP[self.sample_params["region"]], int):
+                is_region = self.sample_vars[variation][self.config.region_branch] == REGION_ID_MAP[self.sample_params["region"]]  # noqa
+            else:
+                for regID in REGION_ID_MAP[self.sample_params["region"]]:
+                    is_region = np.logical_or(
+                        is_region, self.sample_vars[variation][self.config.region_branch] == regID
+                    )
+            self.var_sel[variation] = np.logical_and(is_channel, is_region)
 
-            #if self.config.angle_cut_on:
-            #    pass_angle = self._cut_on_angle(self.tree_signal, self.sample_vars[variation])
-            #    self.var_sel[variation] = np.logical_and(self.var_sel[variation], pass_angle)
-
-            #if self.config.dnn_cut_on:
-            #    pass_dnn = self._cut_on_dnn(self.tree_signal, self.sample_vars[variation])
-            #    self.var_sel[variation] = np.logical_and(self.var_sel[variation], pass_dnn)
-
-            self.var_sel[variation] = True
+            # Trigger Selection
+            is_triggered = self.sample_vars[variation]["passes_trigger"] == 1
+            self.var_sel[variation] = np.logical_and(self.var_sel[variation], is_triggered)
 
     def _get_raw_twod_inputs(self):
         met = self.tree["MET"][self.sel]
@@ -483,6 +488,15 @@ class Sample():
         self.var_hists["weight_pdf_up"] = (np.array(nominal + rms), np.array(nominal + rms), bins)
         self.var_hists["weight_pdf_down"] = (np.array(nominal - rms), np.array(nominal - rms), bins)
 
+    def _build_vjet_var_hists(self, inputs, nom_key, xvars):
+        for xvar in xvars:
+            w_nom = np.array(self.tree[nom_key][self.sel])
+            dkappa = np.array(self.tree[nom_key + xvar][self.sel])
+            w_up = self.weights[self.sel] / w_nom * (w_nom + dkappa)
+            w_dn = self.weights[self.sel] / w_nom * (w_nom - dkappa)
+            self.var_hists[nom_key + xvar + "_up"] = self._build_histogram(inputs, weights=w_up)
+            self.var_hists[nom_key + xvar + "_dn"] = self._build_histogram(inputs, weights=w_dn)
+
     def _build_var_hists(self):
         if self.svar == "ellipses":
             inputs = self._get_raw_twod_inputs()
@@ -500,8 +514,12 @@ class Sample():
             else:
                 w_nom = 1
 
-            w_up = self.weights[self.sel] / w_nom * self.tree[x + xvars[0]][self.sel]
-            w_dn = self.weights[self.sel] / w_nom * self.tree[x + xvars[1]][self.sel]
+            if "vjets" in x:
+                self._build_vjet_var_hists(inputs, nom_key, xvars)
+                continue
+            else:
+                w_up = self.weights[self.sel] / w_nom * self.tree[x + xvars[0]][self.sel]
+                w_dn = self.weights[self.sel] / w_nom * self.tree[x + xvars[1]][self.sel]
 
             if 'mur' in x or 'muf' in x:
                 with open(f"norm_facts/{self.sample}_{self.year}_norm.json") as f:
@@ -517,12 +535,16 @@ class Sample():
 
     def _build_sample_var_hists(self):
 
-        relevant_vars = {
-            x: y for x, y in
-            self.config.sample_variations.items() if
-            self.sample in self.config.sample_var_whitelist[x]
-        }
-        sample_variations = [x + xvar for x, xvars in relevant_vars.items() for xvar in xvars]
+        if self.config.sample_variations:
+            relevant_vars = {
+                x: y for x, y in
+                self.config.sample_variations.items() if
+                self.sample in self.config.sample_var_whitelist[x]
+            }
+            sample_variations = [x + xvar for x, xvars in relevant_vars.items() for xvar in xvars]
+        else:
+            sample_variations = []
+
         for variation in sample_variations:
             sel = self.var_sel[variation]
 
@@ -574,7 +596,7 @@ class Sample():
     def create_histograms(self):
         self._build_svar_hist()
         if not self.sample == "data":
-            #self._build_rms_hists()
+            self._build_rms_hists()
             self._build_var_hists()
             #self._build_sample_var_hists()
 
@@ -605,53 +627,10 @@ class Binner():
             "H_mt": np.linspace(200,1200,16),
             "MET": np.linspace(200,1200,16),
         },
-        "CRZMassSidebands": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 5000, 2), #14),
+        "CR": {
+            "foo": np.linspace(0, 5000, 2),
+            "bar": np.linspace(0, 5000, 2),
         },
-        "CRZMassSidebands1BTagged": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 5000, 2),
-        },
-        "CR1BTaggedJets": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 800, 14),
-        },
-        "CR0BTaggedJets": {
-            "default": np.linspace(0, 5000, 2),
-            "z_mass_reco": np.linspace(85, 97, 9),
-            "z_pt_reco": np.linspace(0, 5000, 2), #14),
-        },
-        "CRSameSignLeptons": {
-            "default": np.linspace(0, 5000, 2)
-        },
-        "DiffFlavourRegion": {
-            "default": np.linspace(0, 5000, 2)
-        },
-        "SRFiveJets": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 800, 14),
-        },
-        "CRFiveJets1BTagged": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 800, 14),
-        },
-        "CRFiveJets0BTagged": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 5000, 2), #14),
-        },
-        "CRFiveJetsZMassSidebands": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 5000, 2), #14),
-        },
-        "CRFiveJetsZMassSidebands0BTagged": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 5000, 2), #14),
-        },
-        "CRFiveJetsZMassSidebands1BTagged": {
-            "default": np.linspace(0, 5000, 2),
-            "z_pt_reco": np.linspace(0, 5000, 2), #14),
-        }
     }
 
     def __init__(self, signal_sample: Sample, set_params: dict):
@@ -668,10 +647,10 @@ class Binner():
         except KeyError:
             pass  # Fallback to default for region
         try:
-            return self.binning_map[self.region]["default"]
+            return self.binning_map["defaults"][self.svar]
         except KeyError:
-            pass  # Fallback to default for variable
-        return self.binning_map["defaults"][self.svar]
+            # Fallback to default for variable
+            return self.binning_map[self.region]["default"]
 
     def get_binning(self):
         if self.svar == "ellipses":
@@ -704,11 +683,11 @@ class Binner():
 
         loader = NTupleLoader()
         sel = self.signal_sample.sel
-        met = loader.nominal_trees[self.year][self.signal]["MET"][sel][0]
-        amt = loader.nominal_trees[self.year][self.signal]["A_mt"][sel][0]
-        hmt = loader.nominal_trees[self.year][self.signal]["H_mt"][sel][0]
+        met = loader.nominal_trees[self.year][self.signal]["MET"][sel]
+        amt = loader.nominal_trees[self.year][self.signal]["A_mt"][sel]
+        hmt = loader.nominal_trees[self.year][self.signal]["H_mt"][sel]
         dm = abs(amt - hmt)
-        weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel][0]
+        weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel]
 
         ellipses = []
         for n_std in self.binning_map["stddevs_ellipses"]:
