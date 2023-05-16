@@ -22,7 +22,7 @@ NTUPLE_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/")
 SIGNALS = ["INV_1000_400"]
 OBSERVABLES = ["2DEllipses", "Amt", "met", "Hmt"]
 #EXCLUDE_BKGS = ["SingleTop", "WJets", "TTW", "VV", "QCD"]
-EXCLUDE_BKGS = []
+EXCLUDE_BKGS = ["VV"]
 CHANNELS = ["inv"]
 REGIONS = ["SignalRegion"]
 YEARS = ['UL17']
@@ -67,6 +67,7 @@ def load(_year, _signal, _obs, _ch, _reg):
         for shape_np, np_processes in SHAPES_NP.items():
             hists[shape_np] = {}
             for process in list(set(np_processes) - set(unavailable_processes)):
+                if process in EXCLUDE_BKGS: continue 
                 hists[shape_np][process] = {}
                 hists[shape_np][process]["up"] = f[f"{_reg}/{process}_{shape_np}Up"]
                 hists[shape_np][process]["down"] = f[f"{_reg}/{process}_{shape_np}Down"]
