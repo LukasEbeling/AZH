@@ -13,3 +13,4 @@ config/Varial/*
 *.json
 *.xml
 *.root
+*.pdf
