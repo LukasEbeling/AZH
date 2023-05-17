@@ -623,9 +623,9 @@ class Binner():
             "slimmedMuonsUSER.m_pt_1": np.linspace(20, 550, 16),
             "slimmedMuonsUSER.m_pt_2": np.linspace(20, 550, 16),
             "z_mass_reco": np.linspace(40, 140, 16),
-            "A_mt": np.linspace(400, 2000, 16),
-            "H_mt": np.linspace(200,1200,16),
-            "MET": np.linspace(200,1200,16),
+            "A_mt": np.append(np.linspace(500,1800,13),10000),
+            "H_mt": np.append(np.linspace(200,1500,13),10000),
+            "MET": np.append(np.linspace(170,800,10),10000),
         },
         "CR": {
             "foo": np.linspace(0, 5000, 2),
