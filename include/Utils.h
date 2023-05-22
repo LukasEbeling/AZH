@@ -34,6 +34,10 @@ enum class Channel {
 
 enum class Region {
   SignalRegion=0,
+  CRTTBar = 1,
+  CRQCD = 2,
+  CRZJets = 3,
+  CRMet = 4,
   SRFiveJets=5,
   CRFiveJets1BTagged=51,
   CRFiveJets0BTagged=50,
