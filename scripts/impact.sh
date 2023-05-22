@@ -20,4 +20,4 @@ rm higgsCombine*
 rm combine_logger.out
 rm impacts.json
 
-cd /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH
+cd /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts
