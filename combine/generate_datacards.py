@@ -190,9 +190,9 @@ class Datacard():
 
     def add_bkg_rate_params(self, f, tt: bool, zj: bool):
         if tt and "TT" in self.processes:
-            f.write(f"rate_TT rateParam * TT 1")
+            f.write(f"rate_both rateParam * TT 1 [-2,2]")
         if zj and "ZJets" in self.processes:
-            f.write(f"\nrate_ZJets rateParam * ZJets 1")
+            f.write(f"\nrate_both rateParam * ZJets 1 [-2,2]")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
