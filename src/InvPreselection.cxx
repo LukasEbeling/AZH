@@ -57,16 +57,13 @@ class InvPreselection: public AnalysisModule {
     // Handles
     uhh2::Event::Handle<double> handle_event_weight;
     uhh2::Event::Handle<double> handle_origin_weight;
-    uhh2::Event::Handle<int> handle_tight_b;
 
     // Histograms
     std::unique_ptr<Hists> h_unc_norm;
     std::unique_ptr<Hists> h_baseline;
     std::unique_ptr<Hists> h_no_leptons;
     std::unique_ptr<Hists> h_six_jets;
-    //std::unique_ptr<Hists> h_bjet_none;
-    //std::unique_ptr<Hists> h_bjet_one;
-    std::unique_ptr<Hists> h_bjet_two;
+    //std::unique_ptr<Hists> h_bjet_two;
     std::unique_ptr<Hists> h_met_100;
 
     // Histograms for BTagging efficiency measurements
@@ -92,8 +89,9 @@ class InvPreselection: public AnalysisModule {
     unique_ptr<AnalysisModule> sf_l1prefiring;
     unique_ptr<AnalysisModule> sf_vjets;
     unique_ptr<AnalysisModule> sf_mtop;
-    unique_ptr<PSWeights> ps_weights;
     unique_ptr<MCScaleVariation> sf_QCDScaleVar;
+    unique_ptr<PSWeights> ps_weights;
+    unique_ptr<AnalysisModule> pdf_weights;
 }; 
 
 
@@ -130,11 +128,12 @@ InvPreselection::InvPreselection(Context & ctx){
   sf_vjets.reset(new VJetsReweighting(ctx));
   sf_mtop.reset(new TopPtReweighting(ctx, string2bool(ctx.get("apply_TopPtReweighting"))));
   sf_QCDScaleVar.reset(new MCScaleVariation(ctx));
+  pdf_weights.reset(new PDFWeightHandleProducer(ctx)); 
+  ps_weights.reset(new PSWeights(ctx));
 
   // Handles
   handle_event_weight = ctx.declare_event_output<double>("event_weight");
   handle_origin_weight = ctx.declare_event_output<double>("origin_weight");
-  handle_tight_b = ctx.declare_event_output<int>("tight_b");
 
   // Common
   common_modules.reset(new CommonModules());
@@ -156,7 +155,7 @@ InvPreselection::InvPreselection(Context & ctx){
   h_six_jets.reset(new PreHists(ctx, "CutFlow_SixJets"));
   h_no_leptons.reset(new PreHists(ctx, "CutFlow_LeptonVeto"));
   h_met_100.reset(new PreHists(ctx, "CutFlow_MET>100"));
-  h_bjet_two.reset(new PreHists(ctx, "CutFlow_TwoB"));
+  //h_bjet_two.reset(new PreHists(ctx, "CutFlow_TwoB"));
   
   h_btag_eff.reset(new BTagMCEfficiencyHists(ctx, "2_BTagMCEff", bmedium));
   h_unc_norm.reset(new NormalisationHists(ctx, "UncNorms"));
@@ -176,6 +175,8 @@ bool InvPreselection::process(Event & event) {
   sf_vjets->process(event);
   sf_mtop->process(event); 
   sf_QCDScaleVar->process(event);
+  pdf_weights->process(event);
+  ps_weights->process(event);
   
   if(sel_hem->passes(event)) {
     if(event.isRealData) return false;
@@ -202,9 +203,9 @@ bool InvPreselection::process(Event & event) {
 
   h_baseline->fill(event);
 
-  //Lepton Veto  
-  if ((*event.muons).size()!=0){return false;}
-  if ((*event.electrons).size()!=0){return false;}
+  //Lepton Veto
+  int leptons = (*event.electrons).size() + (*event.muons).size();
+  if (leptons>2){return false;}
   h_no_leptons->fill(event);
 
   // Cut on missing transvers momentum
@@ -217,22 +218,14 @@ bool InvPreselection::process(Event & event) {
   if (!has_six_jets) { return false; }
   h_six_jets->fill(event);
 
+  //BTagging
+  //bool has_nob = s_bjet_none->passes(event);
+  //bool has_oneb = s_bjet_one->passes(event);
+  //if (has_nob || has_oneb) {return false;}
+  //h_bjet_two->fill(event)
+
   // Histogram for BTagging efficiencye
   if ( !event.isRealData ) { h_btag_eff->fill(event); }
-
-  //BTagging
-  bool has_nob = s_bjet_none->passes(event);
-  bool has_oneb = s_bjet_one->passes(event);
-  if (has_nob || has_oneb) {return false;}
-  h_bjet_two->fill(event);
-
-  //Number of tight btags
-  bool no_tight_b = s_btight_none->passes(event);
-  bool one_tight_b = s_btight_one->passes(event);
-  int tight_b = 2;
-  if (no_tight_b) tight_b = 0;
-  if (one_tight_b) tight_b = 1;
-  event.set(handle_tight_b,tight_b);
 
   //double b_score = event.jets->at(0).btag_DeepFlavour_b()
 
