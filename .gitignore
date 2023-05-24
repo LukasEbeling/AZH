@@ -14,3 +14,6 @@ config/Varial/*
 *.xml
 *.root
 *.pdf
+*.o
+*.e
+*.log
