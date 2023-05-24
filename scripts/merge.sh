@@ -23,15 +23,13 @@ hadd MC.QCD_UL17.root *MC.QCD*.root
 hadd MC.SingleTop_UL17.root *MC.ST*.root
 hadd MC.TTW_UL17.root *MC.TTW*.root
 hadd MC.TTZ_UL17.root *MC.TTW*.root
-hadd MC.TT_UL17.root uhh2.AnalysisModuleRunner.MC.TTToHadronic_JESnominal_JERnominal_UL17.root \
-    uhh2.AnalysisModuleRunner.MC.TTTo2L2Nu_JESnominal_JERnominal_UL17.root \
-    uhh2.AnalysisModuleRunner.MC.TTToSemiLeptonic_JESnominal_JERnominal_UL17.root
+hadd MC.TT_UL17.root *MC.TTTo*.root
 hadd MC.VV_UL17.root *MC.WW* *MC.WZ* *MC.ZZ*
 hadd MC.WJets_UL17.root *MC.WJets*.root
 hadd MC.ZJets_UL17.root *MC.ZJets*.root
 
-hadd MC.TT_UL17_hdampUp.root *TTTo*hdampUP*.root
-hadd MC.TT_UL17_hdampDown.root *TTTo*hdampDOWN*.root
+#hadd MC.TT_UL17_hdampUp.root *TTTo*hdampUP*.root
+#hadd MC.TT_UL17_hdampDown.root *TTTo*hdampDOWN*.root
 
 
 cd $CMSSW_BASE/src/UHH2/AZH
