@@ -33,26 +33,12 @@ enum class Channel {
 
 
 enum class Region {
-  SignalRegion=0,
-  CRTTBar = 1,
-  CRQCD = 2,
-  CRZJets = 3,
-  CRMet = 4,
-  SRFiveJets=5,
-  CRFiveJets1BTagged=51,
-  CRFiveJets0BTagged=50,
-  CRZMassSidebands=11,
-  CRZMassSidebands0BTagged=110,
-  CRZMassSidebands1BTagged=111,
-  CRFiveJetsZMassSidebands=512,
-  CRFiveJetsZMassSidebands0BTagged=510,
-  CRFiveJetsZMassSidebands1BTagged=511,
-  CRSameSignLeptons=12,
-  CRSameSignLeptons1BTagged=121,
-  CRSameSignLeptons0BTagged=120,
-  CR0BTaggedJets=13,
-  CR1BTaggedJets=14,
-  CRDiffLeptonFlavours=15,
+  SR = 0,
+  CR_1l = 1,
+  CR_lowdelta = 2,
+  CR_2l_anyB = 3,
+  CR_lowmet = 4,
+  CR_1l_anymet = 5,
   Invalid=999,
 };
 
