@@ -29,6 +29,7 @@ class InvReconstruction : public AnalysisModule{
   private:
   unique_ptr<HiggsReconstructor> higgs_reconstructor;
   bool run_btag_sf;
+  const JetId bmedium = BTag(BTag::DEEPJET, BTag::WP_MEDIUM);
   
   //Methods
   bool assign_region(Event& event);
@@ -39,16 +40,13 @@ class InvReconstruction : public AnalysisModule{
   Event::Handle<double> handle_sum_pt;
   Event::Handle<double> handle_weight;
   Event::Handle<double> handle_delta;
+  Event::Handle<int> handle_leptons;
 
-  //Weights missing in preselection
-  std::unique_ptr<PSWeights> ps_weights;
-  std::unique_ptr<AnalysisModule> pdf_weights;
+  //Scale Factors  
   std::unique_ptr<AnalysisModule> sf_btagging;
-
-  //Histogram Pointers
-  std::unique_ptr<Hists> h_preselection;
-  std::unique_ptr<Hists> h_met_180;
-  std::unique_ptr<Hists> h_delta_phi;
+  
+  //Selection Modules
+  std::unique_ptr<Selection> s_bjet_two;
 };
 
 InvReconstruction::InvReconstruction(Context& ctx){
@@ -56,6 +54,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
   handle_sum_pt = ctx.declare_event_output<double>("HT");
   handle_weight = ctx.get_handle<double>("event_weight");
   handle_delta = ctx.declare_event_output<double>("delta_phi");
+  handle_leptons = ctx.declare_event_output<int>("num_leptons");
 
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
 
@@ -64,12 +63,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
     sf_btagging.reset(new MCBTagScaleFactor(ctx, BTag::DEEPJET, BTag::WP_MEDIUM, "jets", "mujets", "incl","BTagMCEffFile"));
   }
 
-  pdf_weights.reset(new PDFWeightHandleProducer(ctx)); 
-  ps_weights.reset(new PSWeights(ctx));
-
-  h_preselection.reset(new PreHists(ctx, "CutFlow_Preselection"));
-  h_met_180.reset(new PreHists(ctx, "CutFlow_MET>180"));
-  h_delta_phi.reset(new PreHists(ctx, "CutFlow_deltaphi"));
+  s_bjet_two.reset(new NJetSelection(2,-1,bmedium));
 }
 
 bool InvReconstruction::process(Event& event){
@@ -77,23 +71,10 @@ bool InvReconstruction::process(Event& event){
 
   if (run_btag_sf) sf_btagging->process(event);
 
-  pdf_weights->process(event);
-  ps_weights->process(event);
-
-  h_preselection->fill(event);
-
-
-  if(event.met->pt()<170) return false;
-  h_met_180->fill(event);
-
-  double delta_min = delta_phi(event);
-  if(delta_min < 0.5) return false;
-  event.set(handle_delta,delta_min);
-  h_delta_phi->fill(event);
-
   bool valid_region = assign_region(event);
   if(!valid_region) return false;
 
+  event.set(handle_delta,delta_phi(event));
   higgs_reconstructor->process(event);
 
   double HT = 0;
@@ -121,16 +102,22 @@ double InvReconstruction::delta_phi(Event& event){
 }
 
 bool InvReconstruction::assign_region(Event& event){
+  bool met_high = event.met->pt() > 170;
+  bool delta_high = delta_phi(event) > 0.5;
+  bool two_b = s_bjet_two->passes(event);
+
+  int leptons = (*event.electrons).size() + (*event.muons).size();
+  event.set(handle_leptons,leptons);
+  
   Region region = Region::Invalid;
+  if (met_high && delta_high && two_b && leptons == 0) region = Region::SignalRegion;
+  else if (met_high && delta_high && two_b && leptons == 1) region = Region::CRTTBar;
+  else if (met_high && !delta_high && two_b && leptons == 0) region = Region::CRQCD;
+  else if (met_high && delta_high && true && leptons == 2) region = Region::CRZJets;
+  else if (!met_high && delta_high && two_b && leptons == 0) region = Region::CRMet;
+  else if (true && delta_high && two_b && leptons == 1) region = Region::CRTTBar2;
+  else return false;
 
-  //bool has_six_jets = s_njet_six->passes(event);
-  //bool has_no_b = passes_minmax(*event.jets, 0, 0, event, btag_id_one);
-  //bool has_one_b = passes_minmax(*event.jets, 1, 1, event, btag_id_one);
-  //bool has_two_b = passes_minmax(*event.jets, 2, -1, event, btag_id_two);
-  //bool met_window = (0 <= event.met->pt())&&(event.met->pt()<=300);
-
-  //if(has_six_jets && has_two_b && met_window) region = Region::SignalRegion;
-  region = Region::SignalRegion;
   event.set(handle_region, (int) region);
 
   return true;
