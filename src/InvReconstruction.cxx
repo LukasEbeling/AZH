@@ -110,12 +110,12 @@ bool InvReconstruction::assign_region(Event& event){
   event.set(handle_leptons,leptons);
   
   Region region = Region::Invalid;
-  if (met_high && delta_high && two_b && leptons == 0) region = Region::SignalRegion;
-  else if (met_high && delta_high && two_b && leptons == 1) region = Region::CRTTBar;
-  else if (met_high && !delta_high && two_b && leptons == 0) region = Region::CRQCD;
-  else if (met_high && delta_high && true && leptons == 2) region = Region::CRZJets;
-  else if (!met_high && delta_high && two_b && leptons == 0) region = Region::CRMet;
-  else if (true && delta_high && two_b && leptons == 1) region = Region::CRTTBar2;
+  if (met_high && delta_high && two_b && leptons == 0) region = Region::SR;
+  else if (met_high && delta_high && two_b && leptons == 1) region = Region::CR_1l;
+  else if (met_high && !delta_high && two_b && leptons == 0) region = Region::CR_lowdelta;
+  else if (met_high && delta_high && true && leptons == 2) region = Region::CR_2l_anyB;
+  else if (!met_high && delta_high && two_b && leptons == 0) region = Region::CR_lowmet;
+  else if (true && delta_high && two_b && leptons == 1) region = Region::CR_1l_anymet;
   else return false;
 
   event.set(handle_region, (int) region);
