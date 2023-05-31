@@ -57,6 +57,7 @@ class InvPreselection: public AnalysisModule {
     // Handles
     uhh2::Event::Handle<double> handle_event_weight;
     uhh2::Event::Handle<double> handle_origin_weight;
+    uhh2::Event::Handle<int> handle_leptons;
 
     // Histograms
     std::unique_ptr<Hists> h_unc_norm;
@@ -134,6 +135,7 @@ InvPreselection::InvPreselection(Context & ctx){
   // Handles
   handle_event_weight = ctx.declare_event_output<double>("event_weight");
   handle_origin_weight = ctx.declare_event_output<double>("origin_weight");
+  handle_leptons = ctx.declare_event_output<int>("leptons");
 
   // Common
   common_modules.reset(new CommonModules());
@@ -205,7 +207,8 @@ bool InvPreselection::process(Event & event) {
 
   //Lepton Veto
   int leptons = (*event.electrons).size() + (*event.muons).size();
-  if (leptons>2){return false;}
+  event.set(handle_leptons,leptons);
+  //if (leptons>2){return false;}
   h_no_leptons->fill(event);
 
   // Cut on missing transvers momentum
