@@ -1,0 +1,63 @@
+
+# DO NOT DELETE
+
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TTree.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ROOT/TIOFeatures.hxx
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TBasket.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TKey.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TNamed.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TObject.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/RConfigure.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/Rtypes.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/RtypesCore.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ROOT/RConfig.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/RVersion.h
+./startup_C.so: /usr/include/features.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/DllImport.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/snprintf.h
+./startup_C.so: /usr/include/stdio.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/strlcpy.h
+./startup_C.so: /usr/include/unistd.h /usr/include/string.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TGenericClassInfo.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TSchemaHelper.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TIsAProxy.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TVirtualIsAProxy.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TStorage.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TVersionCheck.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/RVersion.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TString.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TMathBase.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ROOT/RStringView.hxx
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ROOT/TypeTraits.hxx
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ROOT/RSpan.hxx
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ROOT/span.hxx
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TDatime.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TBuffer.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TClass.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TDictionary.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ESTLType.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TObjArray.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TSeqCollection.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TCollection.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TIterator.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TVirtualRWMutex.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TVirtualMutex.h
+./startup_C.so: /usr/include/assert.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TObjString.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/ThreadLocalStorage.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TArrayD.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TArray.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TArrayI.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TAttFill.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TAttLine.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TAttMarker.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TBranch.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TDataType.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TBranchCacheInfo.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TBits.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TDirectory.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TList.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TUUID.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TVirtualTreePlayer.h
+./startup_C.so: /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/RVersion.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/RConfig.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TClass.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TDictAttributeMap.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TInterpreter.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TROOT.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TBuffer.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TMemberInspector.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TError.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/RtypesImp.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TIsAProxy.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TFileMergeInfo.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/lcg/root/6.14.09-pafccj6/include/TCollectionProxyInfo.h /cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_6_28/external/slc7_amd64_gcc700/bin/rootcling
+startup_C__ROOTBUILDVERSION= 6.14/09
