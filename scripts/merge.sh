@@ -22,7 +22,7 @@ cp uhh2.AnalysisModuleRunner.MC.AToZHToInv_MA-1000_MH-850_JESnominal_JERnominal_
 hadd MC.QCD_UL17.root *MC.QCD*.root
 hadd MC.SingleTop_UL17.root *MC.ST*.root
 hadd MC.TTW_UL17.root *MC.TTW*.root
-hadd MC.TTZ_UL17.root *MC.TTW*.root
+hadd MC.TTZ_UL17.root *MC.TTZ*.root
 hadd MC.TT_UL17.root *MC.TTTo*.root
 hadd MC.VV_UL17.root *MC.WW* *MC.WZ* *MC.ZZ*
 hadd MC.WJets_UL17.root *MC.WJets*.root
