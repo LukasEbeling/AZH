@@ -14,163 +14,127 @@ import uproot
 
 plt.style.use(hep.style.CMS)
 
+#Config
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
-RECO_PATH = os.path.join(ANALYSIS, "data/output_02_reconstruction/")
-BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "WJets", "QCD", "SingleTop","TT"]
-SIGNALS = ["1000_400","600_400","700_450","750_400","750_650","800_400","1000_850"]
-REGIONS = [0] #0 corresponds to signalregion
-YEARS = ['UL17']
-YEAR_LUMI_MAP = {
-    'UL18': 59.83,
-    'UL17': 41.48,
-    'UL16preVFP': 19.5,
-    'UL16postVFP': 16.8,
-    }
-UL_YEAR_MAP = {
-    'UL18': 2018,
-    'UL17': 2017,
-    'UL16preVFP': 2016,
-    'UL16postVFP': 2016,
-    }
+RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
+BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "WJets", "QCD", "SingleTop","Semi"]
+MASSES = ["1000_400"]
+SIGNALS = [f"INV_{mass}" for mass in MASSES]
+
+REGIONS = {
+    0: "Signal Region",
+    1: "CR_1l",
+    2: "CR_lowdelta",
+    3: "CR_2l_anyB",
+    4: "CR_lowmet",
+    5: "CR_1l_anymet",
+}
+
+OBSERVABLES = {
+    #"jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
+    #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
+    #"jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21), 
+    "A_mt": np.linspace(200, 2000, 21),
+    #"H_mt": np.linspace(100, 1500, 21),
+    "MET": np.linspace(0, 800, 41),
+    "event_weight": np.linspace(0,100,21),
+    #"HT": np.linspace(100,2000,51),
+    #"delta_phi": np.linspace(0,pi,20),
+    #"num_leptons": np.array([0,1,2,3]),
+    #"W_m": np.linspace(0,400,21),
+    #"b_angle": np.linspace(0,pi,20),
+    #"tight_b": np.linspace(-0.25,2.25,6),
+    #"t_angle": np.linspace(0,pi,20),
+}
 
 
-class DataLoader():
-    
-    def __init__(self, observables):
-        self.observables = observables
-        self.sig = {}
-        self.bkg = {}
+class dataLoader():
 
-        self.bar = IncrementalBar("Loading Samples", max=(len(SIGNALS)+len(BACKGROUNDS))*len(YEARS)*len(REGIONS))
-        self.load_bkgs()
-        self.load_sign()
-        self.bar.finish()
+    sig: dir = {}
+    bkg: dir = {}
+    data: dir = {}
 
+    def __init__(self):
+        #self.load_bkgs()
+        #self.load_sigs()
+        self.load_samples(BACKGROUNDS)
+        self.load_samples(SIGNALS)
 
-    def load(self, _path):
+    def load(self, path):
         o = {}
-        with uproot.open(_path) as f:
-            for _obs in self.observables:
-                o[_obs] = f[f'AnalysisTree/{_obs}'].array(library="np")
+        with uproot.open(path) as f:
+            for obs in OBSERVABLES:
+                o[obs] = f[f'AnalysisTree/{obs}'].array(library="np")
             w = f[f"AnalysisTree/event_weight"].array(library="np")
             r = f[f"AnalysisTree/region"].array(library="np")
-        self.bar.next()
-        print(_path)
         return o, w, r
-
-
-    def load_bkgs(self):
-        for y in YEARS:
-            self.bkg[y] = {}
-            for bkg in BACKGROUNDS:
-                _path = os.path.join(RECO_PATH, "MC", y, f"MC.{bkg}_{y}.root")
-                o, w, r = self.load(_path)
-                self.bkg[y][bkg] = {
-                    "observables": o,
-                    "weights": w,
-                    "regions": r,
-                    }
     
+    def load_samples(self,samples):
+        bar = IncrementalBar("Loading", max=len(samples))
+        for sample in samples:
+            print("\n"+sample)
+            path = RECO_PATH + "MC/UL17/" + f"MC.{sample}_UL17.root"
+            o, w, r = self.load(path)
+            self.data[sample] = {
+                "observables": o,
+                "weights": w,
+                "regions": r,
+            }
+            bar.next()
+        bar.finish()
 
-    def load_sign(self):
-        for y in YEARS:
-            self.sig[y] = {}
-            for sig in SIGNALS:
-                _path = os.path.join(RECO_PATH, "MC", y, f"MC.INV_{sig}_{y}.root")
-                o, w, r = self.load(_path)
-                self.sig[y][sig] = {
-                    "observables": o,
-                    "weights": w,
-                    "regions": r,
-                    }
-                
+def filter_events(val,wgh,reg,region,observable):
+    v = val[reg == region]
+    w = wgh[reg == region]
 
-    def bkg_yield(self,year,background): 
-        weights = self.bkg[year][background]["weights"]
-        for i in range(len(weights)):
-            if weights[i]>100: weights[i]=0
-        return round(sum(weights),1)
-    
-
-    def sig_yield(self,year,signal): 
-        weights = self.sig[year][signal]["weights"]
-        for i in range(len(weights)):
-            if weights[i]>100: weights[i]=0
-        return round(sum(weights),1)
-
-
-def filter_events(observable, weights, region, _region, _obs):
-    sel = region==_region
-    o = observable[sel]
-    w = weights[sel]
-
-    if not len(o):
+    if not len(v):
         assert not len(w)
-        return o, w
+        return v, w
 
-    if "muon" in _obs or "electron" in _obs:
-        # Only consider leading lepton information
-        o = np.array([j[0] for j in o])
-    if "jets" in _obs:
-        # Only consider leading jet information
-        o = np.array([j[0] for j in o])
+    if "jets" in observable: v = np.array([jet[0] for jet in v])
 
-    #for i in range(len(w)):
-    #    if w[i]>100: w[i]=0
+    for i in range(len(w)): 
+        if w[i]>10 and region==0: w[i]=0
+
+    assert (v.shape == w.shape)
+    return v, w
 
 
-    assert (o.shape == w.shape)
-    return o, w
 
-
-def loadSignal(_year, _region, _signal, _binning, _obs):
-
-    observable = data_loader.sig[_year][_signal]["observables"][_obs]
-    weights = data_loader.sig[_year][_signal]["weights"]
-    region = data_loader.sig[_year][_signal]["regions"]
-
-    # Select only events in a given CR
-    observable, weights = filter_events(observable, weights, region, _region, _obs)
-
-    sign, bins = np.histogram(observable, weights=weights, bins=_binning)
-    data = np.maximum(sign, 0)
-    error = np.sqrt(sign)
-
-    return sign, error
-
-
-def loadMC(_year, _region, _binning, _obs):
-    histograms = {}
-    errors = {}
+def get_bkg(region,binning,observable):  #as list 
+    binned = []
+    errors = []
  
     for bkg in BACKGROUNDS:
-        
-        observable = data_loader.bkg[_year][bkg]["observables"][_obs]
-        weights = data_loader.bkg[_year][bkg]["weights"]
-        region = data_loader.bkg[_year][bkg]["regions"]
+        val = data_loader.data[bkg]["observables"][observable]
+        wgh = data_loader.data[bkg]["weights"]
+        reg = data_loader.data[bkg]["regions"]
 
-        observable, weights = filter_events(observable, weights, region, _region, _obs)
-        n, bins = np.histogram(observable, weights=weights, bins=_binning)
-        histograms[bkg] = np.maximum(n, 0)
+        val,wgh = filter_events(val,wgh,reg,region,observable)
 
-        n_err = np.sqrt(np.histogram(observable, weights=weights**2, bins=_binning)[0])
-        errors[bkg] = n_err
+        num,bins = np.histogram(val, weights=wgh, bins=binning)
+        err,bins = np.histogram(val, weights=wgh**2, bins=binning)
 
-    return histograms, errors
+        binned.append(num)
+        errors.append(np.sqrt(err))
 
+    return binned, errors
 
-def regionName(_region):
-    if _region == 0:
-        return "Signal Region"
-    else:
-        return "Undefined"
+def get_sig(region,signal,binning,observable): 
 
+    val = data_loader.data[signal]["observables"][observable]
+    wgh = data_loader.data[signal]["weights"]
+    reg = data_loader.data[signal]["regions"]
 
-def get_obs_labels(observable):
-    """ Maps the ntuple key of the observable to 
-    a tuple of the plot legend label and a shorthand
-    for the output filename of the plot. """
+    val,wgh = filter_events(val,wgh,reg,region,observable)        
 
+    num,bins = np.histogram(val, weights=wgh, bins=binning)
+    err,bins = np.histogram(val, weights=wgh**2, bins=binning)
+
+    err = np.sqrt(err)
+    return num, err
+
+def get_xlabel(obs):
     x = {
         "jetsAk4CHS/jetsAk4CHS.m_pt": (r"$p_{T}(j_{1})$ [GeV]", "Jet1PT"),
         "jetsAk4CHS/jetsAk4CHS.m_phi": (r"$\phi(j_{1})$ [rad]", "Jet1Phi"),
@@ -185,18 +149,13 @@ def get_obs_labels(observable):
         "delta_phi": (r"min $\Delta\phi$ [rad]","DeltaPhi"),
         "b_angle": (r"angle between bs [rad]","BAngle"),
         "t_angle": (r"angle between tops [rad]","TAngle"),
+        "num_leptons": ("number of leptons", "LEP"),
         }
-    return x[observable.replace("Puppi", "CHS")]
+    return x[obs.replace("Puppi", "CHS")]
 
-
-def plot_bkg_vs_sig(_year, _region, _signal, _binning=np.linspace(50, 750, 70), _obs='jetsAk4CHS/jetsAk4CHS.m_pt'):
-
-    histograms, errors = loadMC(_year, _region, _binning, _obs)
-    np_histograms = np.array(list(histograms.values()))
-    
-    sig, error = loadSignal(_year, _region, _signal, _binning, _obs)
-    #sig = sig / sum(sig) * sum(sum(np_histograms))
-    #error = error / sum(sig) * sum(sum(np_histograms))
+def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
+    binned_bkg, errors = get_bkg(region,binning,observable)
+    binned_sig, error = get_sig(region,signal,binning,observable)
 
     fig, axes = plt.subplots(
         nrows=2, 
@@ -206,69 +165,42 @@ def plot_bkg_vs_sig(_year, _region, _signal, _binning=np.linspace(50, 750, 70), 
         sharex=True
     )
 
-    hep.cms.label(ax=axes[0],llabel='Work in progress',data=True, lumi=YEAR_LUMI_MAP[_year], year=UL_YEAR_MAP[_year])
+    yields_bkg = [round(sum(bkg),1) for bkg in binned_bkg]
+    yield_sig = round(sum(binned_sig),1)
 
-    np_errors = np.array(list(errors.values()))
-    bkg_labels = list(histograms.keys())
-    bkg_labels = [l+f" ({data_loader.bkg_yield(year,l)})" for l in bkg_labels]
-    sig_label = f"{_signal} ({data_loader.sig_yield(year,_signal)})"
-    hep.histplot(np_histograms, histtype='fill', w2=np_errors, bins=_binning, stack=True, label=bkg_labels, ax=axes[0])
-    hep.histplot(sig, yerr=error, histtype='step', bins=_binning, color='k', label=sig_label, ax=axes[0])
+    label_bkg = [f"{b} ({y})" for b,y in zip(BACKGROUNDS,yields_bkg)]
+    label_sig = f"{signal} ({yield_sig})" 
 
-    errors_bkg = np.sqrt(sum(np_errors)**2)
-    errors_sig = np.sqrt(sig)
+    hep.cms.label(ax=axes[0],llabel='Work in progress',data=True, lumi=41.48, year=2017)
 
-    axes[0].set_yscale('log')
-    axes[0].legend(ncol=2, title=f"{regionName(_region)}, {_year}", fontsize=18, 
-        title_fontsize=18, frameon=True)
+    hep.histplot(binned_bkg, histtype='fill', bins=binning, stack=True, label=label_bkg, ax=axes[0])
+    hep.histplot(binned_sig, yerr=error, histtype='step', bins=binning, color='k', label=label_sig, ax=axes[0])
+
+
+    #axes[0].set_yscale('log')
+    axes[0].legend(ncol=2, title=REGIONS[region], fontsize=18,title_fontsize=18, frameon=True)
     axes[0].set_ylabel("Events")
 
-    #hep.histplot(ratio, yerr=errors, histtype='errorbar', bins=_binning, stack=False, color='k', ax=axes[1])
-    #axes[1].axhline(1, color='grey', linestyle='--') 
-    #axes[1].set_ylabel('DATA/MC')
-    #axes[1].set_ylim([0.5, 1.5])
-    axes[1].set_xlabel(get_obs_labels(_obs)[0])
+    axes[1].set_xlabel(get_xlabel(observable)[0])
 
     # Save Plot
-    folder = os.path.join(ANALYSIS,"plots",_signal)
+    #folder = os.path.join(ANALYSIS,"plots",signal)
+    folder = os.path.join(ANALYSIS,"plots",signal)
     if not os.path.exists(folder): os.makedirs(folder)
 
-    image = regionName(_region).replace(' ', '') + '_' + get_obs_labels(_obs)[1] + '_' + _year
+    image = REGIONS[region].replace(' ', '') + '_' + get_xlabel(observable)[1] + "_UL17"
 
     plt.savefig(os.path.join(folder,image))
     plt.close()
 
-
-
-def get_n_plots(obs):
-    i = 0
-    for year, region, signal in product(YEARS, REGIONS, SIGNALS): i += 1
-    return i
-
-
 if __name__ == "__main__":
+    data_loader = dataLoader()
+    data = data_loader.data
 
-    observables = {
-        "jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
-        "jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
-        "jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21), 
-        "A_mt": np.linspace(200, 2000, 21),
-        "H_mt": np.linspace(100, 1500, 21),
-        "MET": np.linspace(0, 800, 41),
-        "event_weight": np.linspace(0,100,21),
-        #"W_m": np.linspace(0,400,21),
-        "HT": np.linspace(100,2000,51),
-        "tight_b": np.linspace(-0.25,2.25,6),
-        "delta_phi": np.linspace(0,pi,20),
-        #"b_angle": np.linspace(0,pi,20),
-        #"t_angle": np.linspace(0,pi,20),
-        }
+    bar = IncrementalBar("Plotting", max=len(OBSERVABLES.keys())*len(REGIONS.keys())*(len(SIGNALS)))
 
-    data_loader = DataLoader(observables)
-    for obs, bins in observables.items():
-        bar = IncrementalBar(f"Running Plots for {obs}", max=get_n_plots(obs))
-        for year, region, signal in product(YEARS, REGIONS, SIGNALS):
-            plot_bkg_vs_sig(year, region, signal, bins, obs)
+    for obs, binning in OBSERVABLES.items():
+        for region, signal in product(REGIONS.keys(), SIGNALS):
+            plot_samples(region, signal, obs, binning)
             bar.next()
-        bar.finish()
-
+    bar.finish()
