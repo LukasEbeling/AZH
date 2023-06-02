@@ -22,6 +22,7 @@ branches:
 
 region_branch: 
   - SignalRegion
+  - CR_1L
 
 #based on scale factors
 variations:
