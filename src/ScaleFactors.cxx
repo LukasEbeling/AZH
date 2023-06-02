@@ -307,7 +307,7 @@ DiEleTriggerScaleFactors::DiEleTriggerScaleFactors(Context & ctx) {
 
 bool DiEleTriggerScaleFactors::process(Event & event) {
 
-  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/2HDM/data/ScaleFactors/triggers/";
+  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/AZH/data/ScaleFactors/triggers/";
 
   switch(year) {
     default:
@@ -417,7 +417,7 @@ DiMuTriggerScaleFactors::DiMuTriggerScaleFactors(Context & ctx) {
 
 bool DiMuTriggerScaleFactors::process(Event & event) {
 
-  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/2HDM/data/ScaleFactors/triggers/";
+  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/AZH/data/ScaleFactors/triggers/";
 
   switch(year) {
     default:
@@ -527,7 +527,7 @@ EleMuTriggerScaleFactors::EleMuTriggerScaleFactors(Context & ctx) {
 
 bool EleMuTriggerScaleFactors::process(Event & event) {
 
-  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/2HDM/data/ScaleFactors/triggers/";
+  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/AZH/data/ScaleFactors/triggers/";
 
   switch(year) {
     default:
@@ -808,7 +808,7 @@ VJetsReweighting::VJetsReweighting(Context & ctx, const string & weight_name):
   if((apply_QCD_EWK && (apply_EWK || apply_QCD_NLO)) || (apply_QCD_NNLO && !(apply_QCD_EWK || (apply_EWK && apply_QCD_NLO)))) {
     throw invalid_argument("VJetsReweighting: You are not allowed to use the specified combination of correction scale factors.");
   }
-  string filesDir = (string)getenv("CMSSW_BASE")+"/src/UHH2/2HDM/data/ScaleFactors/VJetsCorrections/";
+  string filesDir = (string)getenv("CMSSW_BASE")+"/src/UHH2/AZH/data/ScaleFactors/VJetsCorrections/";
   for(const string& proc : {"w", "z"}) {
     TFile* file = new TFile((filesDir+"merged_kfactors_"+proc+"jets.root").c_str());
     for(const string& corr : {"ewk", "qcd", "qcd_ewk"}) load_histo(file, (string)(proc+"_"+corr), (string)("kfactor_monojet_"+corr));
