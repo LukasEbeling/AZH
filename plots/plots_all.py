@@ -33,7 +33,7 @@ REGIONS = {
 OBSERVABLES = {
     #"jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
-    #"jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21), 
+    "jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21), 
     "A_mt": np.linspace(200, 2000, 21),
     #"H_mt": np.linspace(100, 1500, 21),
     "MET": np.linspace(0, 800, 41),
@@ -50,8 +50,6 @@ OBSERVABLES = {
 
 class dataLoader():
 
-    sig: dir = {}
-    bkg: dir = {}
     data: dir = {}
 
     def __init__(self):
