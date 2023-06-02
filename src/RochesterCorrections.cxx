@@ -12,7 +12,7 @@ RochesterCorrections::RochesterCorrections(Context & ctx):
   fYear(extract_year(ctx))
 {
 
-  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/2HDM/data/rochester/";
+  string filename = (string)getenv("CMSSW_BASE")+"/src/UHH2/AZH/data/rochester/";
   switch(fYear) {
     case Year::is2016v2 :
     filename += "RoccoR2016.txt";
