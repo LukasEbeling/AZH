@@ -65,7 +65,7 @@ class InvPreselection: public AnalysisModule {
     std::unique_ptr<Hists> h_no_leptons;
     std::unique_ptr<Hists> h_six_jets;
     //std::unique_ptr<Hists> h_bjet_two;
-    std::unique_ptr<Hists> h_met_100;
+    std::unique_ptr<Hists> h_met_50;
 
     // Histograms for BTagging efficiency measurements
     std::unique_ptr<BTagMCEfficiencyHists> h_btag_eff;
@@ -156,7 +156,7 @@ InvPreselection::InvPreselection(Context & ctx){
   h_baseline.reset(new PreHists(ctx, "CutFlow_Baseline"));
   h_six_jets.reset(new PreHists(ctx, "CutFlow_SixJets"));
   h_no_leptons.reset(new PreHists(ctx, "CutFlow_LeptonVeto"));
-  h_met_100.reset(new PreHists(ctx, "CutFlow_MET>100"));
+  h_met_50.reset(new PreHists(ctx, "CutFlow_MET>50"));
   //h_bjet_two.reset(new PreHists(ctx, "CutFlow_TwoB"));
   
   h_btag_eff.reset(new BTagMCEfficiencyHists(ctx, "2_BTagMCEff", bmedium));
@@ -213,8 +213,8 @@ bool InvPreselection::process(Event & event) {
 
   // Cut on missing transvers momentum
   double met = event.met->pt(); 
-  if (met<30) return false;
-  h_met_100->fill(event);
+  if (met<50) return false;
+  h_met_50->fill(event);
 
   // Jet Selection
   bool has_six_jets = s_njet_six->passes(event);
