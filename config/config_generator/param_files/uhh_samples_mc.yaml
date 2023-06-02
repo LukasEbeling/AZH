@@ -47,3 +47,16 @@ ZJets:
   - "ZJetsToNuNu_HT-400to600"
   - "ZJetsToNuNu_HT-200to400"
   - "ZJetsToNuNu_HT-100to200"
+  - "ZJetsToQQ_HT200to400"
+  - "ZJetsToQQ_HT400to600"
+  - "ZJetsToQQ_HT600to800"
+  - "ZJetsToQQ_HT800toInf"
+DYJets:
+  - DYJetsToLL_M-50_HT-70to100
+  - DYJetsToLL_M-50_HT-100to200
+  - DYJetsToLL_M-50_HT-200to400
+  - DYJetsToLL_M-50_HT-400to600
+  - DYJetsToLL_M-50_HT-600to800
+  - DYJetsToLL_M-50_HT-800to1200
+  - DYJetsToLL_M-50_HT-1200to2500
+  - DYJetsToLL_M-50_HT-2500toInf
