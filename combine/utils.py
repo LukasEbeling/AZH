@@ -85,19 +85,11 @@ CHANNEL_ID_MAP = {
 
 REGION_ID_MAP = {
     "SignalRegion": 0,
-    "CRZMassSidebands": 11,
-    "CRZMassSidebands1BTagged": 111,
-    "CRZMassSidebands0BTagged": 110,
-    "CRSameSignLeptons": 12,
-    "CR0BTaggedJets": 13,
-    "CR1BTaggedJets": 14,
-    "CRDiffLeptonFlavours": 15,
-    "SRFiveJets": 5,
-    "CRFiveJets1BTagged": 51,
-    "CRFiveJets0BTagged": 50,
-    "CRFiveJetsZMassSidebands": 512,
-    "CRFiveJetsZMassSidebands0BTagged": 510,
-    "CRFiveJetsZMassSidebands1BTagged": 511
+    "CR_1L": 1,
+    "CR_lowdelta": 2,
+    "CR_2L_anyB": 3,
+    "CR_lowmet": 4,
+    "CR_1L_anymet": 5,
 }
 
 
