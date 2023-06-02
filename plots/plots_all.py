@@ -98,7 +98,6 @@ def filter_events(val,wgh,reg,region,observable):
     return v, w
 
 
-
 def get_bkg(region,binning,observable):  #as list 
     binned = []
     errors = []
@@ -109,6 +108,11 @@ def get_bkg(region,binning,observable):  #as list
         reg = data_loader.data[bkg]["regions"]
 
         val,wgh = filter_events(val,wgh,reg,region,observable)
+
+        #met = data_loader.data[bkg]["observables"]["MET"]
+        #met = met[reg==region]
+        #for i in range(len(wgh)):
+        #    if met[i]<50: wgh[i]=0
 
         num,bins = np.histogram(val, weights=wgh, bins=binning)
         err,bins = np.histogram(val, weights=wgh**2, bins=binning)
