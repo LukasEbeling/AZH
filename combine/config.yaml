@@ -10,6 +10,7 @@ backgrounds:
   - QCD
   - WJets
   - ZJets
+  - DYJets
 
 svars:
   - A_mt
@@ -20,9 +21,7 @@ branches:
   - event_weight
   - region
 
-region_branch: 
-  - SignalRegion
-  - CR_1L
+region_branch: region
 
 #based on scale factors
 variations:
