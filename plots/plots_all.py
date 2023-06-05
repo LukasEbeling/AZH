@@ -17,7 +17,7 @@ plt.style.use(hep.style.CMS)
 #Config
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
-BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "WJets", "QCD", "SingleTop","Semi"]
+BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "WJets", "QCD", "SingleTop","TT"]
 MASSES = ["1000_400"]
 SIGNALS = [f"INV_{mass}" for mass in MASSES]
 
