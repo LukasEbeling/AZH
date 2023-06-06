@@ -34,11 +34,12 @@ enum class Channel {
 
 enum class Region {
   SR = 0,
-  CR_1l = 1,
+  CR_1L = 1,
   CR_lowdelta = 2,
-  CR_2l_anyB = 3,
-  CR_lowmet = 4,
-  CR_1l_anymet = 5,
+  CR_0B = 3,
+  CR_0B_2L = 4,
+  CR_lowmet = 5,
+  CR_1L_anymet = 6,
   Invalid=999,
 };
 

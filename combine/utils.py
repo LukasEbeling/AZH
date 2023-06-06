@@ -87,9 +87,10 @@ REGION_ID_MAP = {
     "SignalRegion": 0,
     "CR_1L": 1,
     "CR_lowdelta": 2,
-    "CR_2L_anyB": 3,
-    "CR_lowmet": 4,
-    "CR_1L_anymet": 5,
+    "CR_0B": 3,
+    "CR_0B_2L": 4,
+    "CR_lowmet": 5,
+    "CR_1L_anymet": 6,
 }
 
 
