@@ -17,17 +17,18 @@ plt.style.use(hep.style.CMS)
 #Config
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
-BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "WJets", "QCD", "SingleTop","TT"]
+BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "DYJets","WJets", "QCD", "SingleTop","TT"]
 MASSES = ["1000_400"]
 SIGNALS = [f"INV_{mass}" for mass in MASSES]
 
 REGIONS = {
     0: "Signal Region",
-    1: "CR_1l",
+    1: "CR_1L",
     2: "CR_lowdelta",
-    3: "CR_2l_anyB",
-    4: "CR_lowmet",
-    5: "CR_1l_anymet",
+    3: "CR_0B",
+    4: "CR_0B_2L",
+    5: "CR_lowmet",
+    6: "CR_1L_anymet",
 }
 
 OBSERVABLES = {
