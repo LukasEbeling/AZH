@@ -26,30 +26,13 @@ private:
   std::string dataset_version;
   std::string dataset_type;
 
-  // Triggers
-  // 2016
-  std::unique_ptr<uhh2::Selection> HLT_PFMET300;
-  std::unique_ptr<uhh2::Selection> HLT_MET200;
-  std::unique_ptr<uhh2::Selection> HLT_PFHT300_PFMET110;
-  std::unique_ptr<uhh2::Selection> HLT_PFMET170_HBHECleaned;
-  std::unique_ptr<uhh2::Selection> HLT_PFMET120_PFMHT120_IDTight; // also 17, 18
-  std::unique_ptr<uhh2::Selection> HLT_PFMET120NoMu_PFMHT120NoMu_IDTight;
-  // 2017, 2018
-  std::unique_ptr<uhh2::Selection> HLT_PFMET200_HBHECleaned;                 // MET POG
-  std::unique_ptr<uhh2::Selection> HLT_PFMET200_HBHE_BeamHaloCleaned;        // MET POG
-  std::unique_ptr<uhh2::Selection> HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned; // MET POG
-  std::unique_ptr<uhh2::Selection> HLT_PFMETNoMu120_PFMHTNoMu120_IDTight;
-  std::unique_ptr<uhh2::Selection> HLT_PFMET120_PFMHT120_IDTight_PFHT60;
-  std::unique_ptr<uhh2::Selection> HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60;
-  std::unique_ptr<uhh2::Selection> HLT_PFHT500_PFMET100_PFMHT100_IDTight;
-  std::unique_ptr<uhh2::Selection> HLT_PFHT700_PFMET85_PFMHT85_IDTight;
-  std::unique_ptr<uhh2::Selection> HLT_PFHT800_PFMET75_PFMHT75_IDTight;
+  std::unique_ptr<uhh2::Selection> HLT_PFMET120_PFMHT120_IDTight;
 
   // Methods
   void getDataset();
   void getPeriod();
-  void passes_UL16(const Event &event, bool &passMET);
-  void passes_UL17(const Event &event, bool &passMET);
-  void passes_UL18(const Event &event, bool &passMET);
+  bool passes_UL16(const Event &event);
+  bool passes_UL17(const Event &event);
+  bool passes_UL18(const Event &event);
 };
 } // namespace uhh2
