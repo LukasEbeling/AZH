@@ -16,6 +16,7 @@
 #include "UHH2/AZH/include/Utils.h"//for region
 #include "UHH2/AZH/include/HiggsReco.h"
 #include "UHH2/AZH/include/AtoZHHists.h"
+#include "UHH2/AZH/include/METTriggers.h"
 
 
 using namespace std;
@@ -41,12 +42,15 @@ class InvReconstruction : public AnalysisModule{
   Event::Handle<double> handle_weight;
   Event::Handle<double> handle_delta;
   Event::Handle<int> handle_leptons;
+  Event::Handle<int> handle_mtrigger;
 
   //Scale Factors  
   std::unique_ptr<AnalysisModule> sf_btagging;
   
   //Selection Modules
   std::unique_ptr<Selection> s_bjet_two;
+  std::unique_ptr<Selection> s_bjet_none;
+  std::unique_ptr<METTriggers> s_met_trigger;
 };
 
 InvReconstruction::InvReconstruction(Context& ctx){
@@ -55,6 +59,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
   handle_weight = ctx.get_handle<double>("event_weight");
   handle_delta = ctx.declare_event_output<double>("delta_phi");
   handle_leptons = ctx.declare_event_output<int>("num_leptons");
+  handle_mtrigger = ctx.declare_event_output<int>("met_triggered");
 
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
 
@@ -64,6 +69,8 @@ InvReconstruction::InvReconstruction(Context& ctx){
   }
 
   s_bjet_two.reset(new NJetSelection(2,-1,bmedium));
+  s_bjet_none.reset(new NJetSelection(-1,0,bmedium));
+  s_met_trigger.reset(new METTriggers(ctx));
 }
 
 bool InvReconstruction::process(Event& event){
@@ -80,6 +87,10 @@ bool InvReconstruction::process(Event& event){
   double HT = 0;
   for(Jet jet: *event.jets){HT += jet.pt();}
   event.set(handle_sum_pt,HT);
+
+  int triggered = 0;
+  if (s_met_trigger->passes(event)) triggered = 1;
+  event.set(handle_mtrigger,triggered);
 
   event.set(handle_weight, event.weight);
 
@@ -105,17 +116,19 @@ bool InvReconstruction::assign_region(Event& event){
   bool met_high = event.met->pt() > 170;
   bool delta_high = delta_phi(event) > 0.5;
   bool two_b = s_bjet_two->passes(event);
+  bool no_b = s_bjet_none->passes(event);
 
   int leptons = (*event.electrons).size() + (*event.muons).size();
   event.set(handle_leptons,leptons);
   
   Region region = Region::Invalid;
   if (met_high && delta_high && two_b && leptons == 0) region = Region::SR;
-  else if (met_high && delta_high && two_b && leptons == 1) region = Region::CR_1l;
+  else if (met_high && delta_high && two_b && leptons == 1) region = Region::CR_1L;
   else if (met_high && !delta_high && two_b && leptons == 0) region = Region::CR_lowdelta;
-  else if (met_high && delta_high && true && leptons == 2) region = Region::CR_2l_anyB;
+  else if (met_high && delta_high && no_b && leptons == 0) region = Region::CR_0B;
+  else if (met_high && delta_high && no_b && leptons == 2) region = Region::CR_0B_2L;
   else if (!met_high && delta_high && two_b && leptons == 0) region = Region::CR_lowmet;
-  else if (true && delta_high && two_b && leptons == 1) region = Region::CR_1l_anymet;
+  else if (true && delta_high && two_b && leptons == 1) region = Region::CR_1L_anymet;
   else return false;
 
   event.set(handle_region, (int) region);
