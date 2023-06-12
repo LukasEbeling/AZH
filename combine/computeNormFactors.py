@@ -15,7 +15,8 @@ class NormComputer:
     SAMPLE_SPECIFIERS = {
         'SingleTop': ['ST'],
         'VV': ['ZZ', 'WW', 'WZ'],
-        'TT': ['TTToHadronic', 'TTToSemiLeptonic', 'TTTo2L2Nu']
+        'TT': ['TTToHadronic', 'TTToSemiLeptonic', 'TTTo2L2Nu'],
+        'ZJets': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL']
     }
 
     QCD_SCALES = [
