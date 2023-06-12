@@ -2,6 +2,10 @@ years:
   - UL17
 
 backgrounds:
+  #- Test
+  #- Semi
+  #- Had
+  #- Lep
   - TT
   - TTZ
   - SingleTop
@@ -10,7 +14,6 @@ backgrounds:
   - QCD
   - WJets
   - ZJets
-  - DYJets
 
 svars:
   - A_mt
