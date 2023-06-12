@@ -17,8 +17,8 @@ plt.style.use(hep.style.CMS)
 #Config
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
-BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets", "DYJets","WJets", "QCD", "SingleTop","TT"]
-MASSES = ["1000_400"]
+BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets","WJets", "QCD", "SingleTop","TT"]
+MASSES = ["1000_400","600_400"]
 SIGNALS = [f"INV_{mass}" for mass in MASSES]
 
 REGIONS = {
@@ -180,7 +180,7 @@ def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
     hep.histplot(binned_sig, yerr=error, histtype='step', bins=binning, color='k', label=label_sig, ax=axes[0])
 
 
-    #axes[0].set_yscale('log')
+    axes[0].set_yscale('log')
     axes[0].legend(ncol=2, title=REGIONS[region], fontsize=18,title_fontsize=18, frameon=True)
     axes[0].set_ylabel("Events")
 
