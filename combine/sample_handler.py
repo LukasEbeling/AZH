@@ -627,6 +627,9 @@ class Binner():
             "H_mt": np.append(np.linspace(200,1500,13),10000),
             "MET": np.append(np.linspace(170,800,10),10000),
         },
+        "CR_lowmet":{
+            "MET": [1,10000],
+        },
         "CR": {
             "foo": np.linspace(0, 5000, 2),
             "bar": np.linspace(0, 5000, 2),
