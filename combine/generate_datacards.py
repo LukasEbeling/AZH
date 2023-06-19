@@ -13,7 +13,7 @@ import utils
 config = Configurator()
 VARS = ["Amt","Hmt","met","2DEllipses"]
 CHANNELS = ["inv"]
-REGIONS = ["SignalRegion","CR_1L"]
+REGIONS = ["SignalRegion","CR_1L","CR_0B","CR_lowmet"]
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
 
 NUISANCES = {
@@ -191,8 +191,8 @@ class Datacard():
     def add_bkg_rate_params(self, f, tt: bool, zj: bool):
         if tt and "TT" in self.processes:
             f.write(f"rate_ttbar rateParam * TT 1 [-2,2]")
-        #if zj and "ZJets" in self.processes:
-        #    f.write(f"\nrate_both rateParam * ZJets 1 [-2,2]")
+        if zj and "ZJets" in self.processes:
+            f.write(f"\nrate_zjets rateParam * ZJets 1 [-2,2]")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")

@@ -19,10 +19,7 @@ class UHH2ToCombineFactory():
     """
 
     CHANNELS_REGIONS = {
-        "inv": ["SignalRegion"],
-        #"diMuon": [x for x in REGION_ID_MAP.keys() if "Flavour" not in x],
-        #"diElectron": [x for x in REGION_ID_MAP.keys() if "Flavour" not in x],
-        #"ElectronMuon": ["CRDiffLeptonFlavours"]
+        "inv": ["SignalRegion","CR_1L","CR_0B","CR_lowmet"],
     }
 
     def __init__(self, signal: str = ""):
@@ -48,17 +45,16 @@ class UHH2ToCombineFactory():
             for channel in self.CHANNELS_REGIONS
             for region in self.CHANNELS_REGIONS[channel]
             for year in config.years
-            for svar in svars + ["ellipses"]
+            for svar in svars
+            #for svar in svars + ["ellipses"]
             #if utils.is_valid_set(channel, region, svar)
         }
 
     def run_factory(self):
         # First iteration without 2D CRs
         for set_name, sample_set in self.sample_sets.items():
-            in_signal_region = sample_set.set_params["region"] == "SignalRegion"
-            if in_signal_region:
-                sample_set.set_sample_bins()
-                sample_set.create_hists_and_save_file()
+            sample_set.set_sample_bins()
+            sample_set.create_hists_and_save_file()
         #If binning exists already:
         #ellipses = self.sample_sets[set_name].set_binning
         #sample_set.set_sample_bins(ellipses)
