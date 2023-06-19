@@ -7,7 +7,7 @@ cd /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/U
     
 combine_cards() {
     echo combining cards for $1 
-    combineCards.py Name1=INV_${1}_met_inv_SignalRegion.dat Name2=INV_${1}_met_inv_CR_0B.dat > INV_${1}_met.dat
+    combineCards.py Name1=INV_${1}_met_inv_SignalRegion.dat Name2=INV_${1}_met_inv_CR_0B.dat Name3=INV_${1}_met_inv_CR_1L.dat Name4=INV_${1}_met_inv_CR_lowmet.dat > INV_${1}_met.dat
     #combineCards.py Name1=INV_${1}_Amt_inv_SignalRegion.dat Name2=INV_${1}_Amt_inv_CR_0B.dat > INV_${1}_Amt.dat
 }
 
