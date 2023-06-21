@@ -44,6 +44,14 @@ class InvReconstruction : public AnalysisModule{
   Event::Handle<int> handle_leptons;
   Event::Handle<int> handle_mtrigger;
 
+  //Histograms
+  unique_ptr<Hists> h_base;
+  unique_ptr<Hists> h_met;
+  unique_ptr<Hists> h_delta;
+  unique_ptr<Hists> h_btag;
+  unique_ptr<Hists> h_veto;
+  unique_ptr<Hists> h_weight;
+
   //Scale Factors  
   std::unique_ptr<AnalysisModule> sf_btagging;
   
@@ -60,6 +68,14 @@ InvReconstruction::InvReconstruction(Context& ctx){
   handle_delta = ctx.declare_event_output<double>("delta_phi");
   handle_leptons = ctx.declare_event_output<int>("num_leptons");
   handle_mtrigger = ctx.declare_event_output<int>("met_triggered");
+
+  h_base.reset(new RecoHists(ctx, "CutFlow_Baseline"));
+  h_met.reset(new RecoHists(ctx, "CutFlow_MET>170"));
+  h_delta.reset(new RecoHists(ctx, "CutFlow_deltaphi"));
+  h_btag.reset(new RecoHists(ctx, "CutFlow_TwoB"));
+  h_veto.reset(new RecoHists(ctx, "CutFlow_LeptonVeto"));
+  h_weight.reset(new RecoHists(ctx, "CutFlow_Weights"));
+
 
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
 
@@ -121,6 +137,13 @@ bool InvReconstruction::assign_region(Event& event){
   int leptons = (*event.electrons).size() + (*event.muons).size();
   event.set(handle_leptons,leptons);
   
+  h_base -> fill(event);
+  if (met_high) h_met -> fill(event);
+  if (met_high && delta_high) h_delta -> fill(event);
+  if (met_high && delta_high && two_b) h_btag -> fill(event);
+  if (met_high && delta_high && two_b && leptons == 0) h_veto -> fill(event);
+  if (met_high && delta_high && two_b && leptons == 0 && event.weight <= 10) h_weight -> fill(event);
+
   Region region = Region::Invalid;
   if (met_high && delta_high && two_b && leptons == 0) region = Region::SR;
   else if (met_high && delta_high && two_b && leptons == 1) region = Region::CR_1L;
