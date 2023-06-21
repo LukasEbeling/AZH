@@ -18,11 +18,22 @@ FILES_PATH = join(CMSSW_BASE, "src/UHH2/AZH/data/output_02_reconstruction/MC/UL1
 OUTPUT_PATH = join(CMSSW_BASE,"src/UHH2/AZH/plots")
 BACKGROUNDS = ["QCD","SingleTop", "TT","TTZ", "WJets", "TTW", "VV","ZJets"]
 SIGNALS = ["1000_400","600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
-CUTS = ["pre", "met", "phi"]
+CUTS = ["base", "met", "phi", "btag", "veto", "weight"]
 BRANCH_MAP = {
-    "pre": "CutFlow_Preselection",
-    "met": "CutFlow_MET>180",
+    "base": "CutFlow_Baseline",
+    "met": "CutFlow_MET>170",
     "phi": "CutFlow_deltaphi",
+    "btag": "CutFlow_TwoB",
+    "veto": "CutFlow_LeptonVeto",
+    "weight": "CutFlow_Weights"
+}
+LABEL_MAP = {
+    "base": "base",
+    "met": "met$\geq$170",
+    "phi": "$\Delta \phi\geq$0.5",
+    "btag": "#b$\geq$2",
+    "veto": "veto",
+    "weight": "weight$\leq$10"
 }
 
 class DataLoader():
@@ -58,8 +69,9 @@ def plot(axis,ratio,name):
         label=name)
 
     x_coordinates = np.arange(0, len(ratio)) + 1.5
+    x_labels = [LABEL_MAP[cut] for cut in CUTS]
     axis.xaxis.set_major_locator(plt.FixedLocator(x_coordinates))
-    axis.xaxis.set_major_formatter(plt.FixedFormatter(CUTS))
+    axis.xaxis.set_major_formatter(plt.FixedFormatter(x_labels))
     axis.set_yscale('log') 
     axis.legend(loc='lower left')
     plt.title("Cutflow")
