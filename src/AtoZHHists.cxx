@@ -63,23 +63,12 @@ PreHists::~PreHists(){}
 
 RecoHists::RecoHists(Context & ctx, const string & dirname): Hists(ctx, dirname){
 
-  book<TH1F>("N_Events", "N_{Events}", 1, -1, 1);  
-  book<TH1F>("MET","Missing pt", 50, 0, 1000);
-  book<TH1F>("Phi","Phi leading jet",50,-M_PI,M_PI);
-  book<TH1F>("Eta","Eta leading jet",-5,5,20);
-  book<TH1F>("Pt","Pt leading jet",50,0,1000);
+  book<TH1F>("N_Events", "N_{Events}", 1, -1, 1);
 }
 
 void RecoHists::fill(const Event & event){
   double weight = event.weight;
   hist("N_Events")->Fill(0., weight);
-  hist("MET")->Fill(event.met->pt(), weight);
-  
-  std::vector<Jet>* jets = event.jets;
-
-  hist("Pt")->Fill(jets->at(0).pt(), weight);
-  hist("Phi")->Fill(jets->at(0).phi(), weight);
-  hist("Eta")->Fill(jets->at(0).eta(), weight);
 }
 
 RecoHists::~RecoHists(){}
