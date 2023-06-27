@@ -97,6 +97,8 @@ bool InvReconstruction::process(Event& event){
   bool valid_region = assign_region(event);
   if(!valid_region) return false;
 
+  if(event.weight > 10) return false;
+
   event.set(handle_delta,delta_phi(event));
   higgs_reconstructor->process(event);
 
