@@ -1,0 +1,46 @@
+Requirements = ( OpSysAndVer == "CentOS7" )
+# Request_GPUs = 1
+universe          = vanilla
+# #Running in local mode with 8 cpu slots
+request_cpus      = 4
+initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/UL17/
+output            = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.o
+error             = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.e
+log               = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.log
+#Requesting CPU and DISK Memory - default +RequestRuntime of 3h stays unaltered
+getenv            = True
+RequestMemory     = 4G
+RequestDisk       = 2G
+JobBatchName      = run_factory
+executable        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_combine.sh
+arguments         = $(arg1) $(arg2)
+queue arg1, arg2 from (
+    1000_400, met
+    1000_850, met
+    600_400, met
+    700_450, met
+    750_400, met
+    750_650, met
+    800_400, met
+    1000_400, Amt
+    1000_850, Amt
+    600_400, Amt
+    700_450, Amt
+    750_400, Amt
+    750_650, Amt
+    800_400, Amt
+    1000_400, Hmt
+    1000_850, Hmt
+    600_400, Hmt
+    700_450, Hmt
+    750_400, Hmt
+    750_650, Hmt
+    800_400, Hmt
+    1000_400, 2DEllipses
+    1000_850, 2DEllipses
+    600_400, 2DEllipses
+    700_450, 2DEllipses
+    750_400, 2DEllipses
+    750_650, 2DEllipses
+    800_400, 2DEllipses
+)
