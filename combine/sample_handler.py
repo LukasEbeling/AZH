@@ -450,7 +450,7 @@ class Sample():
         return [met, deltam]
 
     def _build_histogram(self, inputs, weights, check_weights=False):
-        if self.svar == "ellipses":
+        if self.svar == "ellipses" and self.region == "SignalRegion":
             return self._build_elliptically_binned_hist_fast(inputs[0], inputs[1], weights)
         else:
             H, bins = np.histogram(inputs, bins=self.bins, weights=weights)
@@ -460,16 +460,20 @@ class Sample():
     def _build_svar_hist(self):
         svar_weights = self.weights[self.sel]
 
-        if self.svar == "ellipses":
+        if self.svar == "ellipses" and self.region == "SignalRegion":
             self.svar_hist = self._build_histogram(self._get_raw_twod_inputs(), svar_weights, check_weights=True)
+        elif self.svar == "ellipses":
+            self.svar_hist = self._build_histogram(self.tree["MET"][self.sel], weights=svar_weights)
         else:
             self.svar_hist = self._build_histogram(self.tree[self.svar][self.sel], weights=svar_weights)
 
     def _build_rms_hists(self):
         nominal, nominal_sq_weights, bins = self.svar_hist
 
-        if self.svar == "ellipses":
+        if self.svar == "ellipses" and self.region == "SignalRegion":
             inputs = self._get_raw_twod_inputs()
+        elif self.svar == "ellipses":
+            inputs = self.tree["MET"][self.sel]
         else:
             inputs = self.tree[self.svar][self.sel]
 
@@ -498,8 +502,10 @@ class Sample():
             self.var_hists[nom_key + xvar + "_dn"] = self._build_histogram(inputs, weights=w_dn)
 
     def _build_var_hists(self):
-        if self.svar == "ellipses":
+        if self.svar == "ellipses" and self.region == "SignalRegion":
             inputs = self._get_raw_twod_inputs()
+        elif self.svar == "ellipses": 
+            inputs = self.tree["MET"][self.sel]
         else:
             inputs = self.tree[self.svar][self.sel]
 
@@ -628,7 +634,7 @@ class Binner():
             "MET": np.append(np.linspace(170,800,10),10000),
         },
         "CR_lowmet":{
-            "MET": [1,10000],
+            "MET": np.append(np.linspace(50,150,10),10000),
         },
         "CR": {
             "foo": np.linspace(0, 5000, 2),
@@ -656,8 +662,10 @@ class Binner():
             return self.binning_map[self.region]["default"]
 
     def get_binning(self):
-        if self.svar == "ellipses":
+        if self.svar == "ellipses" and self.region == "SignalRegion":
             return self._compute_ellipses()
+        elif self.svar == "ellipses" and self.region != "SignalRegion":
+            return [1,10000]
         else:
             return self._get_binning_oned()
 
