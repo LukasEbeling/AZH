@@ -25,7 +25,8 @@ class UHH2ToCombineFactory():
     def __init__(self, signal: str = ""):
         config = Configurator()
         if signal:
-            signal = "AZH_" + signal
+            signal = "INV_" + signal
+            print(signal)
             config.signals = [signal]
             config.samples = [signal] + config.backgrounds
             self.loader = NTupleLoader(signal)
@@ -45,8 +46,8 @@ class UHH2ToCombineFactory():
             for channel in self.CHANNELS_REGIONS
             for region in self.CHANNELS_REGIONS[channel]
             for year in config.years
-            for svar in svars
-            #for svar in svars + ["ellipses"]
+            #for svar in svars
+            for svar in svars + ["ellipses"]
             #if utils.is_valid_set(channel, region, svar)
         }
 
@@ -60,7 +61,7 @@ class UHH2ToCombineFactory():
         #sample_set.set_sample_bins(ellipses)
 
     def plot_elliptical_binnings(self):
-        samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses"]
+        samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses" and x.set_params["region"] == "SignalRegion"]
         ell_hist_plotter = EllipticalHistPlotter(samples)
         ell_hist_plotter.plot()
 
@@ -73,4 +74,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     file_factory = UHH2ToCombineFactory(args.signal)
     file_factory.run_factory()
-    #file_factory.plot_elliptical_binnings()
+    file_factory.plot_elliptical_binnings()
