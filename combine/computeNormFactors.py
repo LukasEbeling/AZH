@@ -111,7 +111,7 @@ class NormComputer:
         if sample in self.SAMPLE_SPECIFIERS:
             return self.SAMPLE_SPECIFIERS[sample]
         
-        if "INV" in sample:
+        if "AZH" in sample:
             split = [s for s in sample.split("_") if s]
             return [f"MA-{split[1]}_MH-{split[2]}"] 
         

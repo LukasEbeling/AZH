@@ -25,7 +25,7 @@ class UHH2ToCombineFactory():
     def __init__(self, signal: str = ""):
         config = Configurator()
         if signal:
-            signal = "INV_" + signal
+            signal = "AZH_" + signal
             print(signal)
             config.signals = [signal]
             config.samples = [signal] + config.backgrounds
