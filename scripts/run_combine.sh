@@ -17,9 +17,9 @@ combine_cards() {
     local var=$2
 
     echo combining cards for $mass
-    combineCards.py Name1=INV_${mass}_${var}_inv_SignalRegion.dat \
-        Name2=INV_${mass}_${var}_inv_CR_0B.dat Name3=INV_${mass}_met_inv_CR_1L.dat \
-        Name4=INV_${mass}_${var}_inv_CR_lowmet.dat > INV_${mass}_${var}.dat
+    combineCards.py Name1=AZH_${mass}_${var}_inv_SignalRegion.dat \
+        Name2=AZH_${mass}_${var}_inv_CR_0B.dat Name3=AZH_${mass}_met_inv_CR_1L.dat \
+        Name4=AZH_${mass}_${var}_inv_CR_lowmet.dat > AZH_${mass}_${var}.dat
 }
 
 
@@ -28,9 +28,9 @@ calculate_limit() {
     local var=$2
 
     echo AsymptoticLimits for $mass
-    combine -M AsymptoticLimits -m 125 --run blind -d ${path}INV_${mass}_${var}_inv_SignalRegion.dat \
+    combine -M AsymptoticLimits -m 125 --run blind -d ${path}AZH_${mass}_${var}_inv_SignalRegion.dat \
         --rMin -1 --rMax 1| grep Expected &> ${path}expected_${mass}_${var}_SR.log
-    combine -M AsymptoticLimits -m 125 --run blind -d ${path}INV_${mass}_${var}.dat \
+    combine -M AsymptoticLimits -m 125 --run blind -d ${path}AZH_${mass}_${var}.dat \
         --rMin -1 --rMax 1| grep Expected &> ${path}expected_${mass}_${var}.log
 }
 
@@ -40,7 +40,7 @@ create_workspaces() {
     local var=$2
 
     echo text2workspace.py for ${mass}
-    text2workspace.py INV_${mass}_${var}.dat -m 125 -o INV_${mass}_${var}_workspace.root
+    text2workspace.py AZH_${mass}_${var}.dat -m 125 -o AZH_${mass}_${var}_workspace.root
 }
 
 
@@ -49,11 +49,11 @@ plot_impacts() {
     local var=$2
     
     echo plotting impacts for ${mass}
-    combineTool.py -M Impacts -d INV_${mass}_${var}_workspace.root -m 125 \
+    combineTool.py -M Impacts -d AZH_${mass}_${var}_workspace.root -m 125 \
         --doInitialFit --robustFit 1 --rMin -1 --rMax 1 --expectSignal 0.05 -t -1
-    combineTool.py -M Impacts -d INV_${mass}_${var}_workspace.root -m 125 \
+    combineTool.py -M Impacts -d AZH_${mass}_${var}_workspace.root -m 125 \
         --doFits --robustFit 1 --rMin -1 --rMax 1 --expectSignal 0.05 -t -1
-    combineTool.py -M Impacts -d INV_${mass}_${var}_workspace.root -m 125 -o impacts_${mass}_${var}.json \
+    combineTool.py -M Impacts -d AZH_${mass}_${var}_workspace.root -m 125 -o impacts_${mass}_${var}.json \
         --rMin -1 --rMax 1 --expectSignal 0.05 -t -1
     plotImpacts.py -i impacts_${mass}_${var}.json -o impacts_${mass}_${var}
 }
