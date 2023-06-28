@@ -97,8 +97,6 @@ bool InvReconstruction::process(Event& event){
   bool valid_region = assign_region(event);
   if(!valid_region) return false;
 
-  if(event.weight > 10) return false;
-
   event.set(handle_delta,delta_phi(event));
   higgs_reconstructor->process(event);
 
@@ -147,13 +145,13 @@ bool InvReconstruction::assign_region(Event& event){
   if (met_high && delta_high && two_b && leptons == 0 && event.weight <= 10) h_weight -> fill(event);
 
   Region region = Region::Invalid;
-  if (met_high && delta_high && two_b && leptons == 0) region = Region::SR;
-  else if (met_high && delta_high && two_b && leptons == 1) region = Region::CR_1L;
-  else if (met_high && !delta_high && two_b && leptons == 0) region = Region::CR_lowdelta;
-  else if (met_high && delta_high && no_b && leptons == 0) region = Region::CR_0B;
-  else if (met_high && delta_high && no_b && leptons == 2) region = Region::CR_0B_2L;
+  if (met_high && delta_high && two_b && leptons == 0 && event.weight < 10) region = Region::SR;
+  else if (met_high && delta_high && two_b && leptons == 1 && event.weight < 10) region = Region::CR_1L;
+  //else if (met_high && !delta_high && two_b && leptons == 0) region = Region::CR_lowdelta;
+  else if (met_high && delta_high && no_b && leptons == 0 && event.weight < 10) region = Region::CR_0B;
+  //else if (met_high && delta_high && no_b && leptons == 2) region = Region::CR_0B_2L;
   else if (!met_high && delta_high && two_b && leptons == 0) region = Region::CR_lowmet;
-  else if (true && delta_high && two_b && leptons == 1) region = Region::CR_1L_anymet;
+  //else if (true && delta_high && two_b && leptons == 1) region = Region::CR_1L_anymet;
   else return false;
 
   event.set(handle_region, (int) region);
