@@ -23,7 +23,7 @@ class Parquetifier():
     def __init__(self, sample=None):
         self.config = Configurator()
         self.ul_years = utils.split_ul16(self.config.years)
-        self.samples = [re.sub(r"^MA-", "INV_", sample)]
+        self.samples = [re.sub(r"^MA-", "AZH_", sample)]
         if not sample:
             self.samples = self.config.samples
         self.nominal_trees = {year: {} for year in self.ul_years}
