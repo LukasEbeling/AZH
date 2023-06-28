@@ -25,7 +25,7 @@ class Configurator(Borg):
         with open(os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/config.yaml"), 'r') as f:
             config_dict = yaml.safe_load(f)
         with open(os.path.join(CMSSW_BASE, "src/UHH2/AZH/config/signals.txt"), 'r') as f:
-            self.signals = [f"INV_{line}".removesuffix("\n").replace("MA-","").replace("MH-","") for line in f]
+            self.signals = [f"AZH_{line}".removesuffix("\n").replace("MA-","").replace("MH-","") for line in f]
             
         self.years = config_dict["years"]
         self.backgrounds = config_dict["backgrounds"]
