@@ -19,7 +19,7 @@ ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
 BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets","WJets", "QCD", "SingleTop","TT"]
 MASSES = ["600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
-SIGNALS = [f"INV_{mass}" for mass in MASSES]
+SIGNALS = [f"AZH_{mass}" for mass in MASSES]
 
 REGIONS = {
     0: "Signal Region",
@@ -36,7 +36,7 @@ OBSERVABLES = {
     #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
     "jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21), 
     "A_mt": np.linspace(200, 2000, 21),
-    #"H_mt": np.linspace(100, 1500, 21),
+    "H_mt": np.linspace(100, 1500, 21),
     "MET": np.linspace(0, 800, 41),
     "event_weight": np.linspace(0,100,21),
     #"HT": np.linspace(100,2000,51),
@@ -144,7 +144,7 @@ def get_xlabel(obs):
         "jetsAk4CHS/jetsAk4CHS.m_eta": (r"$\eta(j_{1})$", "Jet1Eta"),
         "A_mt": (r"$m_T$ of A [GeV]","AMT"),
         "H_mt": (r"$m_T$ of H [GeV]","HMT"),
-        "MET": (r"missing $E_T$ [GeV]","MET"),
+        "MET": (r"missing $p_T$ [GeV]","MET"),
         "event_weight": (r"Event Weight","Weight"),
         "W_m": (r"best $W_m$ [GeV]","Wmass"),
         "HT": (r"$H_T$ [GeV]","HT"),
