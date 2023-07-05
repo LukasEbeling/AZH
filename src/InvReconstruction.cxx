@@ -137,12 +137,20 @@ bool InvReconstruction::assign_region(Event& event){
   int leptons = (*event.electrons).size() + (*event.muons).size();
   event.set(handle_leptons,leptons);
   
+  //h_base -> fill(event);
+  //if (met_high) h_met -> fill(event);
+  //if (met_high && delta_high) h_delta -> fill(event);
+  //if (met_high && delta_high && two_b) h_btag -> fill(event);
+  //if (met_high && delta_high && two_b && leptons == 0) h_veto -> fill(event);
+  //if (met_high && delta_high && two_b && leptons == 0 && event.weight <= 10) h_weight -> fill(event);
+
   h_base -> fill(event);
   if (met_high) h_met -> fill(event);
-  if (met_high && delta_high) h_delta -> fill(event);
-  if (met_high && delta_high && two_b) h_btag -> fill(event);
-  if (met_high && delta_high && two_b && leptons == 0) h_veto -> fill(event);
-  if (met_high && delta_high && two_b && leptons == 0 && event.weight <= 10) h_weight -> fill(event);
+  if (met_high && event.weight <= 10) h_weight -> fill(event);
+  if (met_high && event.weight <= 10 && delta_high) h_delta -> fill(event);
+  if (met_high && event.weight <= 10 && delta_high && two_b) h_btag -> fill(event);
+  if (met_high && event.weight <= 10 && delta_high && two_b && leptons == 0) h_veto -> fill(event);
+
 
   Region region = Region::Invalid;
   if (met_high && delta_high && two_b && leptons == 0 && event.weight < 10) region = Region::SR;
