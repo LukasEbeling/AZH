@@ -48,6 +48,13 @@ class DataLoader():
         self.background["ZJets"] = [x+y for x,y in zip(self.load_all("ZJets"),self.load_all("DY"))]
         self.background["VV"] = [x+y+z for x,y,z in zip(self.load_all("WW"),self.load_all("ZZ"),self.load_all("WZ"))]
 
+        #doc = open(OUTPUT_PATH+f"/yields_preselection.txt", "w")
+        #for sample in self.signal:
+        #    doc.write("\""+sample+"\": "+str(list(self.signal[sample]))+",\n")
+        #for sample in self.background:
+        #    doc.write("\""+sample+"\": "+str(list(self.background[sample]))+",\n")
+        #doc.close()
+
     
     def load_bkgs(self):
         for bkg in BACKGROUNDS: 

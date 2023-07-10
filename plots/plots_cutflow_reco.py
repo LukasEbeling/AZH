@@ -18,7 +18,7 @@ FILES_PATH = join(CMSSW_BASE, "src/UHH2/AZH/data/output_02_reconstruction/MC/UL1
 OUTPUT_PATH = join(CMSSW_BASE,"src/UHH2/AZH/plots")
 BACKGROUNDS = ["QCD","SingleTop", "TT","TTZ", "WJets", "TTW", "VV","ZJets"]
 SIGNALS = ["1000_400","600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
-CUTS = ["base", "met", "phi", "btag", "veto", "weight"]
+CUTS = ["base", "met", "weight", "phi", "btag", "veto"]
 BRANCH_MAP = {
     "base": "CutFlow_Baseline",
     "met": "CutFlow_MET>170",
@@ -43,6 +43,13 @@ class DataLoader():
         self.load_bkgs()
         self.load_sign()
 
+        #doc = open(OUTPUT_PATH+f"/yields_reconstruction.txt", "w")
+        #for sample in self.signal:
+        #    doc.write("\""+sample+"\": "+str(list(self.signal[sample]))+",\n")
+        #for sample in self.background:
+        #    doc.write("\""+sample+"\": "+str(list(self.background[sample]))+",\n")
+        #doc.close()
+
     def load_bkgs(self):
         for bkg in BACKGROUNDS: 
             path = join(CMSSW_BASE,FILES_PATH,f"MC.{bkg}_UL17.root")
@@ -50,7 +57,7 @@ class DataLoader():
     
     def load_sign(self):
         for sig in SIGNALS: 
-            path = join(CMSSW_BASE,FILES_PATH,f"MC.INV_{sig}_UL17.root")
+            path = join(CMSSW_BASE,FILES_PATH,f"MC.AZH_{sig}_UL17.root")
             self.signal[sig] = self.load(path)
 
     def load(self, path):
