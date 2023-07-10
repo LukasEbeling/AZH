@@ -192,7 +192,9 @@ class Datacard():
         if tt and "TT" in self.processes:
             f.write(f"rate_ttbar rateParam * TT 1 [-2,2]")
         if zj and "ZJets" in self.processes:
-            f.write(f"\nrate_zjets rateParam * ZJets 1 [-2,2]")
+            f.write(f"\nrate_vjets rateParam * ZJets 1 [-2,2]")
+        if "WJets" in self.processes:
+            f.write(f"\nrate_vjets rateParam * WJets 1 [-2,2]")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
