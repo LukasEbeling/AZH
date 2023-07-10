@@ -41,6 +41,7 @@ create_workspaces() {
 
     echo text2workspace.py for ${mass}
     text2workspace.py AZH_${mass}_${var}.dat -m 125 -o AZH_${mass}_${var}_workspace.root
+    #text2workspace.py AZH_${mass}_${var}_inv_SignalRegion.dat -m 125 -o AZH_${mass}_${var}_workspace.root
 }
 
 
@@ -68,3 +69,5 @@ if [ "$3" = "impacts" ]; then
     create_workspaces $1 $2
     plot_impacts $1 $2
 fi
+
+#exampe run_combine.sh 1000_400 2DEllipses (impatcs)
