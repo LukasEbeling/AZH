@@ -32,21 +32,16 @@ REGIONS = {
 }
 
 OBSERVABLES = {
+    "A_mt": np.linspace(500,1800,13),
+    #"H_mt": np.linspace(200,1500,13),
+    "MET": np.linspace(170,800,10),
     #"jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
-    "jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21), 
-    "A_mt": np.linspace(200, 2000, 21),
-    "H_mt": np.linspace(100, 1500, 21),
-    "MET": np.linspace(0, 800, 41),
-    "event_weight": np.linspace(0,100,21),
-    #"HT": np.linspace(100,2000,51),
-    #"delta_phi": np.linspace(0,pi,20),
-    #"num_leptons": np.array([0,1,2,3]),
-    #"W_m": np.linspace(0,400,21),
-    #"b_angle": np.linspace(0,pi,20),
-    #"tight_b": np.linspace(-0.25,2.25,6),
-    #"t_angle": np.linspace(0,pi,20),
+    #"jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21),
+    #"event_weight": np.linspace(0,100,21), 
 }
+
+
 
 
 class dataLoader():
@@ -98,6 +93,12 @@ def filter_events(val,wgh,reg,region,observable):
     assert (v.shape == w.shape)
     return v, w
 
+def overflow(val,binning):
+    return np.clip(val,binning[0],binning[-1])
+
+def add_bin(binning):
+    return np.append(binning,binning[-1]+(binning[-1]-binning[-2]))
+
 
 def get_bkg(region,binning,observable):  #as list 
     binned = []
@@ -115,6 +116,8 @@ def get_bkg(region,binning,observable):  #as list
         #for i in range(len(wgh)):
         #    if met[i]<50: wgh[i]=0
 
+        val = overflow(val,binning)
+
         num,bins = np.histogram(val, weights=wgh, bins=binning)
         err,bins = np.histogram(val, weights=wgh**2, bins=binning)
 
@@ -129,7 +132,8 @@ def get_sig(region,signal,binning,observable):
     wgh = data_loader.data[signal]["weights"]
     reg = data_loader.data[signal]["regions"]
 
-    val,wgh = filter_events(val,wgh,reg,region,observable)        
+    val,wgh = filter_events(val,wgh,reg,region,observable)  
+    val = overflow(val,binning)      
 
     num,bins = np.histogram(val, weights=wgh, bins=binning)
     err,bins = np.histogram(val, weights=wgh**2, bins=binning)
@@ -157,6 +161,7 @@ def get_xlabel(obs):
     return x[obs.replace("Puppi", "CHS")]
 
 def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
+    binning = add_bin(binning)
     binned_bkg, errors = get_bkg(region,binning,observable)
     binned_sig, error = get_sig(region,signal,binning,observable)
 
@@ -204,6 +209,7 @@ if __name__ == "__main__":
 
     for obs, binning in OBSERVABLES.items():
         for region, signal in product(REGIONS.keys(), SIGNALS):
+            if region == 5 and obs == "MET": binning = np.linspace(50,150,10)
             plot_samples(region, signal, obs, binning)
             bar.next()
     bar.finish()
