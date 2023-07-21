@@ -40,7 +40,7 @@ class SampleSet():
         "slimmedMuonsUSER.m_pt_2": "Muon2Pt",
         "z_mass_reco": "ZMass",
         "A_mt": "Amt",
-        "H_mt": "Hmt",
+        "H_m": "Hm",
         "MET": "met",
     }
 
@@ -59,7 +59,7 @@ class SampleSet():
     def create_hists_and_save_file(self):
         self._create_histograms()
 
-        is_sensitive_var_hist = self.set_params["svar"] in ["A_mt","H_mt","MET","ellipses"]
+        is_sensitive_var_hist = self.set_params["svar"] in ["A_mt","H_mt","H_m","MET","ellipses"]
         is_signal_channel = self.set_params["channel"] in ["inv"]
         if is_sensitive_var_hist and is_signal_channel:
             self._assert_nonzero_backgrounds()
@@ -169,7 +169,7 @@ class SampleSet():
                 continue
             bkg_vals += bkg_s.svar_hist[0]
 
-        is_signal_region = self.set_params["region"] == "SignalRegion"
+        is_signal_region = ("SR" in self.set_params["region"])
         if not (bkg_vals > 0).all() and not is_signal_region:
             bkg_vals = self._merge_bins(bkg_vals)
 
@@ -445,12 +445,12 @@ class Sample():
     def _get_raw_twod_inputs(self):
         met = self.tree["MET"][self.sel]
         amt = self.tree["A_mt"][self.sel]
-        hmt = self.tree["H_mt"][self.sel]
+        hmt = self.tree["H_m"][self.sel]
         deltam = abs(amt-hmt)
         return [met, deltam]
 
     def _build_histogram(self, inputs, weights, check_weights=False):
-        if self.svar == "ellipses" and self.region == "SignalRegion":
+        if self.svar == "ellipses" and "SR" in self.region:
             return self._build_elliptically_binned_hist_fast(inputs[0], inputs[1], weights)
         else:
             H, bins = np.histogram(inputs, bins=self.bins, weights=weights)
@@ -460,7 +460,7 @@ class Sample():
     def _build_svar_hist(self):
         svar_weights = self.weights[self.sel]
 
-        if self.svar == "ellipses" and self.region == "SignalRegion":
+        if self.svar == "ellipses" and "SR" in self.region:
             self.svar_hist = self._build_histogram(self._get_raw_twod_inputs(), svar_weights, check_weights=True)
         elif self.svar == "ellipses":
             self.svar_hist = self._build_histogram(self.tree["MET"][self.sel], weights=svar_weights)
@@ -470,7 +470,7 @@ class Sample():
     def _build_rms_hists(self):
         nominal, nominal_sq_weights, bins = self.svar_hist
 
-        if self.svar == "ellipses" and self.region == "SignalRegion":
+        if self.svar == "ellipses" and "SR" in self.region:
             inputs = self._get_raw_twod_inputs()
         elif self.svar == "ellipses":
             inputs = self.tree["MET"][self.sel]
@@ -502,7 +502,7 @@ class Sample():
             self.var_hists[nom_key + xvar + "_dn"] = self._build_histogram(inputs, weights=w_dn)
 
     def _build_var_hists(self):
-        if self.svar == "ellipses" and self.region == "SignalRegion":
+        if self.svar == "ellipses" and "SR" in self.region:
             inputs = self._get_raw_twod_inputs()
         elif self.svar == "ellipses": 
             inputs = self.tree["MET"][self.sel]
@@ -631,6 +631,7 @@ class Binner():
             "z_mass_reco": np.linspace(40, 140, 16),
             "A_mt": np.append(np.linspace(500,1800,13),10000),
             "H_mt": np.append(np.linspace(200,1500,13),10000),
+            "H_m": np.append(np.linspace(200,1500,13),10000),
             "MET": np.append(np.linspace(170,800,10),10000),
         },
         "CR_lowmet":{
@@ -662,9 +663,9 @@ class Binner():
             return self.binning_map[self.region]["default"]
 
     def get_binning(self):
-        if self.svar == "ellipses" and self.region == "SignalRegion":
+        if self.svar == "ellipses" and "SR" in self.region:
             return self._compute_ellipses()
-        elif self.svar == "ellipses" and self.region != "SignalRegion":
+        elif self.svar == "ellipses" and "SR" not in self.region:
             return [1,10000]
         else:
             return self._get_binning_oned()
@@ -696,7 +697,7 @@ class Binner():
         sel = self.signal_sample.sel
         met = loader.nominal_trees[self.year][self.signal]["MET"][sel]
         amt = loader.nominal_trees[self.year][self.signal]["A_mt"][sel]
-        hmt = loader.nominal_trees[self.year][self.signal]["H_mt"][sel]
+        hmt = loader.nominal_trees[self.year][self.signal]["H_m"][sel]
         dm = abs(amt - hmt)
         weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel]
 

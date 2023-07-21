@@ -13,8 +13,8 @@ backgrounds:
 
 svars:
   - A_mt
-  - H_mt
   - MET
+  - H_m
 
 branches:
   - event_weight
