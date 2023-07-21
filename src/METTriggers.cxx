@@ -42,7 +42,7 @@ bool METTriggers::passes_UL16(const Event &event) {
 }
 
 bool METTriggers::passes_UL17(const Event &event) {
-  if (RunPeriod != "RunB") return true;
+  //if (RunPeriod != "RunB") return true;
   return HLT_PFMET120_PFMHT120_IDTight->passes(event);
 }
 
