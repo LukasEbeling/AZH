@@ -22,18 +22,24 @@ MASSES = ["600_400","700_450","750_400","750_650","800_400","1000_400","1000_850
 SIGNALS = [f"AZH_{mass}" for mass in MASSES]
 
 REGIONS = {
-    0: "Signal Region",
-    1: "CR_1L",
-    #2: "CR_lowdelta",
-    3: "CR_0B",
-    #4: "CR_0B_2L",
-    5: "CR_lowmet",
-    #6: "CR_1L_anymet",
+    0: "SR_6J",
+    1: "SR_5J",
+    11: "IR_1B_5J",
+    12: "IR_1B_6J",
+    13: "IR_0B_5J",
+    14: "IR_0B_6J",
+    15: "LR_2B_5J",
+    16: "LR_2B_6J",
+    17: "LR_1B_5J",
+    18: "LR_1B_6J",
+    19: "LR_0B_5J",
+    20: "LR_0B_6J",
 }
 
 OBSERVABLES = {
     "A_mt": np.linspace(500,1800,13),
-    #"H_mt": np.linspace(200,1500,13),
+    "H_m": np.linspace(200,1500,13),
+    "H_mt": np.linspace(200,1500,13),
     "MET": np.linspace(170,800,10),
     #"jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
@@ -152,6 +158,7 @@ def get_xlabel(obs):
         "event_weight": (r"Event Weight","Weight"),
         "W_m": (r"best $W_m$ [GeV]","Wmass"),
         "HT": (r"$H_T$ [GeV]","HT"),
+        "H_m": (r"m of H [GeV]","Hm"),
         "tight_b": (r"tight b tags", "tightb"),
         "delta_phi": (r"min $\Delta\phi$ [rad]","DeltaPhi"),
         "b_angle": (r"angle between bs [rad]","BAngle"),
