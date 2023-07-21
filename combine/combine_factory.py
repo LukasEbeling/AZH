@@ -19,7 +19,19 @@ class UHH2ToCombineFactory():
     """
 
     CHANNELS_REGIONS = {
-        "inv": ["SignalRegion","CR_1L","CR_0B","CR_lowmet"],
+        "inv": ["SR_6J", 
+                "SR_5J", 
+                "IR_1B_5J", 
+                "IR_1B_6J",
+                "IR_0B_5J",
+                "IR_0B_6J",
+                "LR_2B_5J",
+                "LR_2B_6J",
+                "LR_1B_5J",
+                "LR_1B_6J",
+                "LR_0B_5J",
+                "LR_0B_6J"
+                ]
     }
 
     def __init__(self, signal: str = ""):
@@ -61,7 +73,7 @@ class UHH2ToCombineFactory():
         #sample_set.set_sample_bins(ellipses)
 
     def plot_elliptical_binnings(self):
-        samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses" and x.set_params["region"] == "SignalRegion"]
+        samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses" and "SR" in x.set_params["region"]]
         ell_hist_plotter = EllipticalHistPlotter(samples)
         ell_hist_plotter.plot()
 
