@@ -84,13 +84,18 @@ CHANNEL_ID_MAP = {
 
 
 REGION_ID_MAP = {
-    "SignalRegion": 0,
-    "CR_1L": 1,
-    "CR_lowdelta": 2,
-    "CR_0B": 3,
-    "CR_0B_2L": 4,
-    "CR_lowmet": 5,
-    "CR_1L_anymet": 6,
+    "SR_6J" : 0,
+    "SR_5J" : 1, 
+    "IR_1B_5J" : 11,
+    "IR_1B_6J" : 12,
+    "IR_0B_5J" : 13,
+    "IR_0B_6J" : 14,
+    "LR_2B_5J" : 15,  
+    "LR_2B_6J" : 16,
+    "LR_1B_5J" : 17,
+    "LR_1B_6J" : 18,
+    "LR_0B_5J" : 19,
+    "LR_0B_6J" : 20,
 }
 
 
