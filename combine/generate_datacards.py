@@ -13,7 +13,19 @@ import utils
 config = Configurator()
 VARS = ["Amt","Hmt","met","2DEllipses"]
 CHANNELS = ["inv"]
-REGIONS = ["SignalRegion","CR_1L","CR_0B","CR_lowmet"]
+REGIONS = ["SR_6J", 
+                "SR_5J", 
+                "IR_1B_5J", 
+                "IR_1B_6J",
+                "IR_0B_5J",
+                "IR_0B_6J",
+                "LR_2B_5J",
+                "LR_2B_6J",
+                "LR_1B_5J",
+                "LR_1B_6J",
+                "LR_0B_5J",
+                "LR_0B_6J"
+                ]
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
 
 NUISANCES = {
@@ -82,7 +94,7 @@ SHAPES_NP = {
 # Chars per column
 N1 = 79
 N2 = 8
-N3 = max([len(x) for x in REGIONS]) + 2
+N3 = max([len(x) for x in REGIONS]) + 10
 
 
 class Datacard():
