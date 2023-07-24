@@ -44,7 +44,6 @@ class InvPreselection: public AnalysisModule {
     virtual bool process(Event & event) override;
 
   private:
-    double angle_difference(double,double);
     bool is_mc;
     Year year;
     const JetId jet_id = AndId<Jet>(PtEtaCut(30, 2.4), JetPFID(JetPFID::WP_TIGHT_LEPVETO_CHS));
@@ -57,15 +56,12 @@ class InvPreselection: public AnalysisModule {
     // Handles
     uhh2::Event::Handle<double> handle_event_weight;
     uhh2::Event::Handle<double> handle_origin_weight;
-    uhh2::Event::Handle<int> handle_leptons;
 
     // Histograms
     std::unique_ptr<Hists> h_unc_norm;
     std::unique_ptr<Hists> h_baseline;
-    std::unique_ptr<Hists> h_no_leptons;
-    std::unique_ptr<Hists> h_six_jets;
-    //std::unique_ptr<Hists> h_bjet_two;
-    std::unique_ptr<Hists> h_met_50;
+    std::unique_ptr<Hists> h_five_jets;
+    std::unique_ptr<Hists> h_met_150;
 
     // Histograms for BTagging efficiency measurements
     std::unique_ptr<BTagMCEfficiencyHists> h_btag_eff;
@@ -76,12 +72,7 @@ class InvPreselection: public AnalysisModule {
     // Selection
     std::unique_ptr<CommonModules> common_modules;
     std::unique_ptr<AnalysisModule> clnr_jetpuid;
-    std::unique_ptr<Selection> s_njet_two;
-    std::unique_ptr<Selection> s_njet_six;
-    std::unique_ptr<Selection> s_bjet_none;
-    std::unique_ptr<Selection> s_bjet_one;
-    std::unique_ptr<Selection> s_btight_none;
-    std::unique_ptr<Selection> s_btight_one;
+    std::unique_ptr<Selection> s_njet_five;
 
     // Event Weighting
     unique_ptr<HEMSelection> sel_hem;
@@ -113,13 +104,8 @@ InvPreselection::InvPreselection(Context & ctx){
   electronId_loose = AndId<Electron>(ElectronEtaWindowId(), PtEtaSCCut(20, 2.4), ElectronTagID(eleTag));
 
   // Selections
-  s_njet_six.reset(new NJetSelection(6));
-  s_njet_two.reset(new NJetSelection(2));
+  s_njet_five.reset(new NJetSelection(5));
   s_metFilters.reset(new METFilters(ctx));
-  s_bjet_none.reset(new NJetSelection(-1,0,bmedium));
-  s_bjet_one.reset(new NJetSelection(1,1,bmedium));
-  s_btight_none.reset(new NJetSelection(-1,0,btight));
-  s_btight_one.reset(new NJetSelection(1,1,btight));
 
   // Event Weighting
   sel_hem.reset(new HEMSelection(ctx));
@@ -135,7 +121,6 @@ InvPreselection::InvPreselection(Context & ctx){
   // Handles
   handle_event_weight = ctx.declare_event_output<double>("event_weight");
   handle_origin_weight = ctx.declare_event_output<double>("origin_weight");
-  handle_leptons = ctx.declare_event_output<int>("leptons");
 
   // Common
   common_modules.reset(new CommonModules());
@@ -153,11 +138,9 @@ InvPreselection::InvPreselection(Context & ctx){
   common_modules->init(ctx);
 
   // Histograms
-  h_baseline.reset(new PreHists(ctx, "CutFlow_Baseline"));
-  h_six_jets.reset(new PreHists(ctx, "CutFlow_SixJets"));
-  h_no_leptons.reset(new PreHists(ctx, "CutFlow_LeptonVeto"));
-  h_met_50.reset(new PreHists(ctx, "CutFlow_MET>50"));
-  //h_bjet_two.reset(new PreHists(ctx, "CutFlow_TwoB"));
+  h_baseline.reset(new HistSet(ctx, "CutFlow_Baseline"));
+  h_five_jets.reset(new HistSet(ctx, "CutFlow_FiveJets"));
+  h_met_150.reset(new HistSet(ctx, "CutFlow_MET>150"));
   
   h_btag_eff.reset(new BTagMCEfficiencyHists(ctx, "2_BTagMCEff", bmedium));
   h_unc_norm.reset(new NormalisationHists(ctx, "UncNorms"));
@@ -205,27 +188,15 @@ bool InvPreselection::process(Event & event) {
 
   h_baseline->fill(event);
 
-  //Lepton Veto
-  int leptons = (*event.electrons).size() + (*event.muons).size();
-  event.set(handle_leptons,leptons);
-  //if (leptons>2){return false;}
-  h_no_leptons->fill(event);
-
   // Cut on missing transvers momentum
   double met = event.met->pt(); 
-  if (met<50) return false;
-  h_met_50->fill(event);
+  if (met<150) return false;
+  h_met_150->fill(event);
 
   // Jet Selection
-  bool has_six_jets = s_njet_six->passes(event);
-  if (!has_six_jets) { return false; }
-  h_six_jets->fill(event);
-
-  //BTagging
-  //bool has_nob = s_bjet_none->passes(event);
-  //bool has_oneb = s_bjet_one->passes(event);
-  //if (has_nob || has_oneb) {return false;}
-  //h_bjet_two->fill(event)
+  bool has_five_jets = s_njet_five->passes(event);
+  if (!has_five_jets) { return false; }
+  h_five_jets->fill(event);
 
   // Histogram for BTagging efficiencye
   if ( !event.isRealData ) { h_btag_eff->fill(event); }
@@ -235,12 +206,6 @@ bool InvPreselection::process(Event & event) {
   event.set(handle_event_weight, event.weight);
 
   return true;
-}
-
-double InvPreselection::angle_difference(double jet_phi, double met_phi){
-  double diff = abs(jet_phi-met_phi);
-  if(diff > M_PI){diff = 2*M_PI - diff;}
-  return diff;
 }
 
 UHH2_REGISTER_ANALYSIS_MODULE(InvPreselection)
