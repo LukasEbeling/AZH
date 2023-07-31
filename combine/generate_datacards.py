@@ -11,7 +11,7 @@ import utils
 
 
 config = Configurator()
-VARS = ["Amt","Hmt","met","2DEllipses"]
+VARS = ["MTA","MTH","MH","MET","2DEllipses"]
 CHANNELS = ["inv"]
 REGIONS = ["SR_6J", 
                 "SR_5J", 
