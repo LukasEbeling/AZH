@@ -12,9 +12,11 @@ backgrounds:
   - ZJets
 
 svars:
-  - A_mt
   - MET
-  - H_m
+  - m_H
+  - mt_A
+  - mt_H
+
 
 branches:
   - event_weight
