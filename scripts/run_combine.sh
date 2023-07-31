@@ -17,7 +17,7 @@ combine_cards() {
     local sr_var=$2
     local cr_var=$2
 
-    if [ $sr_var == "2DEllipses"]; then
+    if [ $sr_var == "2DEllipses" ]; then
         cr_var="MET"
     fi
 
