@@ -124,17 +124,17 @@ InvPreselection::InvPreselection(Context & ctx){
 
   // Common
   common_modules.reset(new CommonModules());
-  common_modules-> disable_mclumiweight();
-  common_modules-> disable_mcpileupreweight();
-  //common_modules-> disable_lumisel();
-  //common_modules-> disable_metfilters();
-  //common_modules-> disable_pvfilter();
-  common_modules->disable_jec();
-  common_modules->disable_jersmear();
-  common_modules->disable_jetpfidfilter();
+  common_modules-> disable_mclumiweight(); //done manually 
+  common_modules-> disable_mcpileupreweight(); //done manually 
   common_modules->set_jet_id(jet_id);
   common_modules->switch_jetlepcleaner(true);
   common_modules->switch_jetPtSorter();
+  //common_modules-> disable_lumisel();
+  //common_modules-> disable_metfilters();
+  //common_modules-> disable_pvfilter();
+  //common_modules->disable_jec();
+  //common_modules->disable_jersmear();
+  //common_modules->disable_jetpfidfilter();
   common_modules->init(ctx);
 
   // Histograms
