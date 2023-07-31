@@ -39,9 +39,10 @@ class SampleSet():
         "slimmedMuonsUSER.m_pt_1": "Muon1Pt",
         "slimmedMuonsUSER.m_pt_2": "Muon2Pt",
         "z_mass_reco": "ZMass",
-        "A_mt": "Amt",
-        "H_m": "Hm",
-        "MET": "met",
+        "mt_A": "MTA",
+        "mt_H": "MTH",
+        "m_H": "MH",
+        "MET": "MET",
     }
 
     def __init__(self, set_params: dict):
@@ -444,10 +445,10 @@ class Sample():
 
     def _get_raw_twod_inputs(self):
         met = self.tree["MET"][self.sel]
-        amt = self.tree["A_mt"][self.sel]
-        hmt = self.tree["H_m"][self.sel]
-        deltam = abs(amt-hmt)
-        return [met, deltam]
+        amt = self.tree["mt_A"][self.sel]
+        hm = self.tree["m_H"][self.sel]
+        deltam = abs(amt-hm)
+        return [met, hm]
 
     def _build_histogram(self, inputs, weights, check_weights=False):
         if self.svar == "ellipses" and "SR" in self.region:
@@ -629,9 +630,9 @@ class Binner():
             "slimmedMuonsUSER.m_pt_1": np.linspace(20, 550, 16),
             "slimmedMuonsUSER.m_pt_2": np.linspace(20, 550, 16),
             "z_mass_reco": np.linspace(40, 140, 16),
-            "A_mt": np.append(np.linspace(500,1800,13),10000),
-            "H_mt": np.append(np.linspace(200,1500,13),10000),
-            "H_m": np.append(np.linspace(200,1500,13),10000),
+            "mt_A": np.append(np.linspace(500,1800,13),10000),
+            "mt_H": np.append(np.linspace(200,1500,13),10000),
+            "m_H": np.append(np.linspace(200,1500,13),10000),
             "MET": np.append(np.linspace(170,800,10),10000),
         },
         "CR_lowmet":{
@@ -696,14 +697,14 @@ class Binner():
         loader = NTupleLoader()
         sel = self.signal_sample.sel
         met = loader.nominal_trees[self.year][self.signal]["MET"][sel]
-        amt = loader.nominal_trees[self.year][self.signal]["A_mt"][sel]
-        hmt = loader.nominal_trees[self.year][self.signal]["H_m"][sel]
-        dm = abs(amt - hmt)
+        amt = loader.nominal_trees[self.year][self.signal]["mt_A"][sel]
+        hm = loader.nominal_trees[self.year][self.signal]["m_H"][sel]
+        dm = abs(amt - hm)
         weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel]
 
         ellipses = []
         for n_std in self.binning_map["stddevs_ellipses"]:
-            ell = self._fit_ellipse(met, dm, weights, n_std)
+            ell = self._fit_ellipse(met, hm, weights, n_std)
             ellipses.append(ell)
 
         return ellipses
