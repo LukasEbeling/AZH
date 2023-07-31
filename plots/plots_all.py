@@ -37,10 +37,12 @@ REGIONS = {
 }
 
 OBSERVABLES = {
-    "A_mt": np.linspace(500,1800,13),
-    "H_m": np.linspace(200,1500,13),
-    "H_mt": np.linspace(200,1500,13),
     "MET": np.linspace(170,800,10),
+    "delta_m": np.linspace(200,1500,13),
+    "delta_mt": np.linspace(200,1500,13),
+    "m_H": np.linspace(200,1500,13),
+    "mt_A": np.linspace(500,1800,13),
+    "mt_H": np.linspace(200,1500,13),
     #"jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21),
@@ -149,20 +151,19 @@ def get_sig(region,signal,binning,observable):
 
 def get_xlabel(obs):
     x = {
+        "MET": (r"missing $p_T$ [GeV]","MET"),
+        "m_H": (r"m of H [GeV]","MH"),
+        "mt_A": (r"$m_T$ of A [GeV]","MTA"),
+        "mt_H": (r"$m_T$ of H [GeV]","MTH"),
+        "delta_m": (r"$m_T(A)-m(H)$","DM"),
+        "delta_mt": (r"$m_T(A)-m_T(H)$","DMT"),
         "jetsAk4CHS/jetsAk4CHS.m_pt": (r"$p_{T}(j_{1})$ [GeV]", "Jet1PT"),
         "jetsAk4CHS/jetsAk4CHS.m_phi": (r"$\phi(j_{1})$ [rad]", "Jet1Phi"),
         "jetsAk4CHS/jetsAk4CHS.m_eta": (r"$\eta(j_{1})$", "Jet1Eta"),
-        "A_mt": (r"$m_T$ of A [GeV]","AMT"),
-        "H_mt": (r"$m_T$ of H [GeV]","HMT"),
-        "MET": (r"missing $p_T$ [GeV]","MET"),
         "event_weight": (r"Event Weight","Weight"),
         "W_m": (r"best $W_m$ [GeV]","Wmass"),
         "HT": (r"$H_T$ [GeV]","HT"),
-        "H_m": (r"m of H [GeV]","Hm"),
-        "tight_b": (r"tight b tags", "tightb"),
         "delta_phi": (r"min $\Delta\phi$ [rad]","DeltaPhi"),
-        "b_angle": (r"angle between bs [rad]","BAngle"),
-        "t_angle": (r"angle between tops [rad]","TAngle"),
         "num_leptons": ("number of leptons", "LEP"),
         }
     return x[obs.replace("Puppi", "CHS")]
