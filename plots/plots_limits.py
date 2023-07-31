@@ -93,16 +93,14 @@ class limitLoader():
     
 
 
-def plot_limits():
+def plot_limits(var = "2DEllipses"):
     masses = [(600,400),(750,400),(800,400),(1000,400)]
     
     theory = xsecLoader()
     limits = limitLoader()
-
-    var = "2DEllipses"
     
     tan1 = [theory.get_total(mA,400,1) for mA in range(600,1000,10)]
-    #sr = [limits.get_median(var+"_SR",mA,mH) for mA,mH in masses]
+    ref = [limits.get_median(var+"_ref",mA,mH) for mA,mH in masses]
     down2s = [limits.get_2s_down(var,mA,mH) for mA,mH in masses]
     down1s = [limits.get_1s_down(var,mA,mH) for mA,mH in masses]
     median = [limits.get_median(var,mA,mH) for mA,mH in masses]
@@ -117,13 +115,13 @@ def plot_limits():
     axes.plot(points,median,color="black",marker = "o",label="expected 95% CL")
     axes.fill_between(points, down2s, up2s, color=BRAZILIAN_GOLD, label=r"$2\sigma$")
     axes.fill_between(points, down1s, up1s, color=BRAZILIAN_GREEN, label=r"$1\sigma$")
-    #axes.plot(points,sr,color="blue",label=r"expected SR only")
+    axes.plot(points,ref,color="blue",label=r"ref")
 
     axes.legend()
     plt.xlabel('$m_A$ [GeV] for H@400GeV')
     plt.ylabel('$\sigma \cdot BR$ [pb]')
     axes.set_yscale('log')
-    fig.savefig(ANALYSIS+"plots/limits/limit.png")
+    fig.savefig(ANALYSIS+f"plots/limits/limit_{var}.png")
     plt.close()
 
 def plot_plane():
@@ -149,4 +147,5 @@ def plot_plane():
 
     
 if __name__ == "__main__":
-    plot_limits()
+    plot_limits("2DEllipses")
+    plot_limits("MET")
