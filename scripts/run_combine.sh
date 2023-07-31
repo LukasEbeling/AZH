@@ -14,24 +14,58 @@ preparation() {
 
 combine_cards() {
     local mass=$1
-    local var=$2
+    local sr_var=$2
+    local cr_var=$2
+
+    if [ $sr_var == "2DEllipses"]; then
+        cr_var="MET"
+    fi
 
     echo combining cards for $mass
-    combineCards.py Name1=AZH_${mass}_${var}_inv_SignalRegion.dat \
-        Name2=AZH_${mass}_${var}_inv_CR_0B.dat Name3=AZH_${mass}_met_inv_CR_1L.dat \
-        Name4=AZH_${mass}_${var}_inv_CR_lowmet.dat > AZH_${mass}_${var}.dat
+    combineCards.py \
+        Name1=AZH_${mass}_${sr_var}_inv_SR_6J.dat \
+        Name2=AZH_${mass}_${cr_var}_inv_SR_5J.dat \
+        Name3=AZH_${mass}_${cr_var}_inv_IR_1B_5J.dat  \
+        Name4=AZH_${mass}_${cr_var}_inv_IR_1B_6J.dat  \
+        Name5=AZH_${mass}_${cr_var}_inv_IR_0B_5J.dat  \
+        Name6=AZH_${mass}_${cr_var}_inv_IR_0B_6J.dat  \
+        Name7=AZH_${mass}_${cr_var}_inv_LR_2B_5J.dat  \
+        Name8=AZH_${mass}_${cr_var}_inv_LR_2B_6J.dat  \
+        Name9=AZH_${mass}_${cr_var}_inv_LR_1B_5J.dat  \
+        Name10=AZH_${mass}_${cr_var}_inv_LR_1B_6J.dat  \
+        Name11=AZH_${mass}_${cr_var}_inv_LR_0B_5J.dat  \
+        Name12=AZH_${mass}_${cr_var}_inv_LR_0B_6J.dat > AZH_${mass}_${sr_var}.dat           
 }
-
 
 calculate_limit() {
     local mass=$1
     local var=$2
 
     echo AsymptoticLimits for $mass
-    combine -M AsymptoticLimits -m 125 --run blind -d ${path}AZH_${mass}_${var}_inv_SignalRegion.dat \
-        --rMin -1 --rMax 1| grep Expected &> ${path}expected_${mass}_${var}_SR.log
     combine -M AsymptoticLimits -m 125 --run blind -d ${path}AZH_${mass}_${var}.dat \
         --rMin -1 --rMax 1| grep Expected &> ${path}expected_${mass}_${var}.log
+}
+
+calculate_limit_sronly() {
+    local mass=$1
+    local var=$2
+
+    echo AsymptoticLimits for $mass
+    combine -M AsymptoticLimits -m 125 --run blind -d ${path}AZH_${mass}_${var}_inv_SR_6J.dat \
+        --rMin -1 --rMax 1| grep Expected &> ${path}expected_${mass}_${var}_SR6J.log
+}
+
+reference_limit(){
+    local mass=$1
+    local var=$2
+
+    combineCards.py \
+        Name1=AZH_${mass}_${var}_inv_SR_6J.dat \
+        Name2=AZH_${mass}_${var}_inv_IR_0B_6J.dat  \
+        Name3=AZH_${mass}_${var}_inv_LR_2B_6J.dat > AZH_${mass}_${var}_ref.dat 
+
+    combine -M AsymptoticLimits -m 125 --run blind -d ${path}AZH_${mass}_${var}_ref.dat \
+        --rMin -1 --rMax 1| grep Expected &> ${path}expected_${mass}_${var}_ref.log     
 }
 
 
@@ -59,15 +93,16 @@ plot_impacts() {
     plotImpacts.py -i impacts_${mass}_${var}.json -o impacts_${mass}_${var}
 }
 
-
-
 preparation
 combine_cards $1 $2
 calculate_limit $1 $2
+reference_limit $1 $2
+calculate_limit_sronly $1 $2
 
 if [ "$3" = "impacts" ]; then
     create_workspaces $1 $2
     plot_impacts $1 $2
 fi
+
 
 #exampe run_combine.sh 1000_400 2DEllipses (impatcs)
