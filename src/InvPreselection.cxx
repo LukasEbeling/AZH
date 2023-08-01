@@ -8,25 +8,24 @@
 
 #include "UHH2/common/include/CleaningModules.h"
 #include "UHH2/common/include/CommonModules.h"
-#include "UHH2/common/include/ElectronHists.h"
-#include "UHH2/common/include/ElectronIds.h"
-#include "UHH2/common/include/JetHists.h"
-#include "UHH2/common/include/JetIds.h"
+//#include "UHH2/common/include/ElectronHists.h"
+#include "UHH2/common/include/JetHists.h" //For BTag efficiency hist
 #include "UHH2/common/include/NSelections.h"
 #include "UHH2/common/include/Utils.h"
-
+#include "UHH2/common/include/JetIds.h"
+#include "UHH2/common/include/ElectronIds.h"
+#include "UHH2/common/include/MuonIds.h"
 #include "UHH2/common/include/MCWeight.h"
 #include "UHH2/common/include/PSWeights.h"
 
 #include "UHH2/AZH/include/AtoZHHists.h"
 #include "UHH2/AZH/include/JetCleaner.h"
-#include "UHH2/AZH/include/MetFilters.h"
+//#include "UHH2/AZH/include/MetFilters.h"
 #include "UHH2/AZH/include/NormalisationTools.h"
 #include "UHH2/AZH/include/RochesterCorrections.h"
 #include "UHH2/AZH/include/ScaleFactors.h"
 #include "UHH2/AZH/include/Utils.h"
-#include "UHH2/common/include/ElectronIds.h"
-#include "UHH2/common/include/MuonIds.h"
+#include "UHH2/AZH/include/METTriggers.h"
 
 
 using namespace std;
@@ -48,10 +47,7 @@ class InvPreselection: public AnalysisModule {
     Year year;
     const JetId jet_id = AndId<Jet>(PtEtaCut(30, 2.4), JetPFID(JetPFID::WP_TIGHT_LEPVETO_CHS));
     MuonId muonId_loose;
-    ElectronId electronId_loose;
-
-    // Selection niherits from AnalysisModule as it uses passes() and process()
-    std::unique_ptr<AnalysisModule> s_metFilters;
+    ElectronId electronId_loose;  
 
     // Handles
     uhh2::Event::Handle<double> handle_event_weight;
@@ -73,6 +69,7 @@ class InvPreselection: public AnalysisModule {
     std::unique_ptr<CommonModules> common_modules;
     std::unique_ptr<AnalysisModule> clnr_jetpuid;
     std::unique_ptr<Selection> s_njet_five;
+    std::unique_ptr<METTriggers> s_met_trigger;
 
     // Event Weighting
     unique_ptr<HEMSelection> sel_hem;
@@ -105,7 +102,7 @@ InvPreselection::InvPreselection(Context & ctx){
 
   // Selections
   s_njet_five.reset(new NJetSelection(5));
-  s_metFilters.reset(new METFilters(ctx));
+  s_met_trigger.reset(new METTriggers(ctx));
 
   // Event Weighting
   sel_hem.reset(new HEMSelection(ctx));
@@ -153,6 +150,33 @@ bool InvPreselection::process(Event & event) {
   
   event.set(handle_origin_weight,event.weight);
 
+  if (is_mc) h_unc_norm->fill(event);
+  
+  // Apply Jet corrections
+  bool passes_common = common_modules->process(event);
+  if (!passes_common) { return false; }
+
+  // Apply rochester corrections before ID'ing muons
+  rochester->process(event);
+
+  //Lepton Cleaning
+  clean_collection(*event.muons, event, muonId_loose);
+  clean_collection(*event.electrons, event, electronId_loose);  
+
+  // Jet PU ID, to be applied on JEC corrected jets
+  // JECs in common_modules, hence here PU ID
+  bool pileup_cleaned = clnr_jetpuid->process(event);
+  if (!pileup_cleaned) {return false;}
+
+  //HEM issue
+  if(sel_hem->passes(event)) {
+    if(event.isRealData) return false;
+    else event.weight *= (1. - sel_hem->GetAffectedLumiFraction());
+  }  
+
+  // Trigger Selection
+  if (!(s_met_trigger->passes(event))) return false;
+
   // Event Weighting
   sf_lumi->process(event);
   sf_pileup->process(event);
@@ -162,29 +186,6 @@ bool InvPreselection::process(Event & event) {
   sf_QCDScaleVar->process(event);
   pdf_weights->process(event);
   ps_weights->process(event);
-  
-  if(sel_hem->passes(event)) {
-    if(event.isRealData) return false;
-    else event.weight *= (1. - sel_hem->GetAffectedLumiFraction());
-  }  
-  
-  if (is_mc) h_unc_norm->fill(event);
-
-  // Apply rochester corrections before ID'ing muons
-  rochester->process(event);
-  
-  //Lepton Cleaning
-  clean_collection(*event.muons, event, muonId_loose);
-  clean_collection(*event.electrons, event, electronId_loose);
-  
-  // Jet PU ID, to be applied on JEC corrected jets
-  // JECs in common_modules, hence here PU ID
-  bool pileup_cleaned = clnr_jetpuid->process(event);
-  if (!pileup_cleaned) {return false;}
-
-  // Apply Jet corrections
-  bool passes_common = common_modules->process(event);
-  if (!passes_common) { return false; }
 
   h_baseline->fill(event);
 
