@@ -15,7 +15,6 @@
 #include "UHH2/AZH/include/ScaleFactors.h"
 #include "UHH2/AZH/include/HiggsReco.h"
 #include "UHH2/AZH/include/AtoZHHists.h"
-#include "UHH2/AZH/include/METTriggers.h"
 #include "UHH2/AZH/include/Utils.h"
 
 using namespace std;
@@ -36,7 +35,6 @@ class InvReconstruction : public AnalysisModule{
 
   //Handles
   Event::Handle<int> handle_region;
-  Event::Handle<int> handle_triggered;
   Event::Handle<double> handle_sum_pt;
   Event::Handle<double> handle_delta;
   Event::Handle<double> handle_weight;
@@ -66,7 +64,6 @@ class InvReconstruction : public AnalysisModule{
   std::unique_ptr<Selection> s_njet_six;
   std::unique_ptr<Selection> s_bjet_one;
   std::unique_ptr<Selection> s_bjet_two;
-  std::unique_ptr<METTriggers> s_met_trigger;
 
   //Other Fields
   std::unique_ptr<HiggsReconstructor> higgs_reconstructor;
@@ -83,7 +80,6 @@ InvReconstruction::InvReconstruction(Context& ctx){
   s_njet_six.reset(new NJetSelection(6));
   s_bjet_one.reset(new NJetSelection(1,1,bmedium));
   s_bjet_two.reset(new NJetSelection(2,-1,bmedium));
-  s_met_trigger.reset(new METTriggers(ctx));
 
   h_base.reset(new SimpleHist(ctx, "CutFlow_Baseline"));
   h_met.reset(new SimpleHist(ctx, "CutFlow_MET>170"));
@@ -101,7 +97,6 @@ InvReconstruction::InvReconstruction(Context& ctx){
   handle_region = ctx.declare_event_output<int>("region");
   handle_sum_pt = ctx.declare_event_output<double>("HT");
   handle_delta = ctx.declare_event_output<double>("delta_phi");
-  handle_triggered = ctx.declare_event_output<int>("triggered");
   handle_met = ctx.declare_event_output<double>("MET");
   handle_A_mt = ctx.declare_event_output<double>("mt_A");
   handle_H_mt = ctx.declare_event_output<double>("mt_H");
@@ -155,10 +150,6 @@ bool InvReconstruction::process(Event& event){
   double HT = 0;
   for(Jet jet: *event.jets){HT += jet.pt();}
 
-  int triggered = 0;
-  if (s_met_trigger->passes(event)) triggered = 1;
-
-  event.set(handle_triggered,triggered);
   event.set(handle_sum_pt,HT);
   event.set(handle_delta,DeltaPhi(event));
   event.set(handle_met,event.met->pt());
