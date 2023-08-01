@@ -15,7 +15,7 @@ svars:
   - MET
   - m_H
   - mt_A
-  - mt_H
+  #- mt_H
 
 
 branches:
@@ -46,22 +46,22 @@ variations:
   weight_pdf: ["", "_up", "_down"]
 
 sample_variations:
-  #Absolute: ["_up", "_down"]
+  foo: []
 
 sample_var_whitelist:
-  Total: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  Absolute: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  Absolute_YEAR: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  BBEC1: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  BBEC1_YEAR: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  EC2: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  EC2_YEAR: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  FlavorQCD: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  HF: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  HF_YEAR: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  RelativeBal: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  RelativeSample_YEAR: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
-  jer: ["AtoZH", "ZJets", "TT", "TTZ", "SingleTop", "TTW", "VV", "WJets", "QCD"]
+  Total: "ALL PROCESSES"
+  foo: "ALL PROCESSES"
+  Absolute_YEAR: "ALL PROCESSES"
+  BBEC1: "ALL PROCESSES"
+  BBEC1_YEAR: "ALL PROCESSES"
+  EC2: "ALL PROCESSES"
+  EC2_YEAR: "ALL PROCESSES"
+  FlavorQCD: "ALL PROCESSES"
+  HF: "ALL PROCESSES"
+  HF_YEAR: "ALL PROCESSES"
+  RelativeBal: "ALL PROCESSES"
+  RelativeSample_YEAR: "ALL PROCESSES"
+  jer: "ALL PROCESSES"
   hdamp: ["TT"]
   TuneCP5: ["TT"]
 
