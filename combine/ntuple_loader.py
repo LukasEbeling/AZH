@@ -3,10 +3,8 @@ import os
 import re
 
 import pyarrow.parquet as pq
-import numpy as np
 
 from config import Configurator
-import utils
 
 
 CMSSW_BASE = os.environ.get('CMSSW_BASE')
@@ -25,28 +23,21 @@ class NTupleLoader(BorgNTupleLoader):
     UHH_OUTPUT_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/data/output_02_reconstruction/")
 
     def __init__(self, signal: str = ""):
+        # Makse NTupleLoader Singleton
         BorgNTupleLoader.__init__(self)
         if self._shared_state:
             return
 
-        self.config = Configurator()
-        ul_years = utils.split_ul16(self.config.years)
-        if signal:
-            self.samples = [signal] + self.config.backgrounds
-        else:
-            self.samples = self.config.samples
-        self.nominal_trees = {year: {} for year in ul_years}
-        self.sample_vars = {year: {} for year in ul_years}
+        self.config = Configurator(signal)
+        self.nominal_trees = {year: {} for year in self.config.years}
+        self.sample_vars = {year: {} for year in self.config.years}
 
         self.vars_to_load = self.config.svars + self.config.branches
 
-        for s in self.samples:
+        for s in self.config.samples:
             self.load_trees(s)
             self.load_sample_vars(s)
         self.load_data()
-
-        if "UL16" in self.config.years:
-            self.merge_16_pre_post()
 
     def _tree_to_np_array(self, x):
         # This is the case in which the observable
@@ -69,9 +60,11 @@ class NTupleLoader(BorgNTupleLoader):
                 self.nominal_trees[year]["data"][key] = pq_table["foo"].to_numpy()
 
     def load_sample_vars(self, sample):
-        if self.config.sample_variations is None: return #remove line later
 
         for year in self.sample_vars:
+            # Uncomment the following lines to produce jet related cards
+            # if not self.sample_vars[year]:
+            #     continue
             print(f"Loading Jet Variations {year} {sample}")
             relevant_vars = {
                 x: y for x, y in
@@ -81,13 +74,11 @@ class NTupleLoader(BorgNTupleLoader):
             sample_variations = [x + xvar for x, xvars in relevant_vars.items() for xvar in xvars]
             self.sample_vars[year][sample] = {vari: {} for vari in sample_variations}
 
-            base_path = os.path.join(self.UHH_OUTPUT_PATH, "MC", year, f"MC.{sample}_{year}")
             for variation in sample_variations:
                 print("  >> " + variation)
-                fpath = base_path + '_' + variation + ".root"
-                self.set_sample_var_fields(year, sample, fpath, variation)
+                self.set_sample_var_fields(year, sample, variation)
 
-    def set_sample_var_fields(self, year, sample, fpath, variation):
+    def set_sample_var_fields(self, year, sample, variation):
         for x in self.vars_to_load:
             key = self._tree_to_np_array(x)
             pq_table = pq.read_table(f"cache/mc_{year}_{sample}_{variation}_{key}.parquet")
@@ -116,38 +107,3 @@ class NTupleLoader(BorgNTupleLoader):
                 branch_name = re.sub(r"_[ab]{1}$", "", branch_name)
                 pq_table = pq.read_table(f"cache/mc_{year}_{sample}_variation_{branch}.parquet")
                 self.nominal_trees[year][sample][branch] = pq_table["foo"].to_numpy()
-
-    def merge_16_pre_post(self):
-
-        def concat_sample_var(sample, variation, x):
-            return np.concatenate(
-                (self.sample_vars["UL16preVFP"][sample][variation][x],
-                 self.sample_vars["UL16postVFP"][sample][variation][x])
-            )
-
-        def concat_nominal(sample, x):
-            return np.concatenate(
-                (self.nominal_trees["UL16preVFP"][sample][x],
-                 self.nominal_trees["UL16postVFP"][sample][x])
-            )
-
-        self.nominal_trees["UL16"] = {}
-        self.sample_vars["UL16"] = {}
-
-        # Concatenate Nominal Trees
-        for sample in self.nominal_trees["UL16preVFP"].keys():
-            self.nominal_trees["UL16"][sample] = {}
-            for x in list(self.nominal_trees["UL16preVFP"][sample].keys()):
-                pq_table = pq.read_table(f"cache/mc_UL16_{sample}_nominal_{x}.parquet")
-                self.nominal_trees["UL16"][sample][x] = pq_table["foo"].to_numpy()
-
-        for sample in self.samples:
-            # Concatenate Jet Variations
-            self.sample_vars["UL16"][sample] = {}
-
-            for variation in self.sample_vars["UL16preVFP"][sample].keys():
-                self.sample_vars["UL16"][sample][variation] = {}
-                for x in self.sample_vars["UL16preVFP"][sample][variation].keys():
-                    print(sample, variation, x)
-                    pq_table = pq.read_table(f"cache/mc_UL16_{sample}_{variation}_{x}.parquet")
-                    self.sample_vars["UL16"][sample][variation][x] = pq_table["foo"].to_numpy()
