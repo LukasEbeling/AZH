@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 import numpy as np
 
+sys.path.append("../plots/")
 import plot_utils  # noqa
 
 
@@ -93,11 +94,14 @@ class EllipticalHistPlotter():
             fontsize=20
         )
         ax.tick_params(axis='both', which='major', labelsize=18)
+        ul_year = sample_set.set_params["year"]
         fname_out = os.path.join(
             OUTPUT_PATH,
             "ellipses_"
             + sample_set.samples["signal"].sample
-            + sample_set.set_params["channel"]
+            + "_"
+            + sample_set.set_params["region"]
+            + f"_{ul_year}"
         )
         plt.savefig(fname_out + ".png")
         plt.savefig(fname_out + ".pdf")
@@ -116,7 +120,7 @@ class EllipticalHistPlotter():
 
         plot_meta = plot_utils.PlotMeta()
 
-        fig, ax = self._plot_skeleton(sample_set.set_params["year"])
+        fig, ax = self._plot_skeleton(ul_year=sample_set.set_params["year"])
         ax2 = ax.twinx()
         ax2.hist(bins[:-1], bins=bins, weights=sgnl,
                  label=sample_set.samples["signal"].sample, histtype='step', linewidth=3,
@@ -125,15 +129,19 @@ class EllipticalHistPlotter():
         ax2.tick_params(axis='y', labelcolor=self.sgnl_color)
         ax.set_ylabel("# Background Events", size=30)
         ax.set_xlabel("Standard Deviations", size=30)
+        #bins = [i for i in range(len(bins))] if "overflow" in bins else bins
         ax.hist([[x - .01 for x in bins[1:]] for _ in bkgs], bins=bins, weights=bkgs,
                 label=bkg_labels, stacked=True,
                 color=plot_meta.colors(bkg_labels))
         ax.legend(loc="lower left")
         fig.tight_layout()
+        ul_year = sample_set.set_params["year"]
         fname_out = os.path.join(
             OUTPUT_PATH, "unrolled_bins_"
             + sample_set.samples["signal"].sample
-            + sample_set.set_params["channel"]
+            + "_"
+            + sample_set.set_params["region"]
+            + f"_{ul_year}"
         )
         plt.savefig(fname_out + ".png")
         plt.savefig(fname_out + ".pdf")
