@@ -18,29 +18,10 @@ class UHH2ToCombineFactory():
     the creation of all desired sample sets.
     """
 
-    CHANNELS_REGIONS = {
-        "inv": ["SR_6J", 
-                "SR_5J", 
-                "IR_1B_5J", 
-                "IR_1B_6J",
-                "IR_0B_5J",
-                "IR_0B_6J",
-                "LR_2B_5J",
-                "LR_2B_6J",
-                "LR_1B_5J",
-                "LR_1B_6J",
-                "LR_0B_5J",
-                "LR_0B_6J"
-                ]
-    }
 
     def __init__(self, signal: str = ""):
-        config = Configurator()
+        config = Configurator(signal)
         if signal:
-            signal = "AZH_" + signal
-            print(signal)
-            config.signals = [signal]
-            config.samples = [signal] + config.backgrounds
             self.loader = NTupleLoader(signal)
 
         svars = list(map(utils.collection_key, config.svars))
@@ -55,25 +36,45 @@ class UHH2ToCombineFactory():
                 }
             )
             for sgnl in config.signals
-            for channel in self.CHANNELS_REGIONS
-            for region in self.CHANNELS_REGIONS[channel]
+            for channel in ["inv"]
+            for region in REGION_ID_MAP.keys()
             for year in config.years
-            #for svar in svars
             for svar in svars + ["ellipses"]
             #if utils.is_valid_set(channel, region, svar)
         }
 
-    def run_factory(self):
+    def _run_sr_ellipses_in_crs(self):
         # First iteration without 2D CRs
+        for set_name, sample_set in self.sample_sets.items():
+            in_signal_region = ("SR" in sample_set.set_params["region"])
+            no_2d_binning = ("ellipse" not in sample_set.set_params["svar"])
+            if (no_2d_binning or in_signal_region):
+                sample_set.set_sample_bins()
+                sample_set.create_hists_and_save_file()
+        # Second iteration only 2D CRs fetching the ellipses from
+        # SR sample sets that are already finished
+        for set_name, sample_set in self.sample_sets.items():
+            in_control_region = ("SR" not in sample_set.set_params["region"])
+            elliptical_binning = ("ellipse" in sample_set.set_params["svar"])
+            if (elliptical_binning and in_control_region):                
+                control_region = sample_set.set_params["region"]
+                signal_region = "SR_5J" if "5J" in control_region else "SR_6J"                
+                sr_set_name = set_name.replace(control_region, signal_region) 
+                ellipses = self.sample_sets[sr_set_name].set_binning
+                sample_set.set_sample_bins(ellipses)
+                sample_set.create_hists_and_save_file()
+
+    def _run_simple(self):
         for set_name, sample_set in self.sample_sets.items():
             sample_set.set_sample_bins()
             sample_set.create_hists_and_save_file()
-        #If binning exists already:
-        #ellipses = self.sample_sets[set_name].set_binning
-        #sample_set.set_sample_bins(ellipses)
-
+    
+    def run_factory(self):
+        self._run_sr_ellipses_in_crs()
+        #or self._run_simpe()
+ 
     def plot_elliptical_binnings(self):
-        samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses" and "SR" in x.set_params["region"]]
+        samples = [x for x in self.sample_sets.values() if x.set_params["svar"] == "ellipses"]
         ell_hist_plotter = EllipticalHistPlotter(samples)
         ell_hist_plotter.plot()
 
