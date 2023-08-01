@@ -1,8 +1,49 @@
 import copy
+import os
 
 import matplotlib.patches as mpatches
 import numpy as np
 import scipy.integrate as integrate
+
+
+CMSSW_BASE = os.environ.get('CMSSW_BASE')
+
+ELLIPSE_X = "MET"
+ELLIPSE_Y = "m_H"
+
+REGION_ID_MAP = {
+    "SR_6J" : 0,
+    "SR_5J" : 1, 
+    "IR_1B_5J" : 11,
+    "IR_1B_6J" : 12,
+    "IR_0B_5J" : 13,
+    "IR_0B_6J" : 14,
+    "LR_2B_5J" : 15,  
+    "LR_2B_6J" : 16,
+    "LR_1B_5J" : 17,
+    "LR_1B_6J" : 18,
+    "LR_0B_5J" : 19,
+    "LR_0B_6J" : 20,
+}
+
+OUTPUT_MAP = {
+        "z_pt_reco": "ZPT",
+        "ellipses": "2DEllipses",
+        "jetsAk4CHS/jetsAk4CHS.m_phi_1": "Jet1Phi",
+        "jetsAk4CHS/jetsAk4CHS.m_pt_1": "Jet1Pt",
+        "jetsAk4CHS/jetsAk4CHS.m_pt_2": "Jet2Pt",
+        "jetsAk4CHS/jetsAk4CHS.m_pt_3": "Jet3Pt",
+        "jetsAk4CHS/jetsAk4CHS.m_pt_4": "Jet4Pt",
+        "slimmedElectronsUSER.m_pt_1": "Elec1Pt",
+        "slimmedElectronsUSER.m_pt_2": "Elec2Pt",
+        "slimmedMuonsUSER.m_pt_1": "Muon1Pt",
+        "slimmedMuonsUSER.m_pt_2": "Muon2Pt",
+        "z_mass_reco": "ZMass",
+        "mt_A": "MTA",
+        "mt_H": "MTH",
+        "m_H": "MH",
+        "MET": "MET",
+    }
 
 
 class Ellipse():
@@ -65,38 +106,14 @@ class Ellipse():
             self.rescale_axes(f_scale)
             pct_in = self.pct_points_in(x_vals, y_vals, weights)
             if i > 1900:
-                print(target - pct_in)
+                print("Over 1900: ", target - pct_in)
             if pct_in < 1e-4:
                 f_scale = 2
             else:
-                f_scale = (target / pct_in) ** 0.1
+                f_scale = (target / pct_in) ** 0.5
 
             assert (i < 2000), "Rescaling got stuck"
             i += 1
-
-
-CHANNEL_ID_MAP = {
-    "diMuon": 13**2,
-    "diElectron": 11**2,
-    "ElectronMuon": 11 * 13,
-    "inv": 12 * 12
-}
-
-
-REGION_ID_MAP = {
-    "SR_6J" : 0,
-    "SR_5J" : 1, 
-    "IR_1B_5J" : 11,
-    "IR_1B_6J" : 12,
-    "IR_0B_5J" : 13,
-    "IR_0B_6J" : 14,
-    "LR_2B_5J" : 15,  
-    "LR_2B_6J" : 16,
-    "LR_1B_5J" : 17,
-    "LR_1B_6J" : 18,
-    "LR_0B_5J" : 19,
-    "LR_0B_6J" : 20,
-}
 
 
 def normal_distribution(x: float):
@@ -170,4 +187,3 @@ def is_valid_set(channel, region, svar):
             and (svar[-1] == '2' or svar[-3] == '2')
         )
     )
-
