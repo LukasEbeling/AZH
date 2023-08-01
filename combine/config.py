@@ -2,8 +2,7 @@
 import os
 import yaml
 
-
-CMSSW_BASE = os.environ.get("CMSSW_BASE")
+from utils import CMSSW_BASE
 
 
 class Borg():
@@ -16,42 +15,89 @@ class Borg():
 
 class Configurator(Borg):
 
-    def __init__(self):
+    def __init__(self, signal: str = ""):
+        # Make Configuration Singleton
         Borg.__init__(self)
-
         if self._shared_state:
             return
 
+        self.signal = signal
         with open(os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/config.yaml"), 'r') as f:
             config_dict = yaml.safe_load(f)
+        self.config_dict = config_dict
+
+    @property
+    def years(self):
+        return self.config_dict["years"]
+
+    @property
+    def signals(self):
+        if self.signal:
+            return ["AZH_" + self.signal]
+
         with open(os.path.join(CMSSW_BASE, "src/UHH2/AZH/config/signals.txt"), 'r') as f:
-            self.signals = [f"AZH_{line}".removesuffix("\n").replace("MA-","").replace("MH-","") for line in f]
-            
-        self.years = config_dict["years"]
-        self.backgrounds = config_dict["backgrounds"]
-        self.samples = self.signals + self.backgrounds
-        self.svars = config_dict["svars"]
-        self.branches = config_dict["branches"]
-        self.region_branch = config_dict["region_branch"]
-        self.variations = config_dict["variations"]
-        self.sample_variations = config_dict["sample_variations"]
-        self.sample_var_whitelist = config_dict["sample_var_whitelist"]
-        for jes_variation in ["Total", "Absolute", "Absolute_YEAR", "BBEC1", "BBEC1_YEAR", "EC2", "EC2_YEAR", "FlavorQCD", "HF", "HF_YEAR", "RelativeBal", "RelativeSample_YEAR"]:
-            self.sample_var_whitelist[jes_variation] = config_dict["sample_var_whitelist"][jes_variation] + self.signals
-        self.sample_var_whitelist["jer"] = config_dict["sample_var_whitelist"]["jer"] + self.signals
-        self.angle_cut_on = config_dict["angle_cut"]["active"]
-        self.angle_cut_signal_efficiency = config_dict["angle_cut"]["signal_efficiency"]
-        self.dnn_cut_on = config_dict["dnn_cut"]["active"]
-        self.dnn_cut_signal_efficiency = config_dict["dnn_cut"]["signal_efficiency"]
+            return [f"AZH_{line}".removesuffix("\n").replace("MA-","").replace("MH-","") for line in f]
+
+    @property
+    def backgrounds(self):
+        return self.config_dict["backgrounds"]
+
+    @property
+    def samples(self):
+        return self.signals + self.backgrounds
+
+    @property
+    def svars(self):
+        return self.config_dict["svars"]
+
+    @property
+    def branches(self):
+        return self.config_dict["branches"]
+
+    @property
+    def region_branch(self):
+        return self.config_dict["region_branch"]
+
+    @property
+    def variations(self):
+        return self.config_dict["variations"]
+
+    @property
+    def sample_variations(self):
+        return self.config_dict["sample_variations"]
+
+    @property
+    def sample_var_whitelist(self):
+        sample_var_whitelist = self.config_dict["sample_var_whitelist"]
+        for sample_variation in sample_var_whitelist:
+            if sample_var_whitelist[sample_variation] == "ALL PROCESSES":
+                sample_var_whitelist[sample_variation] = self.samples + ["DYJets", "AtoZH"]
+        return sample_var_whitelist
+
+    @property
+    def angle_cut_on(self):
+        return self.config_dict["angle_cut"]["active"]
+
+    @property
+    def angle_cut_signal_efficiency(self):
+        return self.config_dict["angle_cut"]["signal_efficiency"]
+
+    @property
+    def dnn_cut_on(self):
+        return self.config_dict["dnn_cut"]["active"]
+
+    @property
+    def dnn_cut_signal_efficiency(self):
+        return self.config_dict["dnn_cut"]["signal_efficiency"]
 
 
 if __name__ == "__main__":
     c = Configurator()
+    print(c.variations)
     print("Signals: ", c.signals)
     print("Backgrounds: ", c.backgrounds)
     print("Years: ", c.years)
     print(c.svars)
-    print(c.variations)
     print(c.angle_cut_on)
     print(c.angle_cut_signal_efficiency)
     print(c.dnn_cut_on)
