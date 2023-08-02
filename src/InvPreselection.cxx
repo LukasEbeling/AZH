@@ -78,6 +78,7 @@ class InvPreselection: public AnalysisModule {
     unique_ptr<AnalysisModule> sf_l1prefiring;
     unique_ptr<AnalysisModule> sf_vjets;
     unique_ptr<AnalysisModule> sf_mtop;
+    unique_ptr<AnalysisModule> sf_puid;
     unique_ptr<MCScaleVariation> sf_QCDScaleVar;
     unique_ptr<PSWeights> ps_weights;
     unique_ptr<AnalysisModule> pdf_weights;
@@ -112,6 +113,7 @@ InvPreselection::InvPreselection(Context & ctx){
   sf_vjets.reset(new VJetsReweighting(ctx));
   sf_mtop.reset(new TopPtReweighting(ctx, string2bool(ctx.get("apply_TopPtReweighting"))));
   sf_QCDScaleVar.reset(new MCScaleVariation(ctx));
+  sf_puid.reset(new PUIDScaleFactors(ctx));
   pdf_weights.reset(new PDFWeightHandleProducer(ctx)); 
   ps_weights.reset(new PSWeights(ctx));
 
@@ -184,6 +186,7 @@ bool InvPreselection::process(Event & event) {
   sf_vjets->process(event);
   sf_mtop->process(event); 
   sf_QCDScaleVar->process(event);
+  sf_puid->process(event);
   pdf_weights->process(event);
   ps_weights->process(event);
 
