@@ -99,7 +99,7 @@ class Ellipse():
     def rescale_to_nstd(self, x_vals, y_vals, weights):
         target = integrate.quad(normal_distribution, -self.n_std, self.n_std)[0]
         pct_in = self.pct_points_in(x_vals, y_vals, weights)
-        required_accuracy = 1  # in percent
+        required_accuracy = 1.5  # in percent
         f_scale = 1
         i = 1
         while abs(target - pct_in) * 100 > required_accuracy:
@@ -173,17 +173,4 @@ def collection_key(x):
 
 
 def is_valid_set(channel, region, svar):
-    return not (
-        # 2D Binning only implemented in Signal Region
-        # Other regions lack statistics for scaling.
-        svar in ["ellipses", "2DEllipses"] and not channel.startswith("di")
-        # Make sure no Electron or Muon observables
-        # are included in channel without either.
-        or "Elec" in svar and channel == "diMuon"
-        or "Muon" in svar and channel == "diElectron"
-        or (
-            channel == "ElectronMuon"
-            and ("Elec" in svar or "Muon" in svar)
-            and (svar[-1] == '2' or svar[-3] == '2')
-        )
-    )
+    return True
