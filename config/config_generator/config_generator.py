@@ -60,13 +60,13 @@ class ConfigFactory():
         self.year = args.year
         self.step = args.analysis_step
         self.is_data = args.data
-        self.is_uhh_dataset = (self.step == "Preselection")
         self.data_type = "DATA" if self.is_data else "MC"
         self.mc_helper = MCSampleValuesHelper()
         self.jes_variation = var["jes"]
         self.jer_variation = var["jer"]
         self.params = None
         self.samples = None
+        self.signals = None
         self.output_fname = None
         self.target_lumis = None
         self.output_dirs = None
@@ -138,23 +138,6 @@ class ConfigFactory():
         etree.SubElement(self.config.xml_job_config, "Package", pkg_element)
         self.config.xml_cycle = etree.SubElement(self.config.xml_job_config, "Cycle", cycle_attrs)
 
-    @property
-    def input_path(self):
-        if self.step == "Preselection":
-            path_common = "/nfs/dust/cms/user/hundhad/AtoZH_Common/signal_samples/"
-            return os.path.join(path_common, self.year)
-
-        # else the step is "Reconstruction"
-        input_path = os.path.join(
-            CMSSW_BASE,
-            "src/UHH2/AZH/data",
-            "output_01_preselection",
-            self.data_type,
-            self.year
-        )
-
-        return input_path
-
     def load_params(self):
         with open(f"{self.param_file_dir}/params_common.yaml", 'r') as f:
             self.params = yaml.safe_load(f)
@@ -188,15 +171,11 @@ class ConfigFactory():
         return samples
 
     def load_uhh2_dataset_samples(self):
-        with open("../signals.txt", 'r') as f:
-            signal_samples = ["AToZHToLLTTbar_" + x.removesuffix("\n") for x in f]
-
         with open(f"{self.param_file_dir}/uhh_samples_{self.data_type.lower()}.yaml", 'r') as f:
             samples_by_process = yaml.safe_load(f)
 
         samples = [list(map(self.resolve_sample_variations, y)) for y in samples_by_process.values()]
         samples = self.flatten_irregular_list(samples)
-        #samples += signal_samples
 
         if self.is_data:
             samples = []
@@ -206,8 +185,12 @@ class ConfigFactory():
                         samples.append(sample)
 
         samples = self.filter_samples_for_combined_variations(samples)
-
         return samples
+
+    def load_signal_samples(self): 
+        with open("../signals.txt", 'r') as f:
+            signal_samples = ["AToZHToInv_" + x.removesuffix("\n") for x in f]
+            return signal_samples
 
     def load_root_samples(self):
         def root_file_not_empty(fpath):
@@ -232,8 +215,9 @@ class ConfigFactory():
         return samples
 
     def load_samples(self):
-        if self.is_uhh_dataset:
+        if self.step == "Preselection":
             self.samples = self.load_uhh2_dataset_samples()
+            self.signals = self.load_signal_samples()
         else:
             self.samples = self.load_root_samples()
 
@@ -307,11 +291,39 @@ class ConfigFactory():
             etree.SubElement(input_data, "InputTree", {"Name": "AnalysisTree"})
             etree.SubElement(input_data, "OutputTree", {"Name": "AnalysisTree"})
 
+    def generate_signal_input_blocks(self):
+        for sample in self.signals:
+            bare_sample_name = self.get_bare_sample_name(sample)
+            sample_version = self.get_version_from_sample_name(bare_sample_name)
+            lumi = "1"
+            file_name = sample.replace("AToZHToInv_MA-","").replace("MH-","")
+            input_path = f"/nfs/dust/cms/user/ebelingl/samples_inv/{file_name}.root"
+            if not self.is_data:
+                with uproot.open(input_path) as f:
+                    lumi = str(len(f["AnalysisTree/event"].array(library="np")))
+            attrs = {
+                "Lumi": lumi,
+                "NEventsMax": "-1",
+                "Type": self.data_type,
+                "Version": sample_version,
+                "Cacheable": "False"
+            }
+            in_attrs = {
+                'FileName': input_path,
+                'Lumi': '0.0'
+            }
+
+            input_data = etree.SubElement(self.config.xml_cycle, "InputData", attrs)
+            etree.SubElement(input_data, "In", in_attrs)
+            etree.SubElement(input_data, "InputTree", {"Name": "AnalysisTree"})
+            etree.SubElement(input_data, "OutputTree", {"Name": "AnalysisTree"})
+
     def generate_input_data_blocks(self):
-        if self.is_uhh_dataset:
-            return self.generate_uhh_dataset_input_blocks()
+        if self.step == "Preselection":
+            self.generate_uhh_dataset_input_blocks()
+            self.generate_signal_input_blocks()
         else:
-            return self.generate_root_input_blocks()
+            self.generate_root_input_blocks()
 
     def set_custom_user_config_values(self, name, value):
         btag_sf_filenames = {
@@ -414,7 +426,7 @@ class ConfigFactory():
         return entities
 
     def generate_entities(self):
-        if self.is_uhh_dataset:
+        if self.step == "Preselection":
             entities = self.generate_uhh_dataset_entities()
         else:
             entities = ""
@@ -448,21 +460,16 @@ class ConfigFactory():
 
 if __name__ == "__main__":
     args = parse_cmd_arguments()
-    # Build list of the relevant JES and JER variations
-    variations = [
-        {"jes": "", "jer": ""},
-    ]
 
     if args.data:
-        variations = [
-            {"jes": "nominal", "jer": "nominal"},
-        ]
+        variations = [{"jes": "nominal", "jer": "nominal"}]
+
     else:
-        variations = ["nominal", "up", "down"]
         variations = [
             {"jes": v1, "jer": v2}
-            for v1, v2 in itertools.product(variations, repeat=2)
-            if not (v1 != "nominal" and v2 != "nominal")
+            for v1 in ["nominal", "up", "down"]
+            for v2 in ["nominal", "up", "down"]
+            if (v1 == "nominal" or v2 == "nominal")
         ]
 
     # Build config files
