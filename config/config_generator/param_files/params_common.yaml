@@ -37,6 +37,7 @@ user_config:
   ScaleVariationMuR: "nominal"
   VJetsReweighting_do_EWK: "true"
   VJetsReweighting_do_QCD_EWK: "false"
+  VJetsReweighting_do_QCD_LO: "false"
   VJetsReweighting_do_QCD_NLO: "true"
   VJetsReweighting_do_QCD_NNLO: "false"
   apply_TopPtReweighting: "true"
@@ -85,13 +86,13 @@ user_config:
     - 'weight_toppt_applied'
     - 'weight_toppt_b_down'
     - 'weight_toppt_b_up'
-    - 'weight_vjets_EWK'
     - 'weight_vjets_QCD_EWK'
     - 'weight_vjets_QCD_NLO'
+    - 'weight_vjets_QCD_NLO_d1K'
+    - 'weight_vjets_QCD_NLO_d2K'
+    - 'weight_vjets_QCD_NLO_d3K'
     - 'weight_vjets_QCD_NNLO'
     - 'weight_vjets_applied'
-
-
     - 'weight_fsr_2_down'
     - 'weight_fsr_2_up'
     - 'weight_fsr_4_down'
@@ -146,3 +147,10 @@ user_config:
     - 'weight_pu'
     - 'weight_pu_down'
     - 'weight_pu_up'
+    - 'weight_puid_sf'
+    - 'weight_puid_sf_up'
+    - 'weight_puid_sf_down'
+    - 'weight_vjets_EWK'
+    - 'weight_vjets_EWK_d1K'
+    - 'weight_vjets_EWK_d2K'
+    - 'weight_vjets_EWK_d3K'
