@@ -1,3 +1,4 @@
+import pickle
 import os
 import re
 
@@ -11,11 +12,7 @@ import json
 from config import Configurator
 from ntuple_loader import NTupleLoader
 import utils
-from utils import Ellipse, CHANNEL_ID_MAP, REGION_ID_MAP
-
-
-CMSSW_BASE = os.environ.get('CMSSW_BASE')
-RECO_TYPE = "a_minus_h_mass_chi_sq_fixedb"
+from utils import Ellipse, REGION_ID_MAP, ELLIPSE_X, ELLIPSE_Y, CMSSW_BASE
 
 
 class SampleSet():
@@ -24,26 +21,6 @@ class SampleSet():
     is one SampleSet for each unique combination of
     [Signal, Channel, Region, Sensitive Variable]
     """
-
-    OUTPUT_MAP = {
-        "z_pt_reco": "ZPT",
-        RECO_TYPE: "DeltaM",
-        "ellipses": "2DEllipses",
-        "jetsAk4CHS/jetsAk4CHS.m_phi_1": "Jet1Phi",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_1": "Jet1Pt",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_2": "Jet2Pt",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_3": "Jet3Pt",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_4": "Jet4Pt",
-        "slimmedElectronsUSER.m_pt_1": "Elec1Pt",
-        "slimmedElectronsUSER.m_pt_2": "Elec2Pt",
-        "slimmedMuonsUSER.m_pt_1": "Muon1Pt",
-        "slimmedMuonsUSER.m_pt_2": "Muon2Pt",
-        "z_mass_reco": "ZMass",
-        "mt_A": "MTA",
-        "mt_H": "MTH",
-        "m_H": "MH",
-        "MET": "MET",
-    }
 
     def __init__(self, set_params: dict):
         print(f"Initializing {set_params['signal']} "
@@ -59,12 +36,7 @@ class SampleSet():
 
     def create_hists_and_save_file(self):
         self._create_histograms()
-
-        is_sensitive_var_hist = self.set_params["svar"] in ["A_mt","H_mt","H_m","MET","ellipses"]
-        is_signal_channel = self.set_params["channel"] in ["inv"]
-        if is_sensitive_var_hist and is_signal_channel:
-            self._assert_nonzero_backgrounds()
-
+        self._assert_nonzero_backgrounds()
         self._save_output_file()
 
     def set_sample_bins(self, ellipses: Ellipse = None):
@@ -170,7 +142,7 @@ class SampleSet():
                 continue
             bkg_vals += bkg_s.svar_hist[0]
 
-        is_signal_region = ("SR" in self.set_params["region"])
+        is_signal_region = "SR" in self.set_params["region"]
         if not (bkg_vals > 0).all() and not is_signal_region:
             bkg_vals = self._merge_bins(bkg_vals)
 
@@ -192,6 +164,10 @@ class SampleSet():
         # Format postfixes correctly
         v = re.sub(r"pdf_up$", f"pdf_{sname}Up", v)
         v = re.sub(r"pdf_down$", f"pdf_{sname}Down", v)
+        v = re.sub(r"pu_(\w+)", r"pileup_YEAR_\1", v)
+        v = re.sub(r"puid_sf_(\w+)", r"pileupJetID_YEAR_\1", v)
+        v = re.sub(r"btag_bc_(\w+)$", r"btag_bc_YEAR_\1", v)
+        v = re.sub(r"btag_light_(\w+)$", r"btag_light_YEAR_\1", v)
         v = re.sub(r"_up$", "Up", v)
         v = re.sub(r"_d(ow)?n$", "Down", v)
         v = re.sub(r"muf_noneup$", f"muf_{sname}Up", v)
@@ -203,12 +179,12 @@ class SampleSet():
         # Insert "CMS_"
         if "fsr" not in v and "isr" not in v and "pdf" not in v:
             v = re.sub(r"^([a-z]+_)", r"CMS_\1", v)
-        v = re.sub(r"^(pu)", r"CMS_\1", v)
+        v = re.sub(r"^(pileup)", r"CMS_\1", v)
         v = re.sub(r"^(btag)", r"CMS_\1", v)
         v = re.sub(r"^(btag_bc)", r"CMS_\1", v)
         v = re.sub(r"^(btag_light)", r"CMS_\1", v)
         v = re.sub(r"^(btag)_central", r"CMS_\1", v)
-        v = re.sub(r"^(jer)", r"CMS_res_j", v)
+        v = re.sub(r"^(jer)", r"CMS_res_j_YEAR", v)
         v = re.sub(r"^(mur)$", r"CMS_\1", v)
         v = re.sub(r"^(muf)$", r"CMS_\1", v)
         v = re.sub(r"^(murmuf)", r"CMS_\1", v)
@@ -245,6 +221,7 @@ class SampleSet():
         hist.Hist type histogram with correct
         """
         h_yield, h_yield_sq_weights, bin_edges = hist_tuple
+        #if "overflow" in bin_edges: bin_edges = [i for i in range(len(bin_edges))]
         h = hist.Hist.new.Var(bin_edges, name="", label="")
         h = h.Weight()
         h.values()[:] = h_yield
@@ -295,7 +272,7 @@ class SampleSet():
         sgnl = self.set_params["signal"]
         channel = self.set_params["channel"]
         region = self.set_params["region"]
-        svar = self.OUTPUT_MAP[self.set_params["svar"]]
+        svar = utils.OUTPUT_MAP[self.set_params["svar"]]
 
         base_path = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine", self.set_params["year"])
         fpath_met = os.path.join(base_path, f"{sgnl}_{svar}_{channel}_{region}.root")
@@ -405,12 +382,10 @@ class Sample():
 
     def _set_svar_selection_mask(self):
         """
-        Sets self.sel, which is the mask that is used
-        to filter the trees for channel, region and
-        if specified fullfilment of angle, dnn_score requirements.
+        self.tree["region"] -> region of all events in analysistree
+        self.sample_params["region"] -> region currently computed
         """
         is_region = self.tree["region"] == REGION_ID_MAP[self.sample_params["region"]]
-        #is_triggered = self.tree["passes_trigger"] == 1
         self.sel = is_region
 
     def _set_sample_vars_selection_masks(self):
@@ -425,33 +400,19 @@ class Sample():
             self.sample in self.config.sample_var_whitelist[x]
         }
         sample_variations = [x + xvar for x, xvars in relevant_vars.items() for xvar in xvars]
-        ch = CHANNEL_ID_MAP[self.sample_params["channel"]]
         for variation in sample_variations:
-            # Region and Channel Selection
-            is_channel = self.sample_vars[variation]["channel"] == ch
-            is_region = self.sample_vars[variation][self.config.region_branch] == 777
-            if isinstance(REGION_ID_MAP[self.sample_params["region"]], int):
-                is_region = self.sample_vars[variation][self.config.region_branch] == REGION_ID_MAP[self.sample_params["region"]]  # noqa
-            else:
-                for regID in REGION_ID_MAP[self.sample_params["region"]]:
-                    is_region = np.logical_or(
-                        is_region, self.sample_vars[variation][self.config.region_branch] == regID
-                    )
-            self.var_sel[variation] = np.logical_and(is_channel, is_region)
+            # Region Selection
+            is_region = self.tree["region"] == REGION_ID_MAP[self.sample_params["region"]]
+            self.var_sel[variation] = is_region
 
-            # Trigger Selection
-            is_triggered = self.sample_vars[variation]["passes_trigger"] == 1
-            self.var_sel[variation] = np.logical_and(self.var_sel[variation], is_triggered)
 
     def _get_raw_twod_inputs(self):
-        met = self.tree["MET"][self.sel]
-        amt = self.tree["mt_A"][self.sel]
-        hm = self.tree["m_H"][self.sel]
-        deltam = abs(amt-hm)
-        return [met, hm]
+        x = self.tree[ELLIPSE_X][self.sel]
+        y = self.tree[ELLIPSE_Y][self.sel]
+        return [x, y]
 
     def _build_histogram(self, inputs, weights, check_weights=False):
-        if self.svar == "ellipses" and "SR" in self.region:
+        if self.svar == "ellipses":
             return self._build_elliptically_binned_hist_fast(inputs[0], inputs[1], weights)
         else:
             H, bins = np.histogram(inputs, bins=self.bins, weights=weights)
@@ -461,20 +422,16 @@ class Sample():
     def _build_svar_hist(self):
         svar_weights = self.weights[self.sel]
 
-        if self.svar == "ellipses" and "SR" in self.region:
+        if self.svar == "ellipses":
             self.svar_hist = self._build_histogram(self._get_raw_twod_inputs(), svar_weights, check_weights=True)
-        elif self.svar == "ellipses":
-            self.svar_hist = self._build_histogram(self.tree["MET"][self.sel], weights=svar_weights)
         else:
             self.svar_hist = self._build_histogram(self.tree[self.svar][self.sel], weights=svar_weights)
 
     def _build_rms_hists(self):
         nominal, nominal_sq_weights, bins = self.svar_hist
 
-        if self.svar == "ellipses" and "SR" in self.region:
+        if self.svar == "ellipses":
             inputs = self._get_raw_twod_inputs()
-        elif self.svar == "ellipses":
-            inputs = self.tree["MET"][self.sel]
         else:
             inputs = self.tree[self.svar][self.sel]
 
@@ -503,10 +460,8 @@ class Sample():
             self.var_hists[nom_key + xvar + "_dn"] = self._build_histogram(inputs, weights=w_dn)
 
     def _build_var_hists(self):
-        if self.svar == "ellipses" and "SR" in self.region:
+        if self.svar == "ellipses":
             inputs = self._get_raw_twod_inputs()
-        elif self.svar == "ellipses": 
-            inputs = self.tree["MET"][self.sel]
         else:
             inputs = self.tree[self.svar][self.sel]
 
@@ -556,9 +511,9 @@ class Sample():
             sel = self.var_sel[variation]
 
             if self.svar == "ellipses":
-                met = self.sample_vars[variation]["MET"][sel]
-                deltam = self.sample_vars[variation][RECO_TYPE][sel]
-                inputs = [met, deltam]
+                x = self.tree[ELLIPSE_X][self.sel]
+                y = self.tree[ELLIPSE_Y][self.sel]
+                inputs =  [x, y]
             else:
                 inputs = self.sample_vars[variation][self.svar][sel]
 
@@ -603,9 +558,10 @@ class Sample():
     def create_histograms(self):
         self._build_svar_hist()
         if not self.sample == "data":
-            self._build_rms_hists()
+            if "weight_pdf" in self.config.variations:
+                self._build_rms_hists()
             self._build_var_hists()
-            #self._build_sample_var_hists()
+            self._build_sample_var_hists()
 
 
 class Binner():
@@ -617,9 +573,9 @@ class Binner():
 
     binning_map = {
         "stddevs_ellipses": np.array([0.5, 1, 1.5, 2, 2.5, 3]),
+        #"stddevs_ellipses": np.linspace(0.1,3,15),
         "defaults": {
             "z_pt_reco": np.linspace(0, 800, 14),
-            RECO_TYPE: np.linspace(80, 1000, 3),
             "jetsAk4CHS/jetsAk4CHS.m_phi_1": np.linspace(-3, 3, 30),
             "jetsAk4CHS/jetsAk4CHS.m_pt_1": np.linspace(30, 650, 16),
             "jetsAk4CHS/jetsAk4CHS.m_pt_2": np.linspace(30, 650, 16),
@@ -635,8 +591,8 @@ class Binner():
             "m_H": np.append(np.linspace(200,1500,13),10000),
             "MET": np.append(np.linspace(170,800,10),10000),
         },
-        "CR_lowmet":{
-            "MET": np.append(np.linspace(50,150,10),10000),
+        "SR_5J": {
+            "mt_H": [-2,0]
         },
         "CR": {
             "foo": np.linspace(0, 5000, 2),
@@ -651,23 +607,49 @@ class Binner():
         self.region = set_params["region"]
         self.year = set_params["year"]
         self.svar = set_params["svar"]
+        self.tree = signal_sample.tree
+        self.sel = signal_sample.sel
 
     def _get_binning_oned(self):
         try:
             return self.binning_map[self.region][self.svar]
         except KeyError:
-            pass  # Fallback to default for region
+            pass  # Fallback to default for variable
         try:
             return self.binning_map["defaults"][self.svar]
         except KeyError:
-            # Fallback to default for variable
-            return self.binning_map[self.region]["default"]
+            return np.linspace(-10000, 10000, 2)
+
+    def _load_CR_ellipses(self):
+        ellipses = []
+        for n_std in [1, 1.5, 2, 2.5, 3, "overflow"]:
+            with open(f"bkg_ellipses/bkg_ellipse_{n_std}.pickle", "rb") as f:
+                ell = pickle.load(f)
+            ellipses.append(ell)
+        return ellipses
+
+    def _compute_ellipses(self):
+
+        loader = NTupleLoader()
+        sel = self.signal_sample.sel
+        x = self.tree[ELLIPSE_X][self.sel]
+        y = self.tree[ELLIPSE_Y][self.sel]
+        weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel]
+
+        ellipses = []
+        for n_std in self.binning_map["stddevs_ellipses"]:
+            ell = self._fit_ellipse(x, y, weights, n_std)
+            ellipses.append(ell)
+
+        return ellipses
 
     def get_binning(self):
-        if self.svar == "ellipses" and "SR" in self.region:
-            return self._compute_ellipses()
-        elif self.svar == "ellipses" and "SR" not in self.region:
-            return [1,10000]
+        if self.svar == "ellipses":
+            if "SR" in self.region:
+                return self._compute_ellipses()
+            else:
+                #return self._load_CR_ellipses() #pre-generated ellipses required
+                return self._compute_ellipses()
         else:
             return self._get_binning_oned()
 
@@ -691,20 +673,3 @@ class Binner():
         ell.rescale_to_nstd(x, y, w)
 
         return ell
-
-    def _compute_ellipses(self):
-
-        loader = NTupleLoader()
-        sel = self.signal_sample.sel
-        met = loader.nominal_trees[self.year][self.signal]["MET"][sel]
-        amt = loader.nominal_trees[self.year][self.signal]["mt_A"][sel]
-        hm = loader.nominal_trees[self.year][self.signal]["m_H"][sel]
-        dm = abs(amt - hm)
-        weights = loader.nominal_trees[self.year][self.signal]["event_weight"][sel]
-
-        ellipses = []
-        for n_std in self.binning_map["stddevs_ellipses"]:
-            ell = self._fit_ellipse(met, hm, weights, n_std)
-            ellipses.append(ell)
-
-        return ellipses

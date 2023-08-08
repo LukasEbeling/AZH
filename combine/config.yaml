@@ -22,17 +22,18 @@ branches:
   - event_weight
   - region
 
-region_branch: region
+#region_branch: region
 
-#based on scale factors
 variations:
   weight_btag: ["_central", "_bc_up", "_bc_down"]
   weight_btag_: ["central", "light_up", "light_down"]
-  #weight_pu: ["", "_up", "_down"]
+  weight_pu: ["", "_up", "_down"]
+  weight_puid_sf: ["", "_up", "_down"]
   #weight_sfelec_reco: ["", "_up", "_down"]
   #weight_sfelec_tight_id: ["", "_up", "_down"]
   #weight_sfmu_isolation: ["", "_up", "_down"]
   #weight_sfmu_tight_id: ["", "_up", "_down"]
+  #weight_sfmu_reco: ["", "_up", "_down"]
   #weight_trigger_sf_ee: ["", "_up", "_dn"]
   #weight_trigger_sf_emu: ["", "_up", "_dn"]
   #weight_trigger_sf_mumu: ["", "_up", "_dn"]
@@ -44,26 +45,14 @@ variations:
   weight_mur: ["_upnone", "_downnone"]
   weight_murmuf: ["_upup", "_downdown"]
   weight_pdf: ["", "_up", "_down"]
+  weight_vjets_EWK: ["", "_d1K", "_d2K", "_d3K"]
+  weight_vjets_QCD_NLO: ["", "_d1K", "_d2K", "_d3K"]
 
 sample_variations:
   foo: []
 
 sample_var_whitelist:
-  Total: "ALL PROCESSES"
-  foo: "ALL PROCESSES"
-  Absolute_YEAR: "ALL PROCESSES"
-  BBEC1: "ALL PROCESSES"
-  BBEC1_YEAR: "ALL PROCESSES"
-  EC2: "ALL PROCESSES"
-  EC2_YEAR: "ALL PROCESSES"
-  FlavorQCD: "ALL PROCESSES"
-  HF: "ALL PROCESSES"
-  HF_YEAR: "ALL PROCESSES"
-  RelativeBal: "ALL PROCESSES"
-  RelativeSample_YEAR: "ALL PROCESSES"
-  jer: "ALL PROCESSES"
-  hdamp: ["TT"]
-  TuneCP5: ["TT"]
+  foo: []
 
 angle_cut:
   active: False

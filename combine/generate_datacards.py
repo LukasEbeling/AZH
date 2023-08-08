@@ -13,54 +13,69 @@ import utils
 config = Configurator()
 VARS = ["MTA","MTH","MH","MET","2DEllipses"]
 CHANNELS = ["inv"]
-REGIONS = ["SR_6J", 
-                "SR_5J", 
-                "IR_1B_5J", 
-                "IR_1B_6J",
-                "IR_0B_5J",
-                "IR_0B_6J",
-                "LR_2B_5J",
-                "LR_2B_6J",
-                "LR_1B_5J",
-                "LR_1B_6J",
-                "LR_0B_5J",
-                "LR_0B_6J"
-                ]
+REGIONS = list(utils.REGION_ID_MAP.keys())
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
 
-NUISANCES = {
+RATE_NP = {
     "lumi_13TeV_2016_uncorrelated": {
-      p: {"UL16": 1.01, "UL17": '-', "UL18": '-'} for p in ALL_PROCESSES
+        p: {"UL16": 1.01, "UL17": '-', "UL18": '-'} for p in ALL_PROCESSES
     },
     "lumi_13TeV_2017_uncorrelated": {
-      p: {"UL16": '-', "UL17": 1.02, "UL18": '-'} for p in ALL_PROCESSES
+        p: {"UL16": '-', "UL17": 1.02, "UL18": '-'} for p in ALL_PROCESSES
     },
     "lumi_13TeV_2018_uncorrelated": {
-      p: {"UL16": '-', "UL17": '-', "UL18": 1.015} for p in ALL_PROCESSES
+        p: {"UL16": '-', "UL17": '-', "UL18": 1.015} for p in ALL_PROCESSES
     },
     "lumi_13TeV_correlated_16_17_18": {
-      p: {"UL16": 1.006, "UL17": 1.009, "UL18": 1.02} for p in ALL_PROCESSES
+        p: {"UL16": 1.006, "UL17": 1.009, "UL18": 1.02} for p in ALL_PROCESSES
     },
     "lumi_13TeV_correlated_17_18": {
-      p: {"UL16": '-', "UL17": 1.006, "UL18": 1.002} for p in ALL_PROCESSES
+        p: {"UL16": '-', "UL17": 1.006, "UL18": 1.002} for p in ALL_PROCESSES
     },
     # qcd scales: AN2019_094_v12
     "QCDscale_ttbar": {"TTW": "0.836/1.255", "TTZ": "0.907/1.081"},  # "TT": "0.965/1.024",
-    "QCDscale_ST": {"SingleTop": "0.979/1.031"},
-    "QCDscale_VV": {"VV": 1.03}, 
-    "QCDscale_V": {"WJets": 1.038},  # "DYJets": 1.02}, 
+    "QCDscale_singletop": {"SingleTop": "0.979/1.031"},
+    "QCDscale_VV": {"VV": 1.03},
+    "QCDscale_V": {"WJets": 1.038},  # "DYJets": 1.02},
     # pdf scales: AN2019_094_v12
-    "pdf_gg": {"TTZ": 1.035},  # "TT": 1.042, 
-    "pdf_qqbar": {"WJets": "1.008/0.996", "VV": 1.05, "TTW": 1.036},  # "DYJets": 1.02, 
+    "pdf_gg": {"TTZ": 1.035},  # "TT": 1.042,
+    "pdf_qqbar": {"WJets": "1.008/0.996", "VV": 1.05, "TTW": 1.036},  # "DYJets": 1.02,
     "pdf_qg": {"SingleTop": 1.028},
+    # hdamp
+    #"hdamp_5j": {"TT": {"UL16": "1.061/0.929", "UL17": "1.063/0.928", "UL18": "1.064/0.924"}},
+    #"hdamp_6j": {"TT": {"UL16": "1.085/0.926", "UL17": "1.068/0.930", "UL18": "1.087/0.914"}},
+    # TuneCP5
+    #"TuneCP5_0b": {"TT": {"UL16": "1.045/0.974", "UL17": "1.049/0.974", "UL18": "0.989/0.969"}},
+    #"TuneCP5_1b": {"TT": {"UL16": "0.988/1.005", "UL17": "0.999/0.999", "UL18": "1.003/0.990"}},
+    #"TuneCP5_2b": {"TT": {"UL16": "0.999/0.998", "UL17": "1.003/0.990", "UL18": "1.009/1.005"}},
 }
 
 SHAPES_NP = {
-    "CMS_btag_bc": ["AtoZH", "ZJets", "SingleTop", "TT", "TTW", "TTZ", "VV", "WJets"],
-    "CMS_btag_light": ["AtoZH", "ZJets", "SingleTop", "TT", "TTW", "TTZ", "VV", "WJets"],
-    #"CMS_pu": ["AtoZH", "DYJets", "SingleTop", "TT", "TTW", "TTZ", "VV", "WJets"],
-    "CMS_toppt_a": ["AtoZH", "TT", "TTW", "TTZ"],
-    "CMS_toppt_b": ["AtoZH", "TT", "TTW", "TTZ"],
+    "CMS_btag_bc_YEAR": ALL_PROCESSES,
+    "CMS_btag_light_YEAR": ALL_PROCESSES,
+    "CMS_pileup_YEAR": ALL_PROCESSES,
+    "CMS_pileupJetID_YEAR": ALL_PROCESSES,
+    #"CMS_trigger_sf_ee": ALL_PROCESSES,
+    #"CMS_trigger_sf_mumu": ALL_PROCESSES,
+    #"CMS_sfelec_reco": ALL_PROCESSES,
+    #"CMS_sfelec_tight_id": ALL_PROCESSES,
+    #"CMS_sfmu_isolation": ALL_PROCESSES,
+    #"CMS_sfmu_tight_id": ALL_PROCESSES,
+    "CMS_toppt_a": ["TT"], #or ["AtoZH", "TT", "TTW", "TTZ"],?
+    "CMS_toppt_b": ["TT"], #or ["AtoZH", "TT", "TTW", "TTZ"],?
+    #"CMS_scale_j_Absolute": ALL_PROCESSES,
+    #"CMS_scale_j_BBEC1": ALL_PROCESSES,
+    #"CMS_scale_j_EC2": ALL_PROCESSES,
+    #"CMS_scale_j_FlavorQCD": ALL_PROCESSES,
+    #"CMS_scale_j_HF": ALL_PROCESSES,
+    #"CMS_scale_j_RelativeBal": ALL_PROCESSES,
+    #"CMS_scale_j_Absolute_YEAR": ALL_PROCESSES,
+    #"CMS_scale_j_BBEC1_YEAR": ALL_PROCESSES,
+    #"CMS_scale_j_EC2_YEAR": ALL_PROCESSES,
+    #"CMS_scale_j_HF_YEAR": ALL_PROCESSES,
+    #"CMS_scale_j_RelativeSample_YEAR": ALL_PROCESSES,
+    #"CMS_scale_j_Total": ALL_PROCESSES,
+    #"CMS_res_j_YEAR": ALL_PROCESSES,
     "CMS_mur_AtoZH": ["AtoZH"],
     "CMS_muf_AtoZH": ["AtoZH"],
     "CMS_mur_ZJets": ["ZJets"],
@@ -79,17 +94,23 @@ SHAPES_NP = {
     "CMS_muf_WJets": ["WJets"],
     "CMS_mur_QCD": ["QCD"],
     "CMS_muf_QCD": ["QCD"],
-    "fsr_2": ["AtoZH", "ZJets", "SingleTop", "TT", "TTW", "TTZ", "VV", "WJets"],
-    "isr_2": ["AtoZH", "ZJets", "SingleTop", "TT", "TTW", "TTZ", "VV", "WJets"],
+    "fsr_2": ALL_PROCESSES,
+    "isr_2": ALL_PROCESSES,
     "pdf_AtoZH": ["AtoZH"],
+    "pdf_ZJets": ["ZJets"],
     "pdf_SingleTop": ["SingleTop"],
     "pdf_TT": ["TT"],
     "pdf_TTW": ["TTW"],
     "pdf_TTZ": ["TTZ"],
     "pdf_VV": ["VV"],
     "pdf_WJets": ["WJets"],
+    "CMS_vjets_EWK_d1K": ["ZJets","WJets"],
+    "CMS_vjets_EWK_d2K": ["ZJets","WJets"],
+    "CMS_vjets_EWK_d3K": ["ZJets","WJets"],
+    "CMS_vjets_QCD_NLO_d1K": ["ZJets","WJets"],
+    "CMS_vjets_QCD_NLO_d2K": ["ZJets","WJets"],
+    "CMS_vjets_QCD_NLO_d3K": ["ZJets","WJets"],
 }
-
 
 # Chars per column
 N1 = 79
@@ -103,6 +124,7 @@ class Datacard():
         self.year = year
         self.mass_point = mass_point
         self.svar = svar
+        print(svar)
         self.channel = channel
         self.region = region
         self.fname = f"{self.mass_point}_{self.svar}_{self.channel}_{self.region}"
@@ -121,10 +143,6 @@ class Datacard():
         with uproot.open(combine_fpath) as f:
             keys = f.keys()
         self.processes = [x for x in config.backgrounds if any([(f"{x}" in k) for k in keys])]
-        self.processes = ["AtoZH"] + self.processes
-
-    def write_block_header(self, f, block_name: str):
-        f.write(f"# {block_name.capitalize()}\n")
         self.processes = ["AtoZH"] + self.processes
 
     def write_block_header(self, f, block_name: str):
@@ -169,11 +187,11 @@ class Datacard():
 
     def write_lnN_systematics(self, f):
         self.write_block_header(f, "systematics")
-        for nuisance in NUISANCES:
+        for nuisance in RATE_NP:
             f.write(self.pad(nuisance, N1) + self.pad("lnN", 8))
             for process in self.processes:
-                if process in NUISANCES[nuisance]:
-                    np_val = NUISANCES[nuisance][process]
+                if process in RATE_NP[nuisance]:
+                    np_val = RATE_NP[nuisance][process]
                     if isinstance(np_val, dict):
                         np_val = np_val[self.year]
                     f.write(self.pad(np_val, N3))
@@ -183,7 +201,7 @@ class Datacard():
 
     def write_shape_systematics(self, f):
         for shape_np, applicable_processes in SHAPES_NP.items():
-            shape_np = shape_np.replace("YEAR", self.year.replace("UL", "20"))
+            shape_np = shape_np.replace("YEAR", self.year)
             f.write(self.pad(shape_np, N1) + self.pad("shape", 8))
             for process in self.processes:
                 is_applicable = (
@@ -197,15 +215,16 @@ class Datacard():
             f.write("\n")
 
     def write_auto_mc_stats(self, f):
-      if N := self.args.autoMCStats:
-            f.write(f"* autoMCStats {N}")
+        if self.args.autoMCStats > -1:
+            N = self.args.autoMCStats
+            f.write(f"* autoMCStats {N}\n")
 
-    def add_bkg_rate_params(self, f, tt: bool, zj: bool):
+    def add_bkg_rate_params(self, f, tt: bool, vj: bool):
         if tt and "TT" in self.processes:
             f.write(f"rate_ttbar rateParam * TT 1 [-2,2]")
-        if zj and "ZJets" in self.processes:
+        if vj and "ZJets" in self.processes:
             f.write(f"\nrate_vjets rateParam * ZJets 1 [-2,2]")
-        if "WJets" in self.processes:
+        if vj and "WJets" in self.processes:
             f.write(f"\nrate_vjets rateParam * WJets 1 [-2,2]")
 
     def generate_datacard(self):
@@ -223,13 +242,13 @@ class Datacard():
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--year", type=str, help="all/UL16/UL17/UL18/combined")
-    parser.add_argument("--autoMCStats", type=int, default=0,
+    parser.add_argument("--nojes", action="store_true")
+    parser.add_argument("--inclusivejes", action="store_true")
+    parser.add_argument("--nosamplevars", action="store_true")
+    parser.add_argument("--autoMCStats", type=int, default=-1,
                         help="an integer for autoMCStats")
-    return parser.parse_args()
-    parser.add_argument("--channel", type=str, default="CombinedChannels")
     args = parser.parse_args()
-
-
+    return args
 
 
 if __name__ == "__main__":
@@ -245,7 +264,7 @@ if __name__ == "__main__":
     i = 0
     for svar, year, mass_point, channel, region in product(*ll):
         if not utils.is_valid_set(channel, region, svar):
-            pass
+            continue
         if (region == "CRDiffLeptonFlavours") != (channel == "ElectronMuon"):
             continue
         datacard = Datacard(year, mass_point, svar, channel, region, args)

@@ -21,6 +21,9 @@ class EllipticalHistPlotter():
 
     def __init__(self, sample_sets):
         self.sample_sets = sample_sets
+        #for s in sample_sets:
+        #    for ellipses in s.set_binning:
+        #        print(ellipses.n_std)
 
     def plot(self):
         for sample_set in self.sample_sets:
@@ -75,7 +78,7 @@ class EllipticalHistPlotter():
         for ell, color in zip(sample_set.set_binning, self.ell_colors):
             ax.add_patch(ell.get_plt_patch(color))
 
-        # 1D Plots
+        # 2D Plots
         binwidth = 25
         xymax = np.max(np.abs(sgnl_raw[0]))
         lim = (int(xymax / binwidth) + 1) * binwidth
@@ -108,7 +111,6 @@ class EllipticalHistPlotter():
         plt.close()
 
     def _plot_twod_unrolled_bins(self, sample_set):
-        print(sample_set.samples['signal'].svar_hist)
         sgnl, sgnl_raw, bins = sample_set.samples['signal'].svar_hist
         bkgs = []
         bkg_labels = []
