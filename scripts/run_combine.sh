@@ -105,4 +105,4 @@ if [ "$3" = "impacts" ]; then
 fi
 
 
-#exampe ./run_combine.sh 1000_400 2DEllipses (impatcs)
+#exampe ./run_combine.sh 1000_400 2DEllipses (impacts)
