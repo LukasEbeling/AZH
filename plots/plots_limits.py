@@ -100,7 +100,7 @@ def plot_limits(var = "2DEllipses"):
     limits = limitLoader()
     
     tan1 = [theory.get_total(mA,400,1) for mA in range(600,1000,10)]
-    ref = [limits.get_median(var+"_ref",mA,mH) for mA,mH in masses]
+    #ref = [limits.get_median(var+"_ref",mA,mH) for mA,mH in masses]
     down2s = [limits.get_2s_down(var,mA,mH) for mA,mH in masses]
     down1s = [limits.get_1s_down(var,mA,mH) for mA,mH in masses]
     median = [limits.get_median(var,mA,mH) for mA,mH in masses]
@@ -115,7 +115,7 @@ def plot_limits(var = "2DEllipses"):
     axes.plot(points,median,color="black",marker = "o",label="expected 95% CL")
     axes.fill_between(points, down2s, up2s, color=BRAZILIAN_GOLD, label=r"$2\sigma$")
     axes.fill_between(points, down1s, up1s, color=BRAZILIAN_GREEN, label=r"$1\sigma$")
-    axes.plot(points,ref,color="blue",label=r"ref")
+    #axes.plot(points,ref,color="blue",label=r"ref")
 
     axes.legend()
     plt.xlabel('$m_A$ [GeV] for H@400GeV')
@@ -124,6 +124,25 @@ def plot_limits(var = "2DEllipses"):
     fig.savefig(ANALYSIS+f"plots/limits/limit_{var}.png")
     plt.close()
 
+def plot_versus(vars):    
+    masses = [(600,400),(750,400),(800,400),(1000,400)]
+    limits = limitLoader()
+    
+    fig, axes = plt.subplots(figsize=(12, 8))
+    hep.cms.label(ax=axes,llabel='Work in progress',data=True, lumi=41.48, year="2017")
+    points = [m[0] for m in masses]
+    
+    for var in vars:
+        median = [limits.get_median(var,mA,mH) for mA,mH in masses]
+        axes.plot(points,median,marker = "o",label=var)
+
+    axes.legend()
+    plt.xlabel('$m_A$ [GeV] for H@400GeV')
+    plt.ylabel('$\sigma \cdot BR$ [pb]')
+    axes.set_yscale('log')
+    fig.savefig(ANALYSIS+f"plots/limits/limit_all.png")
+    plt.close()
+    
 def plot_plane():
     samples = [(600,400),(750,400),(800,400),(1000,400),(1000,850),(700,450),(750,650)]
     masses = [(mA,mH) for mA in range(130,1200,10) for mH in range(130,mA,10)]
@@ -147,5 +166,7 @@ def plot_plane():
 
     
 if __name__ == "__main__":
-    plot_limits("2DEllipses")
-    plot_limits("MET")
+    #plot_limits("2DEllipses")
+    #plot_limits("MET")
+    #plot_limits("MH")
+    plot_versus(["MET","2DEllipses","MH"])
