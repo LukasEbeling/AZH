@@ -19,11 +19,11 @@ plt.style.use(hep.style.CMS)
 config = Configurator()
 CMSSW_BASE = os.environ.get("CMSSW_BASE")
 NTUPLE_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/")
-SIGNALS = ["INV_1000_400"]
-OBSERVABLES = ["Amt", "met", "Hmt"]
+SIGNALS = ["AZH_1000_400"]
+OBSERVABLES = ["2DEllipses"]
 EXCLUDE_BKGS = []
 CHANNELS = ["inv"]
-REGIONS = ["SignalRegion"]
+REGIONS = ["SR_6J"]
 YEARS = ['UL17']
 YEAR_LUMI_MAP = {
     'UL18': 59.83,
@@ -36,10 +36,8 @@ UL_YEAR_MAP = {
     'UL16': 2016,
 }
 OBS_XLABEL_MAP = {
-    "2DEllipses": r"miss $p_{T} \times \Delta m_T$",
-    "Amt": r"$m_T$ of A",
-    "Hmt": r"$m_T$ of H",
-    "met": r"missing $p_T$",
+    "2DEllipses": r"$p_{T,mis} \times m_H$",
+    "MET": r"$p_{T,mis}$",
     "DeltaM": r"$\Delta m = m_A - m_H$",
     "ZPT": r"$p_{T}(Z)$",
     "Elec1Pt": r"$p_{T}(e_1)$",
@@ -57,22 +55,24 @@ def load(_year, _signal, _obs, _ch, _reg):
     hists = {"nominals": {}}
     with uproot.open(os.path.join(NTUPLE_PATH, _year, fname)) as f:
         # Load nominal
-        unavailable_processes = []
+        available_processes = []
         for process in config.samples + ["AtoZH"]:
             try:
+                if process in EXCLUDE_BKGS:
+                    raise uproot.exceptions.KeyInFileError(process)
                 hists["nominals"][process] = f[f"{_reg}/{process}"]
-            except uproot.exceptions.KeyInFileError:
-                unavailable_processes.append(process)
+                available_processes.append(process)
+            except uproot.exceptions.KeyInFileError: print(process)
+
         for shape_np, np_processes in SHAPES_NP.items():
+            shape_np = shape_np.replace("YEAR",_year)
             hists[shape_np] = {}
-            for process in list(set(np_processes) - set(unavailable_processes)):
-                if process in EXCLUDE_BKGS: continue 
+            for process in np_processes:
+                if not process in available_processes:
+                    continue
                 hists[shape_np][process] = {}
                 hists[shape_np][process]["up"] = f[f"{_reg}/{process}_{shape_np}Up"]
                 hists[shape_np][process]["down"] = f[f"{_reg}/{process}_{shape_np}Down"]
-                if shape_np in ["hdamp", "TuneCP5"]:
-                    hists[shape_np][process]["up_noweight"] = f[f"{_reg}/{process}_{shape_np}Up_unweighted"]
-                    hists[shape_np][process]["down_noweight"] = f[f"{_reg}/{process}_{shape_np}Down_unweighted"]
     return hists
 
 
@@ -139,13 +139,6 @@ def plotUncertaintyRatios(hists, _year, _signal, _obs, _ch, _reg, _process, _np)
         color=dn_color,
         ax=ax[1]
     )
-    if _np in ["hdamp", "TuneCP5"]:
-        N_up = hists[_np][_process]["up_noweight"].to_numpy()[0]
-        up_err = np.nan_to_num(np.sqrt(N_up) / N_up * var_up, nan=0.0, posinf=0, neginf=0)
-        band_v = np.nan_to_num(np.absolute(up_err / nominal), nan=0.0, posinf=0, neginf=0)
-        ax[1].stairs(1 + band_v, baseline=1 - band_v,
-                     label='up stats.', color='k',
-                     hatch="\\\\", **error_band_args)
     ax[1].axhline(1, color=no_color)
     ax[1].set_ylabel(r'$\frac{Variation}{Nominal}$')
     ax[1].set_ylim([.6, 1.4])
