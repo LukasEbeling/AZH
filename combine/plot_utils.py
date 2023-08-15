@@ -41,6 +41,8 @@ class PlotMeta:
             "AtoZH": 8,
             #"DYJets": 0,
             "ZJets": 0,
+            "DYJets_bjet": 0,
+            "DYJets_ljet": 0,
             "TT": 1,
             "TTZ": 2,
             "QCD": 3,

@@ -16,7 +16,9 @@ class NormComputer:
         'SingleTop': ['ST'],
         'VV': ['ZZ', 'WW', 'WZ'],
         'TT': ['TTToHadronic', 'TTToSemiLeptonic', 'TTTo2L2Nu'],
-        'ZJets': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL']
+        'ZJets': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL'],
+        'DYJets_ljet': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL'],
+        'DYJets_bjet': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL'],
     }
 
     QCD_SCALES = [

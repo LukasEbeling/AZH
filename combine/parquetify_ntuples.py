@@ -27,6 +27,8 @@ class Parquetifier():
         if not sample:
             self.samples = self.config.samples
 
+        self.samples = [s.replace("_ljet","").replace("_bjet","") for s in self.samples]
+
         print(self.samples)
         self.variables_to_load = self.config.svars + self.config.branches
 

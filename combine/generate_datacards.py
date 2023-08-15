@@ -37,6 +37,7 @@ RATE_NP = {
     "QCDscale_singletop": {"SingleTop": "0.979/1.031"},
     "QCDscale_VV": {"VV": 1.03},
     "QCDscale_V": {"WJets": 1.038},  # "DYJets": 1.02},
+    "Norm_bjet": {"DYJets_bjet": 1.4},
     # pdf scales: AN2019_094_v12
     "pdf_gg": {"TTZ": 1.035},  # "TT": 1.042,
     "pdf_qqbar": {"WJets": "1.008/0.996", "VV": 1.05, "TTW": 1.036},  # "DYJets": 1.02,
@@ -61,8 +62,8 @@ SHAPES_NP = {
     #"CMS_sfelec_tight_id": ALL_PROCESSES,
     #"CMS_sfmu_isolation": ALL_PROCESSES,
     #"CMS_sfmu_tight_id": ALL_PROCESSES,
-    "CMS_toppt_a": ["TT"], #or ["AtoZH", "TT", "TTW", "TTZ"],?
-    "CMS_toppt_b": ["TT"], #or ["AtoZH", "TT", "TTW", "TTZ"],?
+    "CMS_toppt_a": ["TT"],
+    "CMS_toppt_b": ["TT"],
     #"CMS_scale_j_Absolute": ALL_PROCESSES,
     #"CMS_scale_j_BBEC1": ALL_PROCESSES,
     #"CMS_scale_j_EC2": ALL_PROCESSES,
@@ -78,8 +79,12 @@ SHAPES_NP = {
     #"CMS_res_j_YEAR": ALL_PROCESSES,
     "CMS_mur_AtoZH": ["AtoZH"],
     "CMS_muf_AtoZH": ["AtoZH"],
-    "CMS_mur_ZJets": ["ZJets"],
-    "CMS_muf_ZJets": ["ZJets"],
+    "CMS_mur_DYJets": ["DYJets"],
+    "CMS_muf_DYJets": ["DYJets"],
+    "CMS_mur_DYJets_bjet": ["DYJets_bjet"],
+    "CMS_muf_DYJets_bjet": ["DYJets_bjet"],
+    "CMS_mur_DYJets_ljet": ["DYJets_ljet"],
+    "CMS_muf_DYJets_ljet": ["DYJets_ljet"],
     "CMS_mur_TT": ["TT"],
     "CMS_muf_TT": ["TT"],
     "CMS_mur_TTZ": ["TTZ"],
@@ -97,19 +102,21 @@ SHAPES_NP = {
     "fsr_2": ALL_PROCESSES,
     "isr_2": ALL_PROCESSES,
     "pdf_AtoZH": ["AtoZH"],
-    "pdf_ZJets": ["ZJets"],
+    "pdf_DYJets": ["DYJets"],
+    "pdf_DYJets_bjet": ["DYJets_bjet"],
+    "pdf_DYJets_ljet": ["DYJets_ljet"],
     "pdf_SingleTop": ["SingleTop"],
     "pdf_TT": ["TT"],
     "pdf_TTW": ["TTW"],
     "pdf_TTZ": ["TTZ"],
     "pdf_VV": ["VV"],
     "pdf_WJets": ["WJets"],
-    "CMS_vjets_EWK_d1K": ["ZJets","WJets"],
-    "CMS_vjets_EWK_d2K": ["ZJets","WJets"],
-    "CMS_vjets_EWK_d3K": ["ZJets","WJets"],
-    "CMS_vjets_QCD_NLO_d1K": ["ZJets","WJets"],
-    "CMS_vjets_QCD_NLO_d2K": ["ZJets","WJets"],
-    "CMS_vjets_QCD_NLO_d3K": ["ZJets","WJets"],
+    "CMS_vjets_EWK_d1K": ["DYJets_bjet","DYJets_ljet","WJets"],
+    "CMS_vjets_EWK_d2K": ["DYJets_bjet","DYJets_ljet","WJets"],
+    "CMS_vjets_EWK_d3K": ["DYJets_bjet","DYJets_ljet","WJets"],
+    "CMS_vjets_QCD_NLO_d1K": ["DYJets_bjet","DYJets_ljet","WJets"],
+    "CMS_vjets_QCD_NLO_d2K": ["DYJets_bjet","DYJets_ljet","WJets"],
+    "CMS_vjets_QCD_NLO_d3K": ["DYJets_bjet","DYJets_ljet","WJets"],
 }
 
 # Chars per column
@@ -124,7 +131,6 @@ class Datacard():
         self.year = year
         self.mass_point = mass_point
         self.svar = svar
-        print(svar)
         self.channel = channel
         self.region = region
         self.fname = f"{self.mass_point}_{self.svar}_{self.channel}_{self.region}"
@@ -219,13 +225,13 @@ class Datacard():
             N = self.args.autoMCStats
             f.write(f"* autoMCStats {N}\n")
 
-    def add_bkg_rate_params(self, f, tt: bool, vj: bool):
+    def add_bkg_rate_params(self, f, tt: bool, dy: bool):
         if tt and "TT" in self.processes:
-            f.write(f"rate_ttbar rateParam * TT 1 [-2,2]")
-        if vj and "ZJets" in self.processes:
-            f.write(f"\nrate_vjets rateParam * ZJets 1 [-2,2]")
-        if vj and "WJets" in self.processes:
-            f.write(f"\nrate_vjets rateParam * WJets 1 [-2,2]")
+            f.write("rate_TT rateParam * TT 1")
+        if dy and "DYJets_bjet" in self.processes:
+            f.write("\nrate_DYJets rateParam * DYJets_bjet 1")
+        if dy and "DYJets_ljet" in self.processes:
+            f.write("\nrate_DYJets rateParam * DYJets_ljet 1")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
@@ -268,4 +274,3 @@ if __name__ == "__main__":
         if (region == "CRDiffLeptonFlavours") != (channel == "ElectronMuon"):
             continue
         datacard = Datacard(year, mass_point, svar, channel, region, args)
-

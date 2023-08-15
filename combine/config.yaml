@@ -9,7 +9,8 @@ backgrounds:
   - VV
   - QCD
   - WJets
-  - ZJets
+  - DYJets_ljet
+  - DYJets_bjet
 
 svars:
   - MET
