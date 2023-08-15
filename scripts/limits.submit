@@ -4,9 +4,9 @@ universe          = vanilla
 # #Running in local mode with 8 cpu slots
 request_cpus      = 4
 initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/UL17/
-output            = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.o
-error             = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.e
-log               = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.log
+output            = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/limits.o
+error             = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/limits.e
+log               = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/limits.log
 #Requesting CPU and DISK Memory - default +RequestRuntime of 3h stays unaltered
 getenv            = True
 RequestMemory     = 4G
@@ -15,39 +15,13 @@ JobBatchName      = run_factory
 executable        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_combine.sh
 arguments         = $(arg1) $(arg2)
 queue arg1, arg2 from (
-    1000_400, 2DEllipses
-    1000_850, 2DEllipses
-    600_400, 2DEllipses
-    700_450, 2DEllipses
-    750_400, 2DEllipses
-    750_650, 2DEllipses
-    800_400, 2DEllipses
-    1000_400, MTA
-    1000_850, MTA
-    600_400, MTA
-    700_450, MTA
-    750_400, MTA
-    750_650, MTA
-    800_400, MTA
-    1000_400, MTH
-    1000_850, MTH
-    600_400, MTH
-    700_450, MTH
-    750_400, MTH
-    750_650, MTH
-    800_400, MTH
-    1000_400, MH
-    1000_850, MH
-    600_400, MH
-    700_450, MH
-    750_400, MH
-    750_650, MH
-    800_400, MH
-    1000_400, MET
-    1000_850, MET
-    600_400, MET
-    700_450, MET
-    750_400, MET
-    750_650, MET
-    800_400, MET
+    600 400 2DEllipses
+    750 400 2DEllipses
+    800 400 2DEllipses
+    600 400 MH
+    750 400 MH
+    800 400 MH
+    600 400 MET
+    750 400 MET
+    800 400 MET
 )
