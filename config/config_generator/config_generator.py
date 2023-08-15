@@ -1,8 +1,6 @@
 #!/nfs/dust/cms/user/ebelingl/anaconda3/envs/py311/bin/python
 import argparse
-import collections.abc
 import glob
-import itertools
 import os
 import sys
 import yaml
@@ -138,6 +136,23 @@ class ConfigFactory():
         etree.SubElement(self.config.xml_job_config, "Package", pkg_element)
         self.config.xml_cycle = etree.SubElement(self.config.xml_job_config, "Cycle", cycle_attrs)
 
+    @property
+    def input_path(self):
+        if self.step == "Preselection":
+            path_common = "/nfs/dust/cms/user/ebelingl/samples_inv"
+            return os.path.join(path_common, self.year)
+
+        # else the step is "Reconstruction"
+        input_path = os.path.join(
+            CMSSW_BASE,
+            "src/UHH2/AZH/data",
+            f"output_01_preselection",
+            self.data_type,
+            self.year
+        )
+
+        return input_path
+
     def load_params(self):
         with open(f"{self.param_file_dir}/params_common.yaml", 'r') as f:
             self.params = yaml.safe_load(f)
@@ -210,7 +225,7 @@ class ConfigFactory():
         )
         samples = glob.glob(path)
         samples = list(filter(root_file_not_empty, samples))
-        samples = [s.split('/')[-1] for s in samples] #if "ZJets" in s
+        samples = [s.split('/')[-1] for s in samples]
         samples = self.filter_samples_for_combined_variations(samples)
         return samples
 
