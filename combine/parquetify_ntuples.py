@@ -28,8 +28,8 @@ class Parquetifier():
             self.samples = self.config.samples
 
         self.samples = [s.replace("_ljet","").replace("_bjet","") for s in self.samples]
+        self.samples = np.unique(self.samples) #drop duplicates
 
-        print(self.samples)
         self.variables_to_load = self.config.svars + self.config.branches
 
         os.makedirs("cache", exist_ok=True)
@@ -104,6 +104,8 @@ class Parquetifier():
         No suffix means inclusive treatment.
         """
         if "DYJets" in sample:
+            return ["_bjet", "_ljet"]
+        if "WJets" in sample:
             return ["_bjet", "_ljet"]
         else:
             return [""]
@@ -207,6 +209,8 @@ class Parquetifier():
         _samples = self.samples
         if _samples == ["DYJets"]:
             _samples = ["DYJets_bjet", "DYJets_ljet"]
+        if _samples == ["WJets"]:
+            _samples = ["WJets_bjet", "WJets_ljet"]
         print(_samples)
         for sample in _samples:
             # Concatenate Nominal Trees
