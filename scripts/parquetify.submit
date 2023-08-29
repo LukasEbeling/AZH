@@ -22,12 +22,14 @@ queue SampleName from (
     AZH_750_400
     AZH_750_650
     AZH_800_400
-    QCD
+    TT
+    TTZ
     SingleTop
     TTW
-    TTZ
     VV
-    WJets
-    ZJets
-    TT
+    QCD
+    WJets_ljet
+    WJets_bjet
+    DYJets_ljet
+    DYJets_bjet
 )
