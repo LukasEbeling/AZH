@@ -26,14 +26,14 @@ CHANNELS = ["inv"]
 REGIONS = ["SR_6J"]
 YEARS = ['UL17']
 YEAR_LUMI_MAP = {
-    'UL18': 59.83,
-    'UL17': 41.48,
-    'UL16': 36.3,
+    "UL18": 59.83,
+    "UL17": 41.48,
+    "UL16": 36.3,
 }
 UL_YEAR_MAP = {
-    'UL18': 2018,
-    'UL17': 2017,
-    'UL16': 2016,
+    "UL18": 2018,
+    "UL17": 2017,
+    "UL16": 2016,
 }
 OBS_XLABEL_MAP = {
     "2DEllipses": r"$p_{T,mis} \times m_H$",
@@ -56,13 +56,16 @@ def load(_year, _signal, _obs, _ch, _reg):
     with uproot.open(os.path.join(NTUPLE_PATH, _year, fname)) as f:
         # Load nominal
         available_processes = []
-        for process in config.samples + ["AtoZH"]:
+
+        # Load all processes that are available
+        for process in config.samples:
             try:
                 if process in EXCLUDE_BKGS:
                     raise uproot.exceptions.KeyInFileError(process)
                 hists["nominals"][process] = f[f"{_reg}/{process}"]
                 available_processes.append(process)
-            except uproot.exceptions.KeyInFileError: print(process)
+            except uproot.exceptions.KeyInFileError:
+                pass
 
         for shape_np, np_processes in SHAPES_NP.items():
             shape_np = shape_np.replace("YEAR",_year)
@@ -98,78 +101,133 @@ def plotUncertaintyRatios(hists, _year, _signal, _obs, _ch, _reg, _process, _np)
         ncols=1,
         figsize=(12, 10),
         gridspec_kw={"height_ratios": (4, 1)},
-        sharex=True
+        sharex=True,
     )
 
-    hep.cms.label(ax=ax[0], llabel='Work in progress', data=True,
-                  lumi=YEAR_LUMI_MAP[_year], year=UL_YEAR_MAP[_year])
+    hep.cms.label(
+        ax=ax[0],
+        llabel="Work in progress",
+        data=True,
+        lumi=YEAR_LUMI_MAP[_year],
+        year=UL_YEAR_MAP[_year],
+    )
 
     # Histogram
     bins = hists[_np][_process]["up"].to_numpy()[1]
     error_band_args = {
-        "edges": bins, "facecolor": "none", "linewidth": 0,
-        "alpha": .74
+        "edges": bins,
+        "facecolor": "none",
+        "linewidth": 0,
+        "alpha": 0.74,
     }
     nominal = hists["nominals"][_process].to_numpy()[0]
     var_up = hists[_np][_process]["up"].to_numpy()[0]
     var_down = hists[_np][_process]["down"].to_numpy()[0]
-    hep.histplot(nominal, yerr=0, bins=bins, linewidth=lw, color=no_color,
-                 histtype='step', label="nominal", ax=ax[0])
-    hep.histplot(var_up, bins=bins, linestyle=var_linestyle, linewidth=lw, color=up_color,
-                 histtype='step', label="up", ax=ax[0])
-    hep.histplot(var_down, bins=bins, linestyle=var_linestyle, linewidth=lw, color=dn_color,
-                 histtype='step', label="down", ax=ax[0])
+    hep.histplot(
+        nominal,
+        yerr=0,
+        bins=bins,
+        linewidth=lw,
+        color=no_color,
+        histtype="step",
+        label="nominal",
+        ax=ax[0],
+    )
+    hep.histplot(
+        var_up,
+        bins=bins,
+        linestyle=var_linestyle,
+        linewidth=lw,
+        color=up_color,
+        histtype="step",
+        label="up",
+        ax=ax[0],
+    )
+    hep.histplot(
+        var_down,
+        bins=bins,
+        linestyle=var_linestyle,
+        linewidth=lw,
+        color=dn_color,
+        histtype="step",
+        label="down",
+        ax=ax[0],
+    )
 
     # Ratio
     hep.histplot(
         var_up / nominal,
-        histtype='step',
+        histtype="step",
         bins=hists["nominals"][_process].to_numpy()[1],
         stack=False,
         linestyle=var_linestyle,
         color=up_color,
-        ax=ax[1]
+        ax=ax[1],
     )
     hep.histplot(
         var_down / nominal,
-        histtype='step',
+        histtype="step",
         bins=hists["nominals"][_process].to_numpy()[1],
         stack=False,
         linestyle=var_linestyle,
         color=dn_color,
-        ax=ax[1]
+        ax=ax[1],
     )
     ax[1].axhline(1, color=no_color)
-    ax[1].set_ylabel(r'$\frac{Variation}{Nominal}$')
-    ax[1].set_ylim([.6, 1.4])
+    ax[1].set_ylabel(r"$\frac{Variation}{Nominal}$")
+    ax[1].set_ylim([0.6, 1.4])
 
     # Plot Settings
     title = f"{_process} {_np}\n{_reg}, {_year}, \n{_ch} Channel {OBS_XLABEL_MAP[_obs]}"
-    ax[0].set_yscale('log')
-    ax[0].legend(loc="lower left", ncol=2, title=title, fontsize=18,
-                 title_fontsize=18, frameon=False)
+    ax[0].set_yscale("log")
+    ax[0].legend(ncol=2, title=title, fontsize=18, title_fontsize=18, frameon=False)
     ax[0].set_ylabel("Events")
     ax[0].set_ylim(ymin=1e-1)
     ax[1].set_xlabel(OBS_XLABEL_MAP[_obs])
 
     # Save Plot
-    fname = ("UncertaintyRatio" + '_' + _np + '_' + _ch + '_' + _reg + '_'
-             + _obs + '_' + _year + '_' + _signal + '_' + _process)
-    base_opath = os.path.join(CMSSW_BASE, "src/UHH2/AZH/plots/nuisances")
+    fname = (
+        "UncertaintyRatio"
+        + "_"
+        + _np
+        + "_"
+        + _ch
+        + "_"
+        + _reg
+        + "_"
+        + _obs
+        + "_"
+        + _year
+        + "_"
+        + _signal
+        + "_"
+        + _process
+    )
+    base_opath = os.path.join(
+        CMSSW_BASE, "src/UHH2/2HDM/limits/plots/plot_output/np_var_ratios"
+    )
     fpath_np = os.path.join(base_opath, f"{_np}/")
     fpath_np_process = os.path.join(base_opath, f"{_np}/{_process}/")
-    save_plot([fpath_np], fname)
+    save_plot([fpath_np, fpath_np_process], fname)
     plt.close()
 
 
 if __name__ == "__main__":
 
-    for year, signal, obs, ch, reg in itertools.product(YEARS, SIGNALS, OBSERVABLES, CHANNELS, REGIONS):
+    for year, signal, obs, ch, reg in itertools.product(
+        YEARS, SIGNALS, OBSERVABLES, CHANNELS, REGIONS
+    ):
         hists = load(year, signal, obs, ch, reg)
         for nparam in list(set(hists.keys()) - set(["nominals"])):
-            available_processes = list(set.intersection(set(hists[nparam].keys()), set(hists["nominals"].keys())))
+            available_processes = list(
+                set.intersection(
+                    set(hists[nparam].keys()), set(hists["nominals"].keys())
+                )
+            )
             for process in available_processes:
                 if process in EXCLUDE_BKGS:
                     continue
                 print(year, signal, obs, ch, reg, process, nparam)
-                plotUncertaintyRatios(hists, year, signal, obs, ch, reg, process, nparam)
+                plotUncertaintyRatios(
+                    hists, year, signal, obs, ch, reg, process, nparam
+                )
