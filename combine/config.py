@@ -71,7 +71,7 @@ class Configurator(Borg):
         sample_var_whitelist = self.config_dict["sample_var_whitelist"]
         for sample_variation in sample_var_whitelist:
             if sample_var_whitelist[sample_variation] == "ALL PROCESSES":
-                sample_var_whitelist[sample_variation] = self.samples + ["DYJets", "AtoZH"]
+                sample_var_whitelist[sample_variation] = self.samples + ["DYJets", "WJets", "AtoZH"]
         return sample_var_whitelist
 
     @property
