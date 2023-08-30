@@ -123,6 +123,8 @@ SHAPES_NP = {
     "CMS_vjets_QCD_NLO_d1K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_QCD_NLO_d2K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_QCD_NLO_d3K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
+    "JER": ALL_PROCESSES
+    "JES": ALL_PROCESSES
 }
 
 # Chars per column
