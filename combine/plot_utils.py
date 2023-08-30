@@ -49,7 +49,9 @@ class PlotMeta:
             "VV": 4,
             "SingleTop": 5,
             "TTW": 6,
-            "WJets": 7,
+            #"WJets": 7,
+            "WJets_ljet": 7,
+            "WJets_bjet": 7,
         }
 
         return [self.CMAP.colors[id_map[p]] for p in processes]
