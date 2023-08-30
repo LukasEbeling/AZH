@@ -16,8 +16,23 @@ backgrounds:
 svars:
   - MET
   - m_H
-  - mt_A
   #- mt_H
+  #- mt_A
+  #- [jetsAk4CHS.m_pt, 1]
+  #- [jetsAk4CHS.m_pt, 2]
+  #- [jetsAk4CHS.m_pt, 3]
+  #- [jetsAk4CHS.m_pt, 4]
+  #- [jetsAk4CHS.m_pt, 5]
+  #- [jetsAk4CHS.m_eta, 1]
+  #- [jetsAk4CHS.m_eta, 2]
+  #- [jetsAk4CHS.m_eta, 3]
+  #- [jetsAk4CHS.m_eta, 4]
+  #- [jetsAk4CHS.m_eta, 5]
+  #- [jetsAk4CHS.m_phi, 1]
+  #- [jetsAk4CHS.m_phi, 2]
+  #- [jetsAk4CHS.m_phi, 3]
+  #- [jetsAk4CHS.m_phi, 4]
+  #- [jetsAk4CHS.m_phi, 5]
 
 
 branches:
@@ -51,10 +66,12 @@ variations:
   weight_vjets_QCD_NLO: ["", "_d1K", "_d2K", "_d3K"]
 
 sample_variations:
-  foo: []
+  JES: ["_up","_down"]
+  JER: ["_up","_down"]
 
 sample_var_whitelist:
-  foo: []
+  JES: "ALL PROCESSES"
+  JER: "ALL PROCESSES"
 
 angle_cut:
   active: False
