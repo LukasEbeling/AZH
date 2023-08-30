@@ -19,6 +19,8 @@ class NormComputer:
         'ZJets': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL'],
         'DYJets_ljet': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL'],
         'DYJets_bjet': ['ZJetsToNuNu','ZJetsToQQ','DYJetsToLL'],
+        'WJets_ljet': ['MC.WJetsToLNu'],
+        'WJets_bjet': ['MC.WJetsToLNu'],
     }
 
     QCD_SCALES = [
