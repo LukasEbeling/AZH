@@ -402,7 +402,7 @@ class Sample():
         sample_variations = [x + xvar for x, xvars in relevant_vars.items() for xvar in xvars]
         for variation in sample_variations:
             # Region Selection
-            is_region = self.tree["region"] == REGION_ID_MAP[self.sample_params["region"]]
+            is_region = self.sample_vars[variation]["region"] == REGION_ID_MAP[self.sample_params["region"]]
             self.var_sel[variation] = is_region
 
 
@@ -511,8 +511,8 @@ class Sample():
             sel = self.var_sel[variation]
 
             if self.svar == "ellipses":
-                x = self.tree[ELLIPSE_X][self.sel]
-                y = self.tree[ELLIPSE_Y][self.sel]
+                x = self.sample_vars[variation][ELLIPSE_X][sel]
+                y = self.sample_vars[variation][ELLIPSE_Y][sel]
                 inputs =  [x, y]
             else:
                 inputs = self.sample_vars[variation][self.svar][sel]
