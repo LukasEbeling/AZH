@@ -17,9 +17,11 @@ plt.style.use(hep.style.CMS)
 #Config
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
-BACKGROUNDS = ["VV", "TTW", "TTZ","ZJets","WJets", "QCD", "SingleTop","TT"]
+CACHE = ANALYSIS + "combine/cache/"
+BACKGROUNDS = ["VV", "TTW", "TTZ", "DYJets_ljet", "DYJets_bjet", "WJets_ljet", "WJets_bjet", "QCD", "SingleTop","TT"]
 MASSES = ["600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
 SIGNALS = [f"AZH_{mass}" for mass in MASSES]
+CMAP = plt.cm.get_cmap("Set1")
 
 REGIONS = {
     0: "SR_6J",
@@ -38,15 +40,31 @@ REGIONS = {
 
 OBSERVABLES = {
     "MET": np.linspace(170,800,10),
-    "delta_m": np.linspace(200,1500,13),
-    "delta_mt": np.linspace(200,1500,13),
+    #"delta_m": np.linspace(200,1500,13),
+    #"delta_mt": np.linspace(200,1500,13),
     "m_H": np.linspace(200,1500,13),
-    "mt_A": np.linspace(500,1800,13),
-    "mt_H": np.linspace(200,1500,13),
+    #"mt_A": np.linspace(500,1800,13),
+    #"mt_H": np.linspace(200,1500,13),
     #"jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21),
     #"event_weight": np.linspace(0,100,21), 
+}
+
+COLOR = {
+    "1000_400": "black",
+    "DYJets": CMAP.colors[0],
+    "DYJets_ljet": CMAP.colors[0],
+    "DYJets_bjet": CMAP.colors[0],
+    "TT": CMAP.colors[8],
+    "TTZ": CMAP.colors[2],
+    "QCD": CMAP.colors[6],
+    "VV": CMAP.colors[1],
+    "SingleTop": CMAP.colors[7],
+    "TTW": CMAP.colors[4],
+    "WJets": CMAP.colors[3],
+    "WJets_ljet": CMAP.colors[3],
+    "WJets_bjet": CMAP.colors[3],
 }
 
 
@@ -70,13 +88,26 @@ class dataLoader():
             w = f[f"AnalysisTree/event_weight"].array(library="np")
             r = f[f"AnalysisTree/region"].array(library="np")
         return o, w, r
+
+    def load_new(self,sample):
+        o = {}
+        for obs in OBSERVABLES: o[obs] = self.load_parquet(sample,obs)
+        w = self.load_parquet(sample, "event_weight")
+        r = self.load_parquet(sample, "region")
+        return o,w,r
+
+    def load_parquet(self, sample, observable):
+        file_path = CACHE + f"mc_UL17_{sample}_nominal_{observable}.parquet"
+        df = pd.read_parquet(file_path)
+        return np.array(df["foo"])
     
     def load_samples(self,samples):
         bar = IncrementalBar("Loading", max=len(samples))
         for sample in samples:
             print("\n"+sample)
-            path = RECO_PATH + "MC/UL17/" + f"MC.{sample}_UL17.root"
-            o, w, r = self.load(path)
+            #path = RECO_PATH + "MC/UL17/" + f"MC.{sample}_UL17.root"
+            #o, w, r = self.load(path)
+            o,w,r = self.load_new(sample)
             self.data[sample] = {
                 "observables": o,
                 "weights": w,
@@ -189,7 +220,9 @@ def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
 
     hep.cms.label(ax=axes[0],llabel='Work in progress',data=True, lumi=41.48, year=2017)
 
-    hep.histplot(binned_bkg, histtype='fill', bins=binning, stack=True, label=label_bkg, ax=axes[0])
+    colors = [COLOR[process] for process in BACKGROUNDS]
+
+    hep.histplot(binned_bkg, histtype='fill', bins=binning, stack=True, label=label_bkg, ax=axes[0],color=colors)
     hep.histplot(binned_sig, yerr=error, histtype='step', bins=binning, color='k', label=label_sig, ax=axes[0])
 
 
