@@ -312,7 +312,7 @@ class ConfigFactory():
             sample_version = self.get_version_from_sample_name(bare_sample_name)
             lumi = "1"
             file_name = sample.replace("AToZHToInv_MA-","").replace("MH-","")
-            input_path = f"/nfs/dust/cms/user/ebelingl/samples_inv/{file_name}.root"
+            input_path = f"/nfs/dust/cms/user/ebelingl/samples_inv/{self.year}/{file_name}.root"
             if not self.is_data:
                 with uproot.open(input_path) as f:
                     lumi = str(len(f["AnalysisTree/event"].array(library="np")))
