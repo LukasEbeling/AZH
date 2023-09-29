@@ -233,13 +233,19 @@ class Datacard():
             N = self.args.autoMCStats
             f.write(f"* autoMCStats {N}\n")
 
-    def add_bkg_rate_params(self, f, tt: bool, dy: bool):
+    def add_bkg_rate_params(self, f, tt: bool, dy: bool, wj: bool):
         if tt and "TT" in self.processes:
-            f.write("rate_TT rateParam * TT 1")
+            f.write("rate_TT rateParam * TT 1 [-2,2]")
         if dy and "DYJets_bjet" in self.processes:
-            f.write("\nrate_DYJets rateParam * DYJets_bjet 1")
+            f.write("\nrate_Vbjet rateParam * DYJets_bjet 1 [-2,2]")
         if dy and "DYJets_ljet" in self.processes:
-            f.write("\nrate_DYJets rateParam * DYJets_ljet 1")
+            f.write("\nrate_Vljet rateParam * DYJets_ljet 1 [-2,2]")
+        if wj and "WJets_bjet" in self.processes:
+            f.write("\nrate_Vbjet rateParam * WJets_bjet 1 [-2,2]")
+        if wj and "WJets_ljet" in self.processes:
+            f.write("\nrate_Vljet rateParam * WJets_ljet 1 [-2,2]")
+        
+        f.write("\nrate_BR_vv rateParam * AtoZH 1")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
@@ -250,7 +256,7 @@ class Datacard():
             self.write_lnN_systematics(f)
             self.write_shape_systematics(f)
             self.write_auto_mc_stats(f)
-            self.add_bkg_rate_params(f, True, True)
+            self.add_bkg_rate_params(f, True, True, True)
 
 
 def parse_args():
