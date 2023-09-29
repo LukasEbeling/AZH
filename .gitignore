@@ -1,6 +1,5 @@
 .vscode/*
 obj/*
-mystuff/*
 plots/*/*
 plots/yields*
 plots/cutflow*
@@ -19,9 +18,5 @@ config/Varial/*
 *.e
 *.log
 2HDMC.txt
-!merged_kfactors_wjets.root
-!merged_kfactors_zjets.root
-!2017_gen_v_pt_qcd_sf.root
-!kfac_dy_filter.root
-!kfac_znn_filter.root
-!lindert_qcd_nnlo_sf.root
+!data/ScaleFactors/*
+!data/ScaleFactors/VJetsCorrections/*
