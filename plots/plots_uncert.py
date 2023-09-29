@@ -10,6 +10,7 @@ import uproot
 
 sys.path.append("../combine/")
 from generate_datacards import SHAPES_NP
+from generate_datacards import RATE_NP
 from config import Configurator
 
 
@@ -20,7 +21,7 @@ config = Configurator()
 CMSSW_BASE = os.environ.get("CMSSW_BASE")
 NTUPLE_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/")
 SIGNALS = ["AZH_1000_400"]
-OBSERVABLES = ["2DEllipses"]
+OBSERVABLES = ["MET"]
 EXCLUDE_BKGS = []
 CHANNELS = ["inv"]
 REGIONS = ["SR_6J"]
@@ -58,7 +59,7 @@ def load(_year, _signal, _obs, _ch, _reg):
         available_processes = []
 
         # Load all processes that are available
-        for process in config.samples:
+        for process in config.samples + ["AtoZH"]:
             try:
                 if process in EXCLUDE_BKGS:
                     raise uproot.exceptions.KeyInFileError(process)
@@ -67,11 +68,13 @@ def load(_year, _signal, _obs, _ch, _reg):
             except uproot.exceptions.KeyInFileError:
                 pass
 
+        #SHAPES_NP.update(RATE_NP)
         for shape_np, np_processes in SHAPES_NP.items():
             shape_np = shape_np.replace("YEAR",_year)
             hists[shape_np] = {}
             for process in np_processes:
                 if not process in available_processes:
+                    print(process)
                     continue
                 hists[shape_np][process] = {}
                 hists[shape_np][process]["up"] = f[f"{_reg}/{process}_{shape_np}Up"]
@@ -204,10 +207,11 @@ def plotUncertaintyRatios(hists, _year, _signal, _obs, _ch, _reg, _process, _np)
         + _process
     )
     base_opath = os.path.join(
-        CMSSW_BASE, "src/UHH2/2HDM/limits/plots/plot_output/np_var_ratios"
+        CMSSW_BASE, "src/UHH2/AZH/plots/nuisances"
     )
     fpath_np = os.path.join(base_opath, f"{_np}/")
-    fpath_np_process = os.path.join(base_opath, f"{_np}/{_process}/")
+    fpath_np_process = os.path.join(base_opath, f"{_np}/")
+    #fpath_np_process = os.path.join(base_opath, f"{_np}/{_process}/")
     save_plot([fpath_np, fpath_np_process], fname)
     plt.close()
 
@@ -227,7 +231,7 @@ if __name__ == "__main__":
             for process in available_processes:
                 if process in EXCLUDE_BKGS:
                     continue
-                print(year, signal, obs, ch, reg, process, nparam)
+                #print(year, signal, obs, ch, reg, process, nparam)
                 plotUncertaintyRatios(
                     hists, year, signal, obs, ch, reg, process, nparam
                 )
