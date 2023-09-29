@@ -12,16 +12,10 @@ getenv            = True
 RequestMemory     = 4G
 RequestDisk       = 2G
 JobBatchName      = run_factory
-executable        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_combine.sh
-arguments         = $(arg1) $(arg2)
-queue arg1, arg2 from (
-    600 400 2DEllipses
-    750 400 2DEllipses
-    800 400 2DEllipses
-    600 400 MH
-    750 400 MH
-    800 400 MH
-    600 400 MET
-    750 400 MET
+executable        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/fitter.py
+arguments         = $(arg1) $(arg2) $(arg3)
+queue arg1, arg2, arg3 from (
+    600 400 MET 
+    750 400 MET 
     800 400 MET
 )
