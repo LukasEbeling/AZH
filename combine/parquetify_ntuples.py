@@ -125,6 +125,8 @@ class Parquetifier():
         return sel_gen
 
     def set_sample_var_fields(self, year, sample, fpath, variation):
+        fpath = fpath.replace("JES_","JES")
+        fpath = fpath.replace("JER_","JER")
         with uproot.open(fpath) as f:
             for jet_flav in self.split_samples_by_flavour(sample):
                 sel_gen = self.load_flavour_selection_mask(f, jet_flav)
