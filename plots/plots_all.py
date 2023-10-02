@@ -19,7 +19,7 @@ ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
 CACHE = ANALYSIS + "combine/cache/"
 BACKGROUNDS = ["VV", "TTW", "TTZ", "DYJets_ljet", "DYJets_bjet", "WJets_ljet", "WJets_bjet", "QCD", "SingleTop","TT"]
-MASSES = ["600_400","700_450","750_400","750_650","800_400","1000_400","1000_850"]
+MASSES = ["600_400","1000_400","2000_400"]
 SIGNALS = [f"AZH_{mass}" for mass in MASSES]
 CMAP = plt.cm.get_cmap("Set1")
 
