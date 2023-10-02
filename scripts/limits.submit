@@ -15,7 +15,37 @@ JobBatchName      = run_factory
 executable        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/fitter.py
 arguments         = $(arg1) $(arg2) $(arg3)
 queue arg1, arg2, arg3 from (
-    600 400 MET 
-    750 400 MET 
+    1300 400 MET
+    1600 1000 MET
+    950 800 MET
+    1600 1300 MET
+    600 400 MET
+    2000 1300 MET
+    950 400 MET
     800 400 MET
+    2000 1600 MET
+    1000 400 MET
+    2000 800 MET
+    1700 800 MET
+    750 650 MET
+    1000 850 MET
+    2000 600 MET
+    1900 400 MET
+    1600 600 MET
+    950 600 MET
+    1600 800 MET
+    2000 400 MET
+    1300 600 MET
+    750 600 MET
+    1700 600 MET
+    1700 400 MET
+    1900 800 MET
+    1300 800 MET
+    2000 1000 MET
+    500 400 MET
+    700 450 MET
+    1600 400 MET
+    1900 600 MET
+    1300 1000 MET
+    750 400 MET
 )
