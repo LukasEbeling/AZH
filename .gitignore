@@ -3,7 +3,7 @@ obj/*
 data/output_01_preselection/*
 data/output_02_reconstruction/*
 combine/cache/*
-combine/__pycache__/*
+*/__pycache__/*
 combine/UL17/*
 *workdir*
 *.json
