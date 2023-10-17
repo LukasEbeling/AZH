@@ -246,6 +246,7 @@ class Datacard():
             f.write("\nrate_Vljet rateParam * WJets_ljet 1 [-2,2]")
         
         f.write("\nrate_BR_vv rateParam * AtoZH 1")
+        f.write("\n* autoMCStats 0")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
