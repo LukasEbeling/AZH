@@ -28,6 +28,8 @@ class InvReconstruction : public AnalysisModule{
 
   private:
 
+  bool is_mc = false;
+
   //Methods
   bool AssignRegion(Event& event);
   bool HasGenLepton(Event& event);
@@ -73,6 +75,7 @@ class InvReconstruction : public AnalysisModule{
 
 
 InvReconstruction::InvReconstruction(Context& ctx){
+  is_mc = ctx.get("dataset_type") == "MC";
 
   sf_btagging.reset(new MCBTagScaleFactor(ctx, BTag::DEEPJET, BTag::WP_MEDIUM, "jets", "mujets", "incl","BTagMCEffFile"));
   //sf_leptons.reset(new LeptonScaleFactors(ctx));
@@ -115,9 +118,11 @@ bool InvReconstruction::process(Event& event){
   sf_btagging->process(event);
 
   //Sanity check for lepton sf
-  int leptons = (*event.electrons).size() + (*event.muons).size();
-  if(leptons==0&&HasGenLepton(event)) h_missed->fill(event);
-  if(leptons!=0&&(!HasGenLepton(event))) h_fake->fill(event);
+  if (is_mc) {
+    int leptons = (*event.electrons).size() + (*event.muons).size();
+    if(leptons==0&&HasGenLepton(event)) h_missed->fill(event);
+    if(leptons!=0&&(!HasGenLepton(event))) h_fake->fill(event);
+  }
 
   //Global cuts
   h_base->fill(event);
