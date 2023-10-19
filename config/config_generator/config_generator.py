@@ -336,7 +336,8 @@ class ConfigFactory():
     def generate_input_data_blocks(self):
         if self.step == "Preselection":
             self.generate_uhh_dataset_input_blocks()
-            self.generate_signal_input_blocks()
+            if not self.is_data:
+                self.generate_signal_input_blocks()
         else:
             self.generate_root_input_blocks()
 
