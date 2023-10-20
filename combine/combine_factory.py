@@ -84,7 +84,12 @@ if __name__ == "__main__":
     parser.add_argument("--signal", default="", help="Optional name of a"
                         "single signal (corresponding to one mA/mH mass point) for which"
                         "to run combine factory.")
+    
     args = parser.parse_args()
-    file_factory = UHH2ToCombineFactory(args.signal)
+    signal = args.signal
+    signal = signal.replace("MA-","")
+    signal = signal.replace("MH-","")
+
+    file_factory = UHH2ToCombineFactory(signal)
     file_factory.run_factory()
     file_factory.plot_elliptical_binnings()
