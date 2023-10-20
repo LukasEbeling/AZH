@@ -18,10 +18,12 @@ plt.style.use(hep.style.CMS)
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
 CACHE = ANALYSIS + "combine/cache/"
-BACKGROUNDS = ["VV", "TTW", "TTZ", "DYJets_ljet", "DYJets_bjet", "WJets_ljet", "WJets_bjet", "QCD", "SingleTop","TT"]
 MASSES = ["600_400","1000_400","2000_400"]
-SIGNALS = [f"AZH_{mass}" for mass in MASSES]
 CMAP = plt.cm.get_cmap("Set1")
+
+BACKGROUNDS = ["VV", "TTW", "TTZ", "DYJets_ljet", "DYJets_bjet", "WJets_ljet", "WJets_bjet", "QCD", "SingleTop","TT"]
+SIGNALS = [f"AZH_{mass}" for mass in MASSES]
+DATA = ["DATA"]
 
 REGIONS = {
     0: "SR_6J",
@@ -75,39 +77,30 @@ class dataLoader():
     data: dir = {}
 
     def __init__(self):
-        #self.load_bkgs()
-        #self.load_sigs()
-        self.load_samples(BACKGROUNDS)
-        self.load_samples(SIGNALS)
+        self.load(BACKGROUNDS)
+        self.load(SIGNALS)
+        self.load(DATA)
 
-    def load(self, path):
-        o = {}
-        with uproot.open(path) as f:
-            for obs in OBSERVABLES:
-                o[obs] = f[f'AnalysisTree/{obs}'].array(library="np")
-            w = f[f"AnalysisTree/event_weight"].array(library="np")
-            r = f[f"AnalysisTree/region"].array(library="np")
-        return o, w, r
+    def load_parquet(self,sample,observable):
+        if sample == "DATA":
+            file_path = CACHE + f"data_UL17_{observable}.parquet"
+        else:
+            file_path = CACHE + f"mc_UL17_{sample}_nominal_{observable}.parquet"
+        df = pd.read_parquet(file_path)
+        return np.array(df["foo"])
 
-    def load_new(self,sample):
+    def load_sample(self,sample):
         o = {}
         for obs in OBSERVABLES: o[obs] = self.load_parquet(sample,obs)
         w = self.load_parquet(sample, "event_weight")
         r = self.load_parquet(sample, "region")
         return o,w,r
-
-    def load_parquet(self, sample, observable):
-        file_path = CACHE + f"mc_UL17_{sample}_nominal_{observable}.parquet"
-        df = pd.read_parquet(file_path)
-        return np.array(df["foo"])
     
-    def load_samples(self,samples):
+    def load(self,samples):
         bar = IncrementalBar("Loading", max=len(samples))
         for sample in samples:
             print("\n"+sample)
-            #path = RECO_PATH + "MC/UL17/" + f"MC.{sample}_UL17.root"
-            #o, w, r = self.load(path)
-            o,w,r = self.load_new(sample)
+            o,w,r = self.load_sample(sample)
             self.data[sample] = {
                 "observables": o,
                 "weights": w,
@@ -138,38 +131,10 @@ def overflow(val,binning):
 def add_bin(binning):
     return np.append(binning,binning[-1]+(binning[-1]-binning[-2]))
 
-
-def get_bkg(region,binning,observable):  #as list 
-    binned = []
-    errors = []
- 
-    for bkg in BACKGROUNDS:
-        val = data_loader.data[bkg]["observables"][observable]
-        wgh = data_loader.data[bkg]["weights"]
-        reg = data_loader.data[bkg]["regions"]
-
-        val,wgh = filter_events(val,wgh,reg,region,observable)
-
-        #met = data_loader.data[bkg]["observables"]["MET"]
-        #met = met[reg==region]
-        #for i in range(len(wgh)):
-        #    if met[i]<50: wgh[i]=0
-
-        val = overflow(val,binning)
-
-        num,bins = np.histogram(val, weights=wgh, bins=binning)
-        err,bins = np.histogram(val, weights=wgh**2, bins=binning)
-
-        binned.append(num)
-        errors.append(np.sqrt(err))
-
-    return binned, errors
-
-def get_sig(region,signal,binning,observable): 
-
-    val = data_loader.data[signal]["observables"][observable]
-    wgh = data_loader.data[signal]["weights"]
-    reg = data_loader.data[signal]["regions"]
+def get_sample(region,sample,binning,observable):
+    val = data_loader.data[sample]["observables"][observable]
+    wgh = data_loader.data[sample]["weights"]
+    reg = data_loader.data[sample]["regions"]
 
     val,wgh = filter_events(val,wgh,reg,region,observable)  
     val = overflow(val,binning)      
@@ -179,6 +144,19 @@ def get_sig(region,signal,binning,observable):
 
     err = np.sqrt(err)
     return num, err
+
+
+def get_bkg(region,binning,observable):  #as list 
+    binned = []
+    errors = []
+ 
+    for bkg in BACKGROUNDS:
+        val,err = get_sample(region,bkg,binning,observable)
+        binned.append(val)
+        errors.append(err)
+
+    return np.array(binned), np.array(errors)
+
 
 def get_xlabel(obs):
     x = {
@@ -202,7 +180,9 @@ def get_xlabel(obs):
 def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
     binning = add_bin(binning)
     binned_bkg, errors = get_bkg(region,binning,observable)
-    binned_sig, error = get_sig(region,signal,binning,observable)
+    binned_sig, error_sig = get_sample(region,signal,binning,observable)
+    binned_data, error_data = get_sample(region,"DATA",binning,observable)
+
 
     fig, axes = plt.subplots(
         nrows=2, 
@@ -223,17 +203,25 @@ def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
     colors = [COLOR[process] for process in BACKGROUNDS]
 
     hep.histplot(binned_bkg, histtype='fill', bins=binning, stack=True, label=label_bkg, ax=axes[0],color=colors)
-    hep.histplot(binned_sig, yerr=error, histtype='step', bins=binning, color='k', label=label_sig, ax=axes[0])
-
+    hep.histplot(binned_sig, yerr=error_sig, histtype='step', bins=binning, color='k', label=label_sig, ax=axes[0])
+    
+    if region == 0 or region == 1:
+        #error_band_args = {"edges": bins, "facecolor": "none", "linewidth": 0, "alpha": 0.9, "color": "black", "hatch": "///"}
+        pass
+    else:
+        hep.histplot(binned_data, yerr=error_data, histtype="errorbar", bins=binning, stack=False, color="k", ax=axes[0])
+        binned_data = binned_data/sum(binned_bkg)
+        error_data = error_data/sum(binned_bkg)
+        hep.histplot(binned_data, yerr=error_data, histtype="errorbar", bins=binning, stack=False, color="k", ax=axes[1])
 
     #axes[0].set_yscale('log')
     axes[0].legend(ncol=2, title=REGIONS[region], fontsize=18,title_fontsize=18, frameon=True)
     axes[0].set_ylabel("Events")
-
     axes[1].set_xlabel(get_xlabel(observable)[0])
+    axes[1].set_ylim(0.5, 1.5)
+    axes[1].set_ylabel("data/mc")
 
     # Save Plot
-    #folder = os.path.join(ANALYSIS,"plots",signal)
     folder = os.path.join(ANALYSIS,"plots",signal)
     if not os.path.exists(folder): os.makedirs(folder)
 
