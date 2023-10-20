@@ -229,24 +229,24 @@ class Datacard():
             f.write("\n")
 
     def write_auto_mc_stats(self, f):
-        if self.args.autoMCStats > -1:
-            N = self.args.autoMCStats
-            f.write(f"* autoMCStats {N}\n")
+        f.write(f"\n* autoMCStats 0")
 
-    def add_bkg_rate_params(self, f, tt: bool, dy: bool, wj: bool):
-        if tt and "TT" in self.processes:
+    def write_scaling(self, f):
+        f.write("\nrate_BR_vv rateParam * AtoZH 0.2")
+        f.write("\nnuisance edit freeze rate_BR_vv ifexists")
+
+    def write_bkg_rate_params(self, f):
+        if "TT" in self.processes:
             f.write("rate_TT rateParam * TT 1 [-2,2]")
-        if dy and "DYJets_bjet" in self.processes:
+        if "DYJets_bjet" in self.processes:
             f.write("\nrate_Vbjet rateParam * DYJets_bjet 1 [-2,2]")
-        if dy and "DYJets_ljet" in self.processes:
+        if "DYJets_ljet" in self.processes:
             f.write("\nrate_Vljet rateParam * DYJets_ljet 1 [-2,2]")
-        if wj and "WJets_bjet" in self.processes:
+        if "WJets_bjet" in self.processes:
             f.write("\nrate_Vbjet rateParam * WJets_bjet 1 [-2,2]")
-        if wj and "WJets_ljet" in self.processes:
+        if "WJets_ljet" in self.processes:
             f.write("\nrate_Vljet rateParam * WJets_ljet 1 [-2,2]")
         
-        f.write("\nrate_BR_vv rateParam * AtoZH 1")
-        f.write("\n* autoMCStats 0")
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
@@ -256,8 +256,9 @@ class Datacard():
             self.write_processes(f)
             self.write_lnN_systematics(f)
             self.write_shape_systematics(f)
+            self.write_bkg_rate_params(f)
+            self.write_scaling(f)
             self.write_auto_mc_stats(f)
-            self.add_bkg_rate_params(f, True, True, True)
 
 
 def parse_args():
