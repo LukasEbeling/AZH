@@ -3,15 +3,15 @@ Requirements = ( OpSysAndVer == "CentOS7" )
 universe          = vanilla
 # #Running in local mode with 8 cpu slots
 request_cpus      = 4
-initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/
-output            = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.o
-error             = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.e
-log               = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/run_factory.log
+initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine
+output            = $(initialdir)/condor/run_factory.o
+error             = $(initialdir)/condor/run_factory.e
+log               = /$(initialdir)/condor/run_factory.log
 #Requesting CPU and DISK Memory - default +RequestRuntime of 3h stays unaltered
 getenv            = True
 RequestMemory     = 4G
 RequestDisk       = 2G
 JobBatchName      = run_factory
-executable        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/combine_factory.py
+executable        = $(initialdir)/combine_factory.py
 arguments         = --signal $(SampleName)
 queue SampleName from ../config/signals.txt
