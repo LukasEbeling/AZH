@@ -4,15 +4,15 @@ universe          = vanilla
 # #Running in local mode with 8 cpu slots
 request_cpus      = 4
 initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/
-output            = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/parquet.o
-error             = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/parquet.e
-log               = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/scripts/parquet.log
+output            = $(initialdir)/condor/parquet.o
+error             = $(initialdir)/condor/parquet.e
+log               = $(initialdir)/condor/parquet.log
 #Requesting CPU and DISK Memory - default +RequestRuntime of 3h stays unaltered
 getenv            = True
 RequestMemory     = 4G
 RequestDisk       = 2G
 JobBatchName      = parquetify
-executable        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine/parquetify_ntuples.py
+executable        = $(initialdir)/parquetify_ntuples.py
 arguments         = --sample $(SampleName)
 queue SampleName from (
     AZH_1000_400
