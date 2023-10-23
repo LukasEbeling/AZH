@@ -33,13 +33,14 @@ class Theory:
 
 class Limit:
 
-    def __init__(self, channel="INV", var="MET", year="UL17"):
+    def __init__(self, channel="inv", var="MET", region="all", year="UL17"):
         self.channel = channel
         self.var = var
+        self.region = region
         self.year = year
 
     def load(self, mA, mH, pct = "50.0%"):
-        fname = f"{self.channel}_{mA}_{mH}_{self.var}_{self.year}.log"
+        fname = f"AZH_{mA}_{mH}_{self.var}_{self.channel}_{self.region}.log"
         with open(os.path.join(ANALYSIS, "combine", self.year, fname), "r") as f:
             limit_line = [x for x in f if pct in x][0]
 
