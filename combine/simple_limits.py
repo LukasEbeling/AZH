@@ -11,7 +11,8 @@ if __name__ == "__main__":
     parser.add_argument("var")
     args = parser.parse_args()
     masses = args.masses; var = args.var   
-
+    
+    masses.replace("MA-","").replace("MH-","")
 
     cards = [f"AZH_{masses}_{var}_inv_{region}.dat" for region in REGIONS]
     outcard = f"AZH_{masses}_{var}_inv_all.dat"
