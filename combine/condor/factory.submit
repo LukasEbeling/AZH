@@ -14,4 +14,4 @@ RequestDisk       = 2G
 JobBatchName      = run_factory
 executable        = $(initialdir)/combine_factory.py
 arguments         = --signal $(SampleName)
-queue SampleName from ../config/signals.txt
+queue SampleName from /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/config/signals.txt
