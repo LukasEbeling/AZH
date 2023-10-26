@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 
 from matplotlib.tri import Triangulation, LinearTriInterpolator
-from utils import Theory, Limit, load_masses
+from utilities import Theory, Limit, load_masses
 
 plt.style.use(hep.style.CMS)
 

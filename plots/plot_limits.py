@@ -2,7 +2,7 @@
 import mplhep as hep
 import matplotlib.pyplot as plt
 
-from utils import Theory, Limit, load_masses
+from utilities import Theory, Limit, load_masses
 
 plt.style.use(hep.style.CMS)
 
