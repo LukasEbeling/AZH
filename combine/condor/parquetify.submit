@@ -41,6 +41,9 @@ queue SampleName from (
     AZH_1300_800
     AZH_1400_400
     AZH_1400_500
+    AZH_1400_600
+    AZH_1500_500
+    AZH_1500_600
     AZH_1600_1000
     AZH_1600_1300
     AZH_1600_400
