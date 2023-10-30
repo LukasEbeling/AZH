@@ -8,9 +8,9 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import mplhep as hep
 
+from utils import Combine, REGION_ID_MAP
 from plot_utils import PlotMeta
 from plot_utils import CMSSW_BASE
-from commands import fit 
 
 BACKGROUNDS = [
     "VV", 
@@ -23,21 +23,6 @@ BACKGROUNDS = [
     "QCD", 
     "SingleTop",
     "TT"
-]
-
-REGIONS = [
-    "SR_6J",
-    "SR_5J", 
-    "IR_1B_5J",
-    "IR_1B_6J",
-    "IR_0B_5J",
-    "IR_0B_6J",
-    "LR_2B_5J",  
-    "LR_2B_6J",
-    "LR_1B_5J",
-    "LR_1B_6J",
-    "LR_0B_5J",
-    "LR_0B_6J"
 ]
 
 class PlotMetaDataMC(PlotMeta):
@@ -63,7 +48,7 @@ class Fitter():
         card = f"UL17/{basename}.dat"
         workspace = f"tmp/{basename}.root"
         shapes = f"tmp/shapes.{basename}.root"
-        fit(card,workspace,shapes)
+        Combine.fit(card,workspace,shapes)
 
 
     def load(self):
@@ -252,7 +237,7 @@ class Fitter():
 
 if __name__ == "__main__":
 
-    for region in REGIONS:
+    for region in REGION_ID_MAP.keys():
         fitter = Fitter(
             signal="1000_400",
             obs="MET",
