@@ -11,7 +11,7 @@ import utils
 
 
 config = Configurator()
-VARS = ["MTA","MTH","MH","MET","2DEllipses"]
+VARS = ["MH","MET","2DEllipses"]
 CHANNELS = ["inv"]
 REGIONS = list(utils.REGION_ID_MAP.keys())
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
@@ -234,6 +234,8 @@ class Datacard():
     def write_scaling(self, f):
         f.write("\nrate_BR_vv rateParam * AtoZH 0.2")
         f.write("\nnuisance edit freeze rate_BR_vv ifexists")
+        f.write("\nlumiscale rateParam * * 1") #3.33 for full run 2
+        f.write("\nnuisance edit freeze lumiscale ifexists")
 
     def write_bkg_rate_params(self, f):
         if "TT" in self.processes:
