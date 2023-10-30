@@ -138,6 +138,7 @@ class Parquetifier():
                     if sel_gen is not None:
                         branch = branch[sel_gen]
                     pa_table = pa.table({"foo": branch})
+                    #key = key.replace("/",".")
                     pq.write_table(pa_table, f"cache/mc_{year}_{sample}{jet_flav}_{variation}_{key}.parquet")
 
     @property
@@ -166,6 +167,7 @@ class Parquetifier():
                         if sel_gen is not None:
                             branch = branch[sel_gen]
                         pa_table = pa.table({"foo": branch})
+                        #key = key.replace("/",".")
                         pq.write_table(pa_table, f"cache/mc_{year}_{sample}{jet_flav}_nominal_{key}.parquet")
 
                     # Variations
@@ -180,6 +182,7 @@ class Parquetifier():
                         if "trigger" in branch:  # TODO: What's going on here?? What is this doing?
                             x = np.where(x != 0, x, 1)
                         pa_table = pa.table({"foo": x})
+                        #branch = branch.replace("/",".")
                         pq.write_table(pa_table, f"cache/mc_{year}_{sample}{jet_flav}_variation_{branch}.parquet")
 
     def merge_16_pre_post(self):
@@ -241,6 +244,7 @@ class Parquetifier():
                     if "ak4chs_" in key:
                         continue
                     pa_table = pa.table({"foo": concat_variation(sample, sample_variation, key)})
+                    #key = key.replace("/",".")
                     pq.write_table(pa_table, f"cache/mc_UL16_{sample}_{sample_variation}_{key}.parquet")
 
 
