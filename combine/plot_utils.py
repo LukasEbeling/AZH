@@ -23,7 +23,7 @@ class PlotMeta:
         "UL16": 2016,
     }
 
-    CMAP = plt.cm.get_cmap("Set3")
+    CMAP = plt.cm.get_cmap("Set1")
 
     LLABEL = "Private work"
 
@@ -38,20 +38,19 @@ class PlotMeta:
 
     def colors(self, processes: list):
         id_map = {
-            "AtoZH": 8,
-            #"DYJets": 0,
-            "ZJets": 0,
-            "DYJets_bjet": 0,
+            "AtoZH": 5,
+            "DYJets": 0,
             "DYJets_ljet": 0,
-            "TT": 1,
+            "DYJets_bjet": 0,
+            "TT": 8,
             "TTZ": 2,
-            "QCD": 3,
-            "VV": 4,
-            "SingleTop": 5,
-            "TTW": 6,
-            #"WJets": 7,
-            "WJets_ljet": 7,
-            "WJets_bjet": 7,
+            "QCD": 6,
+            "VV": 1,
+            "SingleTop": 7,
+            "TTW": 4,
+            "WJets": 3,
+            "WJets_ljet": 3,
+            "WJets_bjet": 3,
         }
 
         return [self.CMAP.colors[id_map[p]] for p in processes]
