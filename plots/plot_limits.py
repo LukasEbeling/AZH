@@ -10,12 +10,12 @@ BRAZILIAN_GREEN = "#009C3B"
 BRAZILIAN_GOLD = "#FFDF00"  
 
 
-def plot_limits(var="MET", year="UL17", channel="INV"):
+def plot_limits(channel="inv", var="MET", region="all", year="UL17"):
     masses = [(mA,mH) for mA,mH in load_masses() if mH==400]
     masses = sorted(masses, key=lambda x: x[0])
     
     theory = Theory(tanb=1)
-    limit = Limit(channel,var,year)
+    limit = Limit(channel,var,region,year)
     
     plot_range = range(500,2000,10)
     tan = [theory.get_inclusive(mA,400) for mA in plot_range]
@@ -45,5 +45,5 @@ def plot_limits(var="MET", year="UL17", channel="INV"):
 
     
 if __name__ == "__main__":
-    plot_limits("MET","UL17")
+    plot_limits()
 
