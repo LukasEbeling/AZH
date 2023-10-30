@@ -27,23 +27,23 @@ REGION_ID_MAP = {
 }
 
 OUTPUT_MAP = {
-        "z_pt_reco": "ZPT",
-        "ellipses": "2DEllipses",
-        "jetsAk4CHS/jetsAk4CHS.m_phi_1": "Jet1Phi",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_1": "Jet1Pt",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_2": "Jet2Pt",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_3": "Jet3Pt",
-        "jetsAk4CHS/jetsAk4CHS.m_pt_4": "Jet4Pt",
-        "slimmedElectronsUSER.m_pt_1": "Elec1Pt",
-        "slimmedElectronsUSER.m_pt_2": "Elec2Pt",
-        "slimmedMuonsUSER.m_pt_1": "Muon1Pt",
-        "slimmedMuonsUSER.m_pt_2": "Muon2Pt",
-        "z_mass_reco": "ZMass",
-        "mt_A": "MTA",
-        "mt_H": "MTH",
-        "m_H": "MH",
-        "MET": "MET",
-    }
+    "z_pt_reco": "ZPT",
+    "ellipses": "2DEllipses",
+    "jetsAk4CHS/jetsAk4CHS.m_phi_1": "Jet1Phi",
+    "jetsAk4CHS/jetsAk4CHS.m_pt_1": "Jet1Pt",
+    "jetsAk4CHS/jetsAk4CHS.m_pt_2": "Jet2Pt",
+    "jetsAk4CHS/jetsAk4CHS.m_pt_3": "Jet3Pt",
+    "jetsAk4CHS/jetsAk4CHS.m_pt_4": "Jet4Pt",
+    "slimmedElectronsUSER.m_pt_1": "Elec1Pt",
+    "slimmedElectronsUSER.m_pt_2": "Elec2Pt",
+    "slimmedMuonsUSER.m_pt_1": "Muon1Pt",
+    "slimmedMuonsUSER.m_pt_2": "Muon2Pt",
+    "z_mass_reco": "ZMass",
+    "mt_A": "MTA",
+    "mt_H": "MTH",
+    "m_H": "MH",
+    "MET": "MET",
+}
 
 
 class Ellipse():
