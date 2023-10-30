@@ -23,7 +23,6 @@ CMAP = plt.cm.get_cmap("Set1")
 
 BACKGROUNDS = ["VV", "TTW", "TTZ", "DYJets_ljet", "DYJets_bjet", "WJets_ljet", "WJets_bjet", "QCD", "SingleTop","TT"]
 SIGNALS = [f"AZH_{mass}" for mass in MASSES]
-DATA = ["DATA"]
 
 REGIONS = {
     0: "SR_6J",
@@ -79,13 +78,9 @@ class dataLoader():
     def __init__(self):
         self.load(BACKGROUNDS)
         self.load(SIGNALS)
-        self.load(DATA)
 
     def load_parquet(self,sample,observable):
-        if sample == "DATA":
-            file_path = CACHE + f"data_UL17_{observable}.parquet"
-        else:
-            file_path = CACHE + f"mc_UL17_{sample}_nominal_{observable}.parquet"
+        file_path = CACHE + f"mc_UL17_{sample}_nominal_{observable}.parquet"
         df = pd.read_parquet(file_path)
         return np.array(df["foo"])
 
@@ -179,16 +174,14 @@ def get_xlabel(obs):
 
 def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
     binning = add_bin(binning)
-    binned_bkg, errors = get_bkg(region,binning,observable)
+    binned_bkg, foo = get_bkg(region,binning,observable)
     binned_sig, error_sig = get_sample(region,signal,binning,observable)
-    binned_data, error_data = get_sample(region,"DATA",binning,observable)
 
 
     fig, axes = plt.subplots(
-        nrows=2, 
+        nrows=1, 
         ncols=1,
         figsize=(12,10),
-        gridspec_kw={"height_ratios": (4, 1)},
         sharex=True
     )
 
@@ -198,28 +191,17 @@ def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
     label_bkg = [f"{b} ({y})" for b,y in zip(BACKGROUNDS,yields_bkg)]
     label_sig = f"{signal} ({yield_sig})" 
 
-    hep.cms.label(ax=axes[0],llabel='Work in progress',data=True, lumi=41.48, year=2017)
+    hep.cms.label(ax=axes,llabel='Work in progress',data=True, lumi=41.48, year=2017)
 
     colors = [COLOR[process] for process in BACKGROUNDS]
 
-    hep.histplot(binned_bkg, histtype='fill', bins=binning, stack=True, label=label_bkg, ax=axes[0],color=colors)
-    hep.histplot(binned_sig, yerr=error_sig, histtype='step', bins=binning, color='k', label=label_sig, ax=axes[0])
+    hep.histplot(binned_bkg, histtype='fill', bins=binning, stack=True, label=label_bkg, ax=axes,color=colors)
+    hep.histplot(binned_sig, yerr=error_sig, histtype='step', bins=binning, color='k', label=label_sig, ax=axes)
     
-    if region == 0 or region == 1:
-        #error_band_args = {"edges": bins, "facecolor": "none", "linewidth": 0, "alpha": 0.9, "color": "black", "hatch": "///"}
-        pass
-    else:
-        hep.histplot(binned_data, yerr=error_data, histtype="errorbar", bins=binning, stack=False, color="k", ax=axes[0])
-        binned_data = binned_data/sum(binned_bkg)
-        error_data = error_data/sum(binned_bkg)
-        hep.histplot(binned_data, yerr=error_data, histtype="errorbar", bins=binning, stack=False, color="k", ax=axes[1])
-
-    #axes[0].set_yscale('log')
-    axes[0].legend(ncol=2, title=REGIONS[region], fontsize=18,title_fontsize=18, frameon=True)
-    axes[0].set_ylabel("Events")
-    axes[1].set_xlabel(get_xlabel(observable)[0])
-    axes[1].set_ylim(0.5, 1.5)
-    axes[1].set_ylabel("data/mc")
+    #axes.set_yscale('log')
+    axes.legend(ncol=2, title=REGIONS[region], fontsize=18,title_fontsize=18, frameon=True)
+    axes.set_ylabel("Events")
+    axes.set_xlabel(get_xlabel(observable)[0])
 
     # Save Plot
     folder = os.path.join(ANALYSIS,"plots",signal)
