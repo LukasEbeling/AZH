@@ -24,6 +24,7 @@ class PlotMeta:
     }
 
     CMAP = plt.cm.get_cmap("Set1")
+    #CMAP = plt.cm.get_cmap("Set3")
 
     LLABEL = "Private work"
 
@@ -53,7 +54,25 @@ class PlotMeta:
             "WJets_bjet": 3,
         }
 
+        id_map_alt = {
+            "AtoZH": 8,
+            "DYJets": 0,
+            "DYJets_ljet": 9,
+            "DYJets_bjet": 10,
+            "TT": 1,
+            "TTZ": 2,
+            "QCD": 3,
+            "VV": 4,
+            "SingleTop": 5,
+            "TTW": 6,
+            "WJets": 0,
+            "WJets_ljet": 9,
+            "WJets_bjet": 10,
+        }
         return [self.CMAP.colors[id_map[p]] for p in processes]
+
+
+
 
 
 class map_region_int_to_str:
