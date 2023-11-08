@@ -70,7 +70,6 @@ class Combine():
     # run fit diagnostics
     def fit(card,workspace,output): 
         short = card.replace(".dat","").replace("/","_")
-        create_workspace(card,workspace)
         os.system(
             f"combine -M FitDiagnostics -d {workspace} "
             f"-n _{short} -m 125 -v 1 --rMin -1 --rMax 1 "
