@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import mplhep as hep
 
-from utils import Combine, REGION_ID_MAP
+from utils import Combine
 from plot_utils import PlotMeta
 from plot_utils import CMSSW_BASE
 
@@ -25,10 +25,25 @@ BACKGROUNDS = [
     "TT"
 ]
 
+REGIONS = {
+    "SR_6J" : r"SR 6j",
+    "SR_5J" : r"SR 5j", 
+    "IR_1B_5J" : r"0l 1b 5j",
+    "IR_1B_6J" : r"0l 1b 6j",
+    "IR_0B_5J" : r"0l 0b 5j",
+    "IR_0B_6J" : r"0l 0b 6j",
+    "LR_2B_5J" : r"1l 2b 5j",  
+    "LR_2B_6J" : r"1l 2b 6j",
+    "LR_1B_5J" : r"1l 1b 5j",
+    "LR_1B_6J" : r"1l 1b 6j",
+    "LR_0B_5J" : r"1l 0b 5j",
+    "LR_0B_6J" : r"1l 0b 6j",
+}
+
 class PlotMetaDataMC(PlotMeta):
 
     OBS_XLABEL_MAP = {
-        "MET": r"$p_t^miss$",
+        "MET": r"$p_t^{miss}$",
     }
 
 
@@ -48,6 +63,7 @@ class Fitter():
         card = f"UL17/{basename}.dat"
         workspace = f"tmp/{basename}.root"
         shapes = f"tmp/shapes.{basename}.root"
+        Combine.create_workspace(card,workspace)
         Combine.fit(card,workspace,shapes)
 
 
@@ -189,10 +205,11 @@ class Fitter():
             ax[1].set_ylim([0.5, 1.5])
 
         # Plot Settings
-        title = rf"$\it{{{self.region}}}$  $\it{{{self.channel}}}$ $\it{{Channel}}$"
-        ax[0].set_yscale("log")
+        #title = rf"$\it{{{self.region}}}$  $\it{{{self.channel}}}$ $\it{{Channel}}$"
+        title = REGIONS[self.region]
+        #ax[0].set_yscale("log")
         handles, labels = ax[0].get_legend_handles_labels()
-        ax[0].legend(
+        legend = ax[0].legend(
             reversed(handles),
             reversed(labels),
             loc="upper right",
@@ -200,12 +217,14 @@ class Fitter():
             title=title,
             fontsize=18,
             title_fontsize=18,
-            frameon=False,
+            frameon=True,
         )
+        legend.get_frame().set_facecolor('white')
         ax[0].set_ylabel("Events")
-        ax[0].set_ylim(ymin=1e-2, ymax=np.max(mc) * 900)
-        ax[0].set_xlim(bins[0],bins[-2]+10) #crop overflow bin
-        ax[1].set_xlim(bins[0],bins[-2]+10) #crop overflow bin
+        #ax[0].set_ylim(ymin=1e-2, ymax=np.max(mc) * 900)
+        ax[0].set_ylim(ymin=0, ymax=np.max(mc) + 100)
+        ax[0].set_xlim(bins[0],bins[-2]) #crop overflow bin
+        ax[1].set_xlim(bins[0],bins[-2]) #crop overflow bin
         ax[1].set_xlabel(plot_meta.xlabel(self.obs))
 
         ax[0].grid()
@@ -216,7 +235,6 @@ class Fitter():
             CMSSW_BASE(),
             f"src/UHH2/AZH/combine/plots/",
         )
-        print(fpath_out)
         os.makedirs(fpath_out, exist_ok=True)
         fname = (
             self.channel
@@ -227,17 +245,17 @@ class Fitter():
             + "_"
             + self.signal
             + "_"
-            + "Postfit"
+            + self.fit
         )
         if pulls:
             fname += "_pulls"
         plt.savefig(fpath_out + f"{fname}.png")
-        plt.savefig(fpath_out + f"{fname}.pdf")
+        #plt.savefig(fpath_out + f"{fname}.pdf")
         plt.close()
 
 if __name__ == "__main__":
 
-    for region in REGION_ID_MAP.keys():
+    for region in REGIONS.keys():
         fitter = Fitter(
             signal="1000_400",
             obs="MET",
@@ -248,6 +266,6 @@ if __name__ == "__main__":
             hists={},
         )
 
-        fitter.run_fits()
+        #fitter.run_fits()
         fitter.load()
         fitter.plot()
