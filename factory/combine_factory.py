@@ -1,7 +1,7 @@
 #!/nfs/dust/cms/user/ebelingl/anaconda3/envs/py311/bin/python
 import argparse
 
-from elliptical_hist_plotter import EllipticalHistPlotter
+#from elliptical_hist_plotter import EllipticalHistPlotter
 from ntuple_loader import NTupleLoader
 import utils
 from utils import REGION_ID_MAP
@@ -92,4 +92,4 @@ if __name__ == "__main__":
 
     file_factory = UHH2ToCombineFactory(signal)
     file_factory.run_factory()
-    file_factory.plot_elliptical_binnings()
+    #file_factory.plot_elliptical_binnings()

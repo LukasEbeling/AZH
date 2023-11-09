@@ -3,6 +3,7 @@ obj/*
 data/output_01_preselection/*
 data/output_02_reconstruction/*
 combine/cache/*
+factory/cache/*
 */__pycache__/*
 combine/UL17/*
 *workdir*

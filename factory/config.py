@@ -22,7 +22,7 @@ class Configurator(Borg):
             return
 
         self.signal = signal
-        with open(os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/config.yaml"), 'r') as f:
+        with open(os.path.join(CMSSW_BASE, "src/UHH2/AZH/factory/config.yaml"), 'r') as f:
             config_dict = yaml.safe_load(f)
         self.config_dict = config_dict
 

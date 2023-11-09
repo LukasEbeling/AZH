@@ -1,0 +1,100 @@
+Requirements = ( OpSysAndVer == "CentOS7" )
+# Request_GPUs = 1
+universe          = vanilla
+# #Running in local mode with 8 cpu slots
+request_cpus      = 4
+initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/factory/
+output            = $(initialdir)/condor_logs/parquet.o
+error             = $(initialdir)/condor_logs/parquet.e
+log               = $(initialdir)/condor_logs/parquet.log
+#Requesting CPU and DISK Memory - default +RequestRuntime of 3h stays unaltered
+getenv            = True
+RequestMemory     = 4G
+RequestDisk       = 2G
+JobBatchName      = parquetify
+executable        = $(initialdir)/parquetify_ntuples.py
+arguments         = --sample $(SampleName)
+queue SampleName from (
+    AZH_1000_400
+    AZH_1000_450
+    AZH_1000_500
+    AZH_1000_550
+    AZH_1000_850
+    AZH_1050_400
+    AZH_1050_450
+    AZH_1050_500
+    AZH_1050_550
+    AZH_1050_600
+    AZH_1100_400
+    AZH_1100_450
+    AZH_1100_500
+    AZH_1100_550
+    AZH_1100_600
+    AZH_1150_450
+    AZH_1150_550
+    AZH_1200_500
+    AZH_1200_600
+    AZH_1300_1000
+    AZH_1300_400
+    AZH_1300_500
+    AZH_1300_600
+    AZH_1300_800
+    AZH_1400_400
+    AZH_1400_500
+    AZH_1400_600
+    AZH_1500_500
+    AZH_1500_600
+    AZH_1600_1000
+    AZH_1600_1300
+    AZH_1600_400
+    AZH_1600_600
+    AZH_1600_800
+    AZH_1700_400
+    AZH_1700_600
+    AZH_1700_800
+    AZH_1900_400
+    AZH_1900_600
+    AZH_1900_800
+    AZH_2000_1000
+    AZH_2000_1300
+    AZH_2000_1600
+    AZH_2000_400
+    AZH_2000_600
+    AZH_2000_800
+    AZH_500_400
+    AZH_600_400
+    AZH_700_450
+    AZH_750_400
+    AZH_750_600
+    AZH_750_650
+    AZH_800_400
+    AZH_800_450
+    AZH_800_500
+    AZH_800_550
+    AZH_850_400
+    AZH_850_450
+    AZH_850_500
+    AZH_850_550
+    AZH_850_600
+    AZH_900_450
+    AZH_900_500
+    AZH_900_550
+    AZH_900_600
+    AZH_950_400
+    AZH_950_450
+    AZH_950_500
+    AZH_950_550
+    AZH_950_600
+    AZH_950_800
+    TT
+    TTZ
+    SingleTop
+    TTW
+    VV
+    QCD
+    WJets_ljet
+    WJets_bjet
+    DYJets_ljet
+    DYJets_bjet
+    DATA
+)

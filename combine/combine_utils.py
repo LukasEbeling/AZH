@@ -38,3 +38,36 @@ class Combine():
         )
         os.system(f"rm fitDiagnostics_{short}.root")
         os.system(f"rm higgsCombine_{short}*")
+
+
+    # perform a log likelyhood scan of poi
+    def log_likely_scan(workspace, outfile, r_in=0):
+    r_max = max(2*r_in,2)
+
+    HASH = workspace.replace(".root","")
+    
+    os.system(
+        f"combine -M MultiDimFit {workspace} -n .{HASH}.nominal "
+        f"-m 125 --rMin -1 --rMax {r_max} --algo grid --points 30 -t -1 --setParameters r={r_in}"
+    )
+
+    os.system(
+        f"combine -M MultiDimFit {workspace} -n .{HASH}.snapshot "
+        f"-m 125 --rMin -1 --rMax {r_max} --saveWorkspace -t -1 --setParameters r={r_in}"
+    )
+
+    os.system(
+        f"combine -M MultiDimFit higgsCombine.{HASH}.snapshot.MultiDimFit.mH125.root "
+        f"-n .{HASH}.freezeall -m 125 --rMin -1 --rMax {r_max} --algo grid --points 30 "
+        f"--freezeParameters allConstrainedNuisances --snapshotName MultiDimFit -t -1 --setParameters r={r_in}"
+    )
+
+   os.system(
+        f"python $CMSSW_BASE/src/CombineHarvester/CombineTools/scripts/plot1DScan.py "
+        f"higgsCombine.{HASH}.nominal.MultiDimFit.mH125.root --others "
+        f"'higgsCombine.{HASH}.freezeall.MultiDimFit.mH125.root:FreezeAll:{r_max}' -o {outfile}"
+    )
+
+    os.system(
+        f"rm higgsCombine.{HASH}*"
+    )

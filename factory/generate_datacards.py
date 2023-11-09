@@ -120,7 +120,7 @@ class Datacard():
             print(f"File {e.filename} not found! Will skip.")
 
     def filter_processes(self):
-        combine_fpath = f"{self.year}/{self.fname}.root"
+        combine_fpath = f"../combine/{self.year}/{self.fname}.root"
         if not os.path.isfile(combine_fpath):
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), combine_fpath)
         with uproot.open(combine_fpath) as f:
@@ -221,7 +221,7 @@ class Datacard():
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
-        with open(f"{self.year}/{self.fname}.dat", 'w') as f:
+        with open(f"../combine/{self.year}/{self.fname}.dat", 'w') as f:
             self.write_parameters(f)
             self.write_channels(f)
             self.write_processes(f)
