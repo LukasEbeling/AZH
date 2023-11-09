@@ -117,7 +117,7 @@ class Fitter():
         }
 
         mc = self.hists["total_bkg"].to_numpy()[0]
-        mc_error = self.hists["total_bkg"].errors()
+        mc_error = self.hists["total_bkg"].errors() #not mc error but bkg uncertainty
         # Set data to total bkg in SR if run in blinded mode
         if ("SR" not in self.region) or self.unblind:
             data = self.hists["data"].to_numpy()[0]
