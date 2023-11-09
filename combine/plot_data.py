@@ -8,9 +8,8 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import mplhep as hep
 
-from utils import Combine
-from plot_utils import PlotMeta
-from plot_utils import CMSSW_BASE
+from combine_utils import Combine
+from plot_utils import PlotMeta, CMSSW_BASE
 
 BACKGROUNDS = [
     "VV", 
