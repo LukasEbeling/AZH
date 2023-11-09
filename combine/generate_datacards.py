@@ -17,96 +17,62 @@ REGIONS = list(utils.REGION_ID_MAP.keys())
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
 
 RATE_NP = {
-    "lumi_13TeV_2016_uncorrelated": {
-        p: {"UL16": 1.01, "UL17": '-', "UL18": '-'} for p in ALL_PROCESSES
-    },
-    "lumi_13TeV_2017_uncorrelated": {
-        p: {"UL16": '-', "UL17": 1.02, "UL18": '-'} for p in ALL_PROCESSES
-    },
-    "lumi_13TeV_2018_uncorrelated": {
-        p: {"UL16": '-', "UL17": '-', "UL18": 1.015} for p in ALL_PROCESSES
-    },
-    "lumi_13TeV_correlated_16_17_18": {
-        p: {"UL16": 1.006, "UL17": 1.009, "UL18": 1.02} for p in ALL_PROCESSES
-    },
-    "lumi_13TeV_correlated_17_18": {
-        p: {"UL16": '-', "UL17": 1.006, "UL18": 1.002} for p in ALL_PROCESSES
-    },
-    # qcd scales: AN2019_094_v12
-    "QCDscale_ttbar": {"TTW": "0.836/1.255", "TTZ": "0.907/1.081"},  # "TT": "0.965/1.024",
+    # experimental 
+    "lumi_13TeV_2017": { p: 1.02 for p in ALL_PROCESSES },
+    "Norm_bjet": {"DYJets_bjet": 1.4, "WJets_bjet": 1.4}, #not on light jets -> freely floating
+    
+    # theory AN2019_094_v12
+    "QCDscale_ttbar": {"TTW": "0.836/1.255", "TTZ": "0.907/1.081"},  #not on TT -> freely floating
     "QCDscale_singletop": {"SingleTop": "0.979/1.031"},
     "QCDscale_VV": {"VV": 1.03},
-    "QCDscale_V": {"WJets": 1.038},  # "DYJets": 1.02},
-    "Norm_bjet": {"DYJets_bjet": 1.4},
-    # pdf scales: AN2019_094_v12
-    "pdf_gg": {"TTZ": 1.035},  # "TT": 1.042,
-    "pdf_qqbar": {"WJets": "1.008/0.996", "VV": 1.05, "TTW": 1.036},  # "DYJets": 1.02,
+    "pdf_gg": {"TTZ": 1.035},  #not on TT -> freely floating
+    "pdf_qqbar": {"VV": 1.05, "TTW": 1.036}, 
     "pdf_qg": {"SingleTop": 1.028},
-    # hdamp
-    #"hdamp_5j": {"TT": {"UL16": "1.061/0.929", "UL17": "1.063/0.928", "UL18": "1.064/0.924"}},
-    #"hdamp_6j": {"TT": {"UL16": "1.085/0.926", "UL17": "1.068/0.930", "UL18": "1.087/0.914"}},
-    # TuneCP5
-    #"TuneCP5_0b": {"TT": {"UL16": "1.045/0.974", "UL17": "1.049/0.974", "UL18": "0.989/0.969"}},
-    #"TuneCP5_1b": {"TT": {"UL16": "0.988/1.005", "UL17": "0.999/0.999", "UL18": "1.003/0.990"}},
-    #"TuneCP5_2b": {"TT": {"UL16": "0.999/0.998", "UL17": "1.003/0.990", "UL18": "1.009/1.005"}},
 }
 
 SHAPES_NP = {
+    # b tagging efficiency 
     "CMS_btag_bc_YEAR": ALL_PROCESSES,
     "CMS_btag_light_YEAR": ALL_PROCESSES,
+
+
     "CMS_pileup_YEAR": ALL_PROCESSES,
     "CMS_pileupJetID_YEAR": ALL_PROCESSES,
-    #"CMS_trigger_sf_ee": ALL_PROCESSES,
-    #"CMS_trigger_sf_mumu": ALL_PROCESSES,
-    #"CMS_sfelec_reco": ALL_PROCESSES,
-    #"CMS_sfelec_tight_id": ALL_PROCESSES,
-    #"CMS_sfmu_isolation": ALL_PROCESSES,
-    #"CMS_sfmu_tight_id": ALL_PROCESSES,
     "CMS_toppt_a": ["TT"],
     "CMS_toppt_b": ["TT"],
-    #"CMS_scale_j_Absolute": ALL_PROCESSES,
-    #"CMS_scale_j_BBEC1": ALL_PROCESSES,
-    #"CMS_scale_j_EC2": ALL_PROCESSES,
-    #"CMS_scale_j_FlavorQCD": ALL_PROCESSES,
-    #"CMS_scale_j_HF": ALL_PROCESSES,
-    #"CMS_scale_j_RelativeBal": ALL_PROCESSES,
-    #"CMS_scale_j_Absolute_YEAR": ALL_PROCESSES,
-    #"CMS_scale_j_BBEC1_YEAR": ALL_PROCESSES,
-    #"CMS_scale_j_EC2_YEAR": ALL_PROCESSES,
-    #"CMS_scale_j_HF_YEAR": ALL_PROCESSES,
-    #"CMS_scale_j_RelativeSample_YEAR": ALL_PROCESSES,
-    #"CMS_scale_j_Total": ALL_PROCESSES,
-    #"CMS_res_j_YEAR": ALL_PROCESSES,
-    "CMS_mur_AtoZH": ["AtoZH"],
+
+    # factorization scale - shape effect only 
     "CMS_muf_AtoZH": ["AtoZH"],
-    #"CMS_mur_DYJets": ["DYJets"],
-    #"CMS_muf_DYJets": ["DYJets"],
-    "CMS_mur_DYJets_bjet": ["DYJets_bjet"],
     "CMS_muf_DYJets_bjet": ["DYJets_bjet"],
     "CMS_mur_DYJets_ljet": ["DYJets_ljet"],
+    "CMS_muf_TT": ["TT"],
+    "CMS_muf_TTZ": ["TTZ"],
+    "CMS_muf_SingleTop": ["SingleTop"],
+    "CMS_muf_TTW": ["TTW"],
+    "CMS_muf_VV": ["VV"],
+    "CMS_muf_WJets_bjet": ["WJets_bjet"],
+    "CMS_muf_WJets_ljet": ["WJets_ljet"],
+    "CMS_muf_QCD": ["QCD"],
+
+    # renormilization - shape effect only
+    "CMS_mur_AtoZH": ["AtoZH"],
+    "CMS_mur_DYJets_bjet": ["DYJets_bjet"],
     "CMS_muf_DYJets_ljet": ["DYJets_ljet"],
     "CMS_mur_TT": ["TT"],
-    "CMS_muf_TT": ["TT"],
     "CMS_mur_TTZ": ["TTZ"],
-    "CMS_muf_TTZ": ["TTZ"],
     "CMS_mur_SingleTop": ["SingleTop"],
-    "CMS_muf_SingleTop": ["SingleTop"],
     "CMS_mur_TTW": ["TTW"],
-    "CMS_muf_TTW": ["TTW"],
     "CMS_mur_VV": ["VV"],
-    "CMS_muf_VV": ["VV"],
-    #"CMS_mur_WJets": ["WJets"],
-    #"CMS_muf_WJets": ["WJets"],
     "CMS_mur_WJets_bjet": ["WJets_bjet"],
-    "CMS_muf_WJets_bjet": ["WJets_bjet"],
     "CMS_mur_WJets_ljet": ["WJets_ljet"],
-    "CMS_muf_WJets_ljet": ["WJets_ljet"],
     "CMS_mur_QCD": ["QCD"],
-    "CMS_muf_QCD": ["QCD"],
+
+    # radiation
     "fsr_2": ALL_PROCESSES,
     "isr_2": ALL_PROCESSES,
+
+    # pdf uncertainty 
     "pdf_AtoZH": ["AtoZH"],
-    #"pdf_DYJets": ["DYJets"],
     "pdf_DYJets_bjet": ["DYJets_bjet"],
     "pdf_DYJets_ljet": ["DYJets_ljet"],
     "pdf_SingleTop": ["SingleTop"],
@@ -114,15 +80,18 @@ SHAPES_NP = {
     "pdf_TTW": ["TTW"],
     "pdf_TTZ": ["TTZ"],
     "pdf_VV": ["VV"],
-    #"pdf_WJets": ["WJets"],
     "pdf_WJets_bjet": ["WJets_bjet"],
     "pdf_WJets_ljet": ["WJets_ljet"],
+
+    # ?
     "CMS_vjets_EWK_d1K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_EWK_d2K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_EWK_d3K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_QCD_NLO_d1K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_QCD_NLO_d2K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_QCD_NLO_d3K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
+
+    # jet energy correction and resolution
     "JER": ALL_PROCESSES,
     "JES": ALL_PROCESSES,
 }
@@ -232,7 +201,7 @@ class Datacard():
         f.write(f"\n* autoMCStats 0")
 
     def write_scaling(self, f):
-        f.write("\nrate_BR_vv rateParam * AtoZH 0.2")
+        f.write("\nrate_BR_vv rateParam * AtoZH 1") #0.2 for inclusive xsec in AZH -> ttZ
         f.write("\nnuisance edit freeze rate_BR_vv ifexists")
         f.write("\nlumiscale rateParam * * 1") #3.33 for full run 2
         f.write("\nnuisance edit freeze lumiscale ifexists")
