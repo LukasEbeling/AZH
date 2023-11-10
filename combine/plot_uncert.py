@@ -8,7 +8,7 @@ import mplhep as hep
 import numpy as np
 import uproot
 
-sys.path.append("../combine/")
+sys.path.append("../factory/")
 from generate_datacards import SHAPES_NP
 from generate_datacards import RATE_NP
 from config import Configurator
@@ -207,7 +207,7 @@ def plotUncertaintyRatios(hists, _year, _signal, _obs, _ch, _reg, _process, _np)
         + _process
     )
     base_opath = os.path.join(
-        CMSSW_BASE, "src/UHH2/AZH/plots/nuisances"
+        CMSSW_BASE, "src/UHH2/AZH/combine/nuisances"
     )
     fpath_np = os.path.join(base_opath, f"{_np}/")
     fpath_np_process = os.path.join(base_opath, f"{_np}/")
