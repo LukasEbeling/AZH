@@ -2,6 +2,7 @@
 obj/*
 data/output_01_preselection/*
 data/output_02_reconstruction/*
+data/output_03_templates/*
 combine/cache/*
 factory/cache/*
 */__pycache__/*
