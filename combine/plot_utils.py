@@ -1,12 +1,42 @@
 #!/nfs/dust/cms/user/ebelingl/anaconda3/envs/py311/bin/python
 import os
+import json
+import re
+import numpy as np
 
 import matplotlib.pyplot as plt
 
 
-def CMSSW_BASE():
-    return "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28"
+CMSSW_BASE = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28"
+ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH"
 
+BACKGROUNDS = [
+    "VV", 
+    "TTW", 
+    "TTZ", 
+    "DYJets_ljet", 
+    "DYJets_bjet", 
+    "WJets_ljet", 
+    "WJets_bjet", 
+    "QCD", 
+    "SingleTop",
+    "TT"
+]
+
+REGIONS = {
+    "SR_6J" : r"SR 6j",
+    "SR_5J" : r"SR 5j", 
+    "IR_1B_5J" : r"0l 1b 5j",
+    "IR_1B_6J" : r"0l 1b 6j",
+    "IR_0B_5J" : r"0l 0b 5j",
+    "IR_0B_6J" : r"0l 0b 6j",
+    "LR_2B_5J" : r"1l 2b 5j",  
+    "LR_2B_6J" : r"1l 2b 6j",
+    "LR_1B_5J" : r"1l 1b 5j",
+    "LR_1B_6J" : r"1l 1b 6j",
+    "LR_0B_5J" : r"1l 0b 5j",
+    "LR_0B_6J" : r"1l 0b 6j",
+}
 
 class PlotMeta:
 
@@ -72,10 +102,6 @@ class PlotMeta:
         return [self.CMAP.colors[id_map[p]] for p in processes]
 
 
-
-
-
-class map_region_int_to_str:
     single_region_map = {
         "all": "All Control Regions",
         0: "SignalRegion",
@@ -102,66 +128,54 @@ class map_region_int_to_str:
         if isinstance(i, list):
             return '\n+'.join([self.single_region_map[x] for x in i])
 
+class Theory: 
 
-map_year_lumi = {
-    'UL18': 59.83,
-    'UL17': 41.48,
-    'UL16preVFP': 19.5,
-    'UL16postVFP': 16.8,
-}
+    def __init__(self,tanb = 1):
+        tanb_str = str(float(tanb))
 
+        with open(f"theory_predictions/xsec_{tanb_str}.json", "r") as f:
+            self.xsecs = json.load(f)
 
-map_ul_year = {
-    'UL18': 2018,
-    'UL17': 2017,
-    'UL16preVFP': 2016,
-    'UL16postVFP': 2016,
-}
-
-map_channel_int_to_str = {
-    11 * 11: "Electron",
-    13 * 13: "Muon",
-    11 * 13: "EMu"
-}
+        with open(f"theory_predictions/brs_{tanb_str}.json", "r") as f:
+            self.brs = json.load(f)
 
 
-def is_valid_combination(channel, region, obs):
-    if channel == 11 * 11 and "muon" in obs:
-        return False
-    if channel == 13 * 13 and "electron" in obs:
-        return False
-    if channel == 11 * 13 and region != 15:
-        return False
-    if channel != 11 * 13 and region == 15:
-        return False
-    return True
+    def get_inclusive(self,mA, mH): 
+        br_A_ZH = self.brs[f"{float(mA)},{float(mH)}"]["a_zh"]
+        br_H_tt = self.brs[f"{float(mA)},{float(mH)}"]["h_tt"]
+        xsec = self.xsecs[f"{float(mA)}"]
+        return xsec * br_A_ZH * br_H_tt
+
+    def get_invisible(self,mA,mH):
+        br_Z_vv = 0.2
+        return self.get_inclusive(mA,mH) * br_Z_vv
+
+class Limit:
+
+    def __init__(self, channel="inv", var="MET", region="all", year="UL17"):
+        self.channel = channel
+        self.var = var
+        self.region = region
+        self.year = year
+
+    def load(self, mA, mH, pct = "50.0%"):
+        file = f"tmp/AZH_{mA}_{mH}_{self.var}_{self.channel}_{self.region}.log"
+        with open(file, "r") as f:
+            limit_line = [x for x in f if pct in x][0]
+
+        limit_value = float(re.findall(r"\d+.\d+", limit_line.split("<")[1])[0])
+        return limit_value
 
 
-def errorband(
-    H_band,  # value array if error band is symmetric / tuple of upper and lower value arrays
-    bins,  # corresponding to bin edges of the hist values supplied in H_band
-    label=None,
-    edges=True,
-    ax=None,
-    **kwargs,
-):
-    # ax check
-    if ax is None:
-        ax = plt.gca()
-    else:
-        if not isinstance(ax, plt.Axes):
-            raise ValueError("ax must be a matplotlib Axes object")
-
-    # Construction of upper and lower boundries
-    y_upper = H_band[0]
-    y_lower = H_band[1]
-
-    error_band_args = {
-        "edges": bins, "facecolor": "none", "linewidth": 0,
-        "alpha": .9, "color": "black", "hatch": "///"
-    }
-    ax.stairs(y_upper, baseline=y_lower, label=label, **{**error_band_args, **kwargs})
-
-
-if __name__ == "__main__":
-    pass
+def load_masses():
+    with open(
+        os.path.join(ANALYSIS, "config/signals.txt"), "r"
+    ) as f:
+        mass_points = np.array(
+            [
+                (int(re.findall(r"\d+", x)[0]), int(re.findall(r"\d+", x)[1]))
+                for x in f
+            ]
+        )
+    #mass_points = np.array([(MA,MH) for MA,MH in mass_points if MA<1001 and MH<1001])
+    return mass_points

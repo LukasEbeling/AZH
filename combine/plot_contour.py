@@ -3,9 +3,10 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 import mplhep as hep
+import os
 
 from matplotlib.tri import Triangulation, LinearTriInterpolator
-from utilities import Theory, Limit, load_masses
+from plot_utils import Theory, Limit, load_masses
 
 plt.style.use(hep.style.CMS)
 
@@ -41,7 +42,8 @@ def plot_plane(tanb):
 
 
     theory_values = np.array(
-        [theory.get_inclusive(MA, MH) for MA, MH in grid]
+        #[theory.get_inclusive(MA, MH) for MA, MH in grid]
+        [theory.get_invisible(MA, MH) for MA, MH in grid]
     )
 
     theory_limit_ratio = theory_values / expected_values_interpolated
@@ -70,8 +72,9 @@ def plot_plane(tanb):
     ax.set_xlim(500, 2000)
     ax.set_ylim(400, 1600)
 
-    plt.savefig(f"mass_plane_{tanb}.png")
-    plt.savefig(f"mass_plane_{tanb}.pdf")
+    os.makedirs("limits",exist_ok=True)
+    plt.savefig(f"limits/mass_plane_{tanb}.png")
+    plt.savefig(f"limits/mass_plane_{tanb}.pdf")
     plt.close()
 
 
