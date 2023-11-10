@@ -12,14 +12,13 @@ sys.path.append("../factory/")
 from generate_datacards import SHAPES_NP
 from generate_datacards import RATE_NP
 from config import Configurator
-
+from utils import CMSSW_BASE, TEMPLATES
 
 plt.style.use(hep.style.CMS)
 
+OUTPUT_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/nuisances")
 
 config = Configurator()
-CMSSW_BASE = os.environ.get("CMSSW_BASE")
-NTUPLE_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine/")
 SIGNALS = ["AZH_1000_400"]
 OBSERVABLES = ["MET"]
 EXCLUDE_BKGS = []
@@ -54,7 +53,7 @@ def load(_year, _signal, _obs, _ch, _reg):
     """
     fname = f"{_signal}_{_obs}_{_ch}_{_reg}.root"
     hists = {"nominals": {}}
-    with uproot.open(os.path.join(NTUPLE_PATH, _year, fname)) as f:
+    with uproot.open(os.path.join(TEMPLATES, _year, fname)) as f:
         # Load nominal
         available_processes = []
 
@@ -81,13 +80,9 @@ def load(_year, _signal, _obs, _ch, _reg):
                 hists[shape_np][process]["down"] = f[f"{_reg}/{process}_{shape_np}Down"]
     return hists
 
-
-def save_plot(fpaths: list, fname: str):
-    for fpath in fpaths:
-        os.makedirs(fpath, exist_ok=True)
-        plt.savefig(os.path.join(fpath, f"{fname}.png"))
-        #plt.savefig(os.path.join(fpath, f"{fname}.pdf"))
-
+def save_plot(path, file):
+    os.makedirs(path, exist_ok=True)
+    plt.savefig(os.path.join(path,file+".png"))
 
 def plotUncertaintyRatios(hists, _year, _signal, _obs, _ch, _reg, _process, _np):
     """
@@ -206,13 +201,10 @@ def plotUncertaintyRatios(hists, _year, _signal, _obs, _ch, _reg, _process, _np)
         + "_"
         + _process
     )
-    base_opath = os.path.join(
-        CMSSW_BASE, "src/UHH2/AZH/combine/nuisances"
-    )
-    fpath_np = os.path.join(base_opath, f"{_np}/")
-    fpath_np_process = os.path.join(base_opath, f"{_np}/")
-    #fpath_np_process = os.path.join(base_opath, f"{_np}/{_process}/")
-    save_plot([fpath_np, fpath_np_process], fname)
+
+    fpath_np = os.path.join(OUTPUT_PATH, f"{_np}/")
+    fpath_np = fpath_np.replace("_"+process,"")
+    save_plot(fpath_np, fname)
     plt.close()
 
 
