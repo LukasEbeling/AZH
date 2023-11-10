@@ -5,9 +5,11 @@ from itertools import product
 import os
 
 import uproot
-
-from config import Configurator
 import utils
+
+from utils import TEMPLATES
+from config import Configurator
+
 
 
 config = Configurator()
@@ -120,10 +122,10 @@ class Datacard():
             print(f"File {e.filename} not found! Will skip.")
 
     def filter_processes(self):
-        combine_fpath = f"../combine/{self.year}/{self.fname}.root"
-        if not os.path.isfile(combine_fpath):
-            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), combine_fpath)
-        with uproot.open(combine_fpath) as f:
+        root_fpath = f"{TEMPLATES}/{self.year}/{self.fname}.root"
+        if not os.path.isfile(root_fpath):
+            raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), root_fpath)
+        with uproot.open(root_fpath) as f:
             keys = f.keys()
         self.processes = [x for x in config.backgrounds if any([(f"{x}" in k) for k in keys])]
         self.processes = ["AtoZH"] + self.processes
@@ -221,7 +223,7 @@ class Datacard():
 
     def generate_datacard(self):
         print(f"{self.year}/{self.fname}.dat")
-        with open(f"../combine/{self.year}/{self.fname}.dat", 'w') as f:
+        with open(f"{TEMPLATES}/{self.year}/{self.fname}.dat", 'w') as f:
             self.write_parameters(f)
             self.write_channels(f)
             self.write_processes(f)

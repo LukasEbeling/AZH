@@ -12,7 +12,7 @@ import json
 from config import Configurator
 from ntuple_loader import NTupleLoader
 import utils
-from utils import Ellipse, REGION_ID_MAP, ELLIPSE_X, ELLIPSE_Y, CMSSW_BASE
+from utils import Ellipse, REGION_ID_MAP, ELLIPSE_X, ELLIPSE_Y, CMSSW_BASE, TEMPLATES
 
 
 class SampleSet():
@@ -274,7 +274,7 @@ class SampleSet():
         region = self.set_params["region"]
         svar = utils.OUTPUT_MAP[self.set_params["svar"]]
 
-        base_path = os.path.join(CMSSW_BASE, "src/UHH2/AZH/combine", self.set_params["year"])
+        base_path = os.path.join(TEMPLATES, self.set_params["year"])
         fpath_met = os.path.join(base_path, f"{sgnl}_{svar}_{channel}_{region}.root")
 
         with uproot.recreate(fpath_met) as f:

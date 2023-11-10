@@ -5,9 +5,7 @@ import re
 import pyarrow.parquet as pq
 
 from config import Configurator
-
-
-CMSSW_BASE = os.environ.get('CMSSW_BASE')
+from utils import CMSSW_BASE,CACHE
 
 
 class BorgNTupleLoader():
@@ -19,8 +17,6 @@ class BorgNTupleLoader():
 
 
 class NTupleLoader(BorgNTupleLoader):
-
-    UHH_OUTPUT_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/data/output_02_reconstruction/")
 
     def __init__(self, signal: str = ""):
         # Makse NTupleLoader Singleton
@@ -56,7 +52,7 @@ class NTupleLoader(BorgNTupleLoader):
             self.nominal_trees[year]["data"] = {}
             for x in self.vars_to_load:
                 key = self._tree_to_np_array(x)
-                pq_table = pq.read_table(f"cache/data_{year}_{key}.parquet")
+                pq_table = pq.read_table(f"{CACHE}/data_{year}_{key}.parquet")
                 self.nominal_trees[year]["data"][key] = pq_table["foo"].to_numpy()
 
     def load_sample_vars(self, sample):
@@ -81,7 +77,7 @@ class NTupleLoader(BorgNTupleLoader):
     def set_sample_var_fields(self, year, sample, variation):
         for x in self.vars_to_load:
             key = self._tree_to_np_array(x)
-            pq_table = pq.read_table(f"cache/mc_{year}_{sample}_{variation}_{key}.parquet")
+            pq_table = pq.read_table(f"{CACHE}/mc_{year}_{sample}_{variation}_{key}.parquet")
             self.sample_vars[year][sample][variation][key] = pq_table["foo"].to_numpy()
 
     def load_trees(self, sample):
@@ -93,7 +89,7 @@ class NTupleLoader(BorgNTupleLoader):
             for x in self.vars_to_load:
                 key = self._tree_to_np_array(x)
                 # self.nominal_trees[year][sample][key] = branch
-                pq_table = pq.read_table(f"cache/mc_{year}_{sample}_nominal_{key}.parquet")
+                pq_table = pq.read_table(f"{CACHE}/mc_{year}_{sample}_nominal_{key}.parquet")
                 self.nominal_trees[year][sample][key] = pq_table["foo"].to_numpy()
 
             # Variations
@@ -105,5 +101,5 @@ class NTupleLoader(BorgNTupleLoader):
                     continue
                 branch_name = re.sub(r"_mu[rf]{1}_", "_murmuf_", branch)
                 branch_name = re.sub(r"_[ab]{1}$", "", branch_name)
-                pq_table = pq.read_table(f"cache/mc_{year}_{sample}_variation_{branch}.parquet")
+                pq_table = pq.read_table(f"{CACHE}/mc_{year}_{sample}_variation_{branch}.parquet")
                 self.nominal_trees[year][sample][branch] = pq_table["foo"].to_numpy()

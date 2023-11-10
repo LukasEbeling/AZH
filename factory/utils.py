@@ -7,6 +7,8 @@ import scipy.integrate as integrate
 
 
 CMSSW_BASE = os.environ.get('CMSSW_BASE')
+CACHE = os.path.join(CMSSW_BASE,"src/UHH2/AZH/data/output_03_templates/cache")
+TEMPLATES = os.path.join(CMSSW_BASE,"src/UHH2/AZH/data/output_03_templates")
 
 ELLIPSE_X = "MET"
 ELLIPSE_Y = "m_H"

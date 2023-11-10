@@ -8,12 +8,12 @@ import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 import uproot
-
-from config import Configurator
 import utils
 
+from utils import CACHE
+from config import Configurator
 
-CMSSW_BASE = os.environ.get('CMSSW_BASE')
+
 
 
 class Parquetifier():
@@ -32,7 +32,7 @@ class Parquetifier():
 
         self.variables_to_load = self.config.svars + self.config.branches
 
-        os.makedirs("cache", exist_ok=True)
+        os.makedirs(CACHE, exist_ok=True)
 
         if sample.upper() == "DATA":
             self.load_data()
@@ -74,7 +74,7 @@ class Parquetifier():
                 for x in self.variables_to_load:
                     key, branch = self._tree_to_np_array(f, x)
                     pa_table = pa.table({"foo": branch})
-                    pq.write_table(pa_table, f"cache/data_{year}_{key}.parquet")
+                    pq.write_table(pa_table, f"{CACHE}/data_{year}_{key}.parquet")
 
     def _get_relevant_sample_variations(self, sample):
         relevant_vars = {
@@ -139,7 +139,7 @@ class Parquetifier():
                         branch = branch[sel_gen]
                     pa_table = pa.table({"foo": branch})
                     #key = key.replace("/",".")
-                    pq.write_table(pa_table, f"cache/mc_{year}_{sample}{jet_flav}_{variation}_{key}.parquet")
+                    pq.write_table(pa_table, f"{CACHE}/mc_{year}_{sample}{jet_flav}_{variation}_{key}.parquet")
 
     @property
     def _varied_weights_to_load(self):
@@ -168,7 +168,7 @@ class Parquetifier():
                             branch = branch[sel_gen]
                         pa_table = pa.table({"foo": branch})
                         #key = key.replace("/",".")
-                        pq.write_table(pa_table, f"cache/mc_{year}_{sample}{jet_flav}_nominal_{key}.parquet")
+                        pq.write_table(pa_table, f"{CACHE}/mc_{year}_{sample}{jet_flav}_nominal_{key}.parquet")
 
                     # Variations
                     for branch in itertools.chain(self._varied_weights_to_load):
@@ -183,14 +183,14 @@ class Parquetifier():
                             x = np.where(x != 0, x, 1)
                         pa_table = pa.table({"foo": x})
                         #branch = branch.replace("/",".")
-                        pq.write_table(pa_table, f"cache/mc_{year}_{sample}{jet_flav}_variation_{branch}.parquet")
+                        pq.write_table(pa_table, f"{CACHE}/mc_{year}_{sample}{jet_flav}_variation_{branch}.parquet")
 
     def merge_16_pre_post(self):
 
         def concat_variation(sample, variation, x):
-            print(f"cache/mc_UL16pre/postVFP_{sample}_{variation}_{x}.parquet")
-            pq_table_pre = pq.read_table(f"cache/mc_UL16preVFP_{sample}_{variation}_{x}.parquet")
-            pq_table_post = pq.read_table(f"cache/mc_UL16postVFP_{sample}_{variation}_{x}.parquet")
+            print(f"{CACHE}/mc_UL16pre/postVFP_{sample}_{variation}_{x}.parquet")
+            pq_table_pre = pq.read_table(f"{CACHE}/mc_UL16preVFP_{sample}_{variation}_{x}.parquet")
+            pq_table_post = pq.read_table(f"{CACHE}/mc_UL16postVFP_{sample}_{variation}_{x}.parquet")
             return np.concatenate(
                 (pq_table_pre["foo"].to_numpy(),
                  pq_table_post["foo"].to_numpy())
@@ -203,9 +203,9 @@ class Parquetifier():
             else:
                 mc_or_data = "mc"
                 postfix = f"{sample}_nominal_{variable}"
-            print(f"cache/{mc_or_data}_UL16preVFP_{postfix}.parquet")
-            pq_table_pre = pq.read_table(f"cache/{mc_or_data}_UL16preVFP_{postfix}.parquet")
-            pq_table_post = pq.read_table(f"cache/{mc_or_data}_UL16postVFP_{postfix}.parquet")
+            print(f"{CACHE}/{mc_or_data}_UL16preVFP_{postfix}.parquet")
+            pq_table_pre = pq.read_table(f"{CACHE}/{mc_or_data}_UL16preVFP_{postfix}.parquet")
+            pq_table_post = pq.read_table(f"{CACHE}/{mc_or_data}_UL16postVFP_{postfix}.parquet")
             return np.concatenate(
                 (pq_table_pre["foo"].to_numpy(),
                  pq_table_post["foo"].to_numpy())
@@ -223,9 +223,9 @@ class Parquetifier():
                 variable = self._get_variable_key(variable)
                 pa_table = pa.table({"foo": concat_nominal(sample, variable)})
                 if sample == "data":
-                    pq.write_table(pa_table, f"cache/data_UL16_{variable}.parquet")
+                    pq.write_table(pa_table, f"{CACHE}/data_UL16_{variable}.parquet")
                 else:
-                    pq.write_table(pa_table, f"cache/mc_UL16_{sample}_nominal_{variable}.parquet")
+                    pq.write_table(pa_table, f"{CACHE}/mc_UL16_{sample}_nominal_{variable}.parquet")
 
             if sample == "data":
                 continue
@@ -235,7 +235,7 @@ class Parquetifier():
                 if(("pdf" in variation) and (("up" in variation) or ("down" in variation))):
                     continue
                 pa_table = pa.table({"foo": concat_variation(sample, "variation", variation)})
-                pq.write_table(pa_table, f"cache/mc_UL16_{sample}_variation_{variation}.parquet")
+                pq.write_table(pa_table, f"{CACHE}/mc_UL16_{sample}_variation_{variation}.parquet")
 
             # Concatenate sample Variations
             for sample_variation in self._get_relevant_sample_variations(sample):
@@ -245,7 +245,7 @@ class Parquetifier():
                         continue
                     pa_table = pa.table({"foo": concat_variation(sample, sample_variation, key)})
                     #key = key.replace("/",".")
-                    pq.write_table(pa_table, f"cache/mc_UL16_{sample}_{sample_variation}_{key}.parquet")
+                    pq.write_table(pa_table, f"{CACHE}/mc_UL16_{sample}_{sample_variation}_{key}.parquet")
 
 
 if __name__ == "__main__":
