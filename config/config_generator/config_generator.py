@@ -265,6 +265,7 @@ class ConfigFactory():
 
     def generate_root_input_blocks(self):
         for sample in self.samples:
+            #if "AToZH" not in sample: continue #shorthand for signal only
             bare_sample_name = self.get_bare_sample_name(sample)
             sample_version = self.get_version_from_sample_name(bare_sample_name)
             lumi = self.get_lumi_from_sample_name(re.sub(r"_\d+$", '', bare_sample_name))
