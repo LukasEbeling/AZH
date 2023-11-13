@@ -23,6 +23,7 @@ void NormalisationHists::init(Context & ctx){
   is_zjets = ctx.get("dataset_version").find("ZJets") == 0;
   is_qcd = ctx.get("dataset_version").find("QCD") == 0;
   is_azh = (ctx.get("dataset_version").find("AZH") == 0) ||
+           (ctx.get("dataset_version").find("AToZHToLLTTbar") == 0) ||
            (ctx.get("dataset_version").find("AToZHToInv") == 0);
   is_mc = ctx.get("dataset_type") == "MC";
 
@@ -129,6 +130,7 @@ PDFWeightHandleProducer::PDFWeightHandleProducer(Context & ctx){
   is_wjets = ctx.get("dataset_version").find("WJets") == 0;
   is_zjets = ctx.get("dataset_version").find("ZJets") == 0;
   is_azh = (ctx.get("dataset_version").find("AZH") == 0) ||
+           (ctx.get("dataset_version").find("AToZHToLLTTbar") == 0) ||
            (ctx.get("dataset_version").find("AToZHToInv") == 0);
 
   m_oname = ctx.get("dataset_version");
