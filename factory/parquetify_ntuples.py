@@ -10,7 +10,7 @@ import pyarrow.parquet as pq
 import uproot
 import utils
 
-from utils import CACHE
+from utils import CACHE, CMSSW_BASE
 from config import Configurator
 
 
