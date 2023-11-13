@@ -314,8 +314,7 @@ class ConfigFactory():
             file_name = sample.replace("AToZHToInv_MA-","").replace("MH-","")
             input_path = f"/nfs/dust/cms/user/ebelingl/samples_inv/{self.year}/{file_name}.root"
             if not self.is_data:
-                with uproot.open(input_path) as f:
-                    lumi = str(len(f["AnalysisTree/event"].array(library="np")))
+                lumi = self.get_lumi_from_sample_name(bare_sample_name)
             attrs = {
                 "Lumi": lumi,
                 "NEventsMax": "-1",
@@ -335,7 +334,7 @@ class ConfigFactory():
 
     def generate_input_data_blocks(self):
         if self.step == "Preselection":
-            self.generate_uhh_dataset_input_blocks() # comment out to generate signal only
+            #self.generate_uhh_dataset_input_blocks() # comment out to generate signal only
             if not self.is_data:
                 self.generate_signal_input_blocks()
         else:
