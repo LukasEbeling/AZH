@@ -839,6 +839,7 @@ bool TopPtReweighting::process(Event &event) {
 
 VJetsReweighting::VJetsReweighting(Context &ctx, const string &weight_name)
     : is_WJets(ctx.get("dataset_version").find("WJets") == 0),
+      is_ZJets(ctx.get("dataset_version").find("ZJets") == 0),
       is_DYJets(ctx.get("dataset_version").find("DYJets") == 0),
       apply_EWK(string2bool(ctx.get("VJetsReweighting_do_EWK"))),
       apply_QCD_EWK(string2bool(ctx.get("VJetsReweighting_do_QCD_EWK"))),
@@ -875,6 +876,20 @@ void VJetsReweighting::load_correction_files() {
   // evj : W(lv)
   // aj  : Gamma
 
+  // Load Z(nunu)
+  TFile *file_vvj = new TFile((filesDir + "vvj.root").c_str());
+  for (const string &systematic : {"kappa", "d1kappa", "d2kappa", "d3kappa"})
+    load_histo(file_vvj, (string)("vvj_pTV_" + systematic + "_EW"));
+  for (const string &pqcd_order : {"NLO", "NNLO"}) {
+    for (const string &systematic : {"d1K", "d2K", "d3K"}) {
+      load_histo(file_vvj, (string)("vvj_pTV_" + systematic + "_" + pqcd_order));
+    }
+  }
+  load_histo(file_vvj, (string)("vvj_pTV_K_LO"));
+  load_histo(file_vvj, (string)("vvj_pTV_K_NLO"));
+  load_histo(file_vvj, (string)("vvj_pTV_K_NNLO"));
+  file_vvj->Close();
+
   // Load Z(ll)
   TFile *file_eej = new TFile((filesDir + "eej.root").c_str());
   for (const string &systematic : {"kappa", "d1kappa", "d2kappa", "d3kappa"})
@@ -888,6 +903,7 @@ void VJetsReweighting::load_correction_files() {
   load_histo(file_eej, (string)("eej_pTV_K_NLO"));
   load_histo(file_eej, (string)("eej_pTV_K_NNLO"));
   file_eej->Close();
+  
   // Load (W(lv))
   TFile *file_evj = new TFile((filesDir + "evj.root").c_str());
   for (const string &systematic : {"kappa", "d1kappa", "d2kappa", "d3kappa"})
@@ -909,7 +925,7 @@ void VJetsReweighting::load_histo(TFile *file, const string &name) {
 }
 
 double VJetsReweighting::get_gen_v_pt(const Event &event) {
-  if (!(is_DYJets || is_WJets))
+  if (!(is_DYJets || is_WJets  || is_ZJets))
     throw runtime_error("VJetsReweighting::get_gen_v_pt(): Calling this function "
                         "on non-WJets/DYJets sample makes no sense.");
   double pt(-1.);
@@ -919,6 +935,9 @@ double VJetsReweighting::get_gen_v_pt(const Event &event) {
       pt = gp.v4().Pt();
       v_found = true;
     } else if (is_DYJets && gp.status() == 22 && abs(gp.pdgId()) == 23) {
+      pt = gp.v4().Pt();
+      v_found = true;
+    } else if (is_ZJets && gp.status() == 22 && abs(gp.pdgId()) == 23) {
       pt = gp.v4().Pt();
       v_found = true;
     }
@@ -968,13 +987,15 @@ bool VJetsReweighting::process(Event &event) {
   float weight_EWK_d2K(1.);
   float weight_EWK_d3K(1.);
 
-  if (!event.isRealData && (is_WJets || is_DYJets)) {
+  if (!event.isRealData && (is_WJets || is_DYJets || is_ZJets)) {
     double pt = get_gen_v_pt(event);
     string file("");
     if (is_WJets)
       file = "evj";
     if (is_DYJets)
       file = "eej";
+    if (is_ZJets)
+      file = "vvj";
 
     // QCD EWK
     if (apply_QCD_EWK) {

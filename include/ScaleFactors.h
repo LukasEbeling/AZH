@@ -190,6 +190,7 @@ private:
   double evaluate(const std::string &name, const double pt);
 
   const bool is_WJets;
+  const bool is_ZJets;
   const bool is_DYJets;
   const bool apply_EWK;
   const bool apply_QCD_EWK;
