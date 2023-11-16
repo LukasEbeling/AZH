@@ -309,6 +309,7 @@ double PUIDScaleFactors::load_sf(const Jet &jet, string variation) {
     double variation = (double)histo_sf_sys->GetBinContent(bin_lead, bin_sublead);
     return nominal - variation;
   }
+  return 1;
 }
 
 bool PUIDScaleFactors::process(Event &event) {
