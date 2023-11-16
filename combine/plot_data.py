@@ -1,43 +1,20 @@
 #!/nfs/dust/cms/user/ebelingl/anaconda3/envs/py311/bin/python
 
 import os
+import sys
 import argparse
 import uproot
 import numpy as np
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import mplhep as hep
+from math import sqrt
 
-from combine_utils import Combine
-from plot_utils import PlotMeta, CMSSW_BASE
+from combine import Combine
+from plot_utils import PlotMeta, CMSSW_BASE, REGIONS, BACKGROUNDS
 
-BACKGROUNDS = [
-    "VV", 
-    "TTW", 
-    "TTZ", 
-    "DYJets_ljet", 
-    "DYJets_bjet", 
-    "WJets_ljet", 
-    "WJets_bjet", 
-    "QCD", 
-    "SingleTop",
-    "TT"
-]
-
-REGIONS = {
-    "SR_6J" : r"SR 6j",
-    "SR_5J" : r"SR 5j", 
-    "IR_1B_5J" : r"0l 1b 5j",
-    "IR_1B_6J" : r"0l 1b 6j",
-    "IR_0B_5J" : r"0l 0b 5j",
-    "IR_0B_6J" : r"0l 0b 6j",
-    "LR_2B_5J" : r"1l 2b 5j",  
-    "LR_2B_6J" : r"1l 2b 6j",
-    "LR_1B_5J" : r"1l 1b 5j",
-    "LR_1B_6J" : r"1l 1b 6j",
-    "LR_0B_5J" : r"1l 0b 5j",
-    "LR_0B_6J" : r"1l 0b 6j",
-}
+sys.path.append("../factory")
+from utils import TEMPLATES
 
 class PlotMetaDataMC(PlotMeta):
 
@@ -59,11 +36,12 @@ class Fitter():
 
     def run_fits(self):
         basename = f"AZH_{self.signal}_{self.obs}_{self.channel}_{self.region}"
-        card = f"UL17/{basename}.dat"
+        card = f"{TEMPLATES}/UL17/{basename}.dat"
         workspace = f"tmp/{basename}.root"
         shapes = f"tmp/shapes.{basename}.root"
         Combine.create_workspace(card,workspace)
         Combine.fit(card,workspace,shapes)
+        Combine.save_shapes(card,workspace,shapes)
 
 
     def load(self):
@@ -117,14 +95,14 @@ class Fitter():
         }
 
         mc = self.hists["total_bkg"].to_numpy()[0]
-        mc_error = self.hists["total_bkg"].errors() #not mc error but bkg uncertainty
+        mc_error = self.hists["total_bkg"].errors() 
         # Set data to total bkg in SR if run in blinded mode
         if ("SR" not in self.region) or self.unblind:
             data = self.hists["data"].to_numpy()[0]
             data_error = self.hists["data"].errors()
         else:
             data = mc
-            data_error = mc_error
+            data_error = [sqrt(bin_entry) for bin_entry in data] #correct?
 
         hep.histplot(
             [x[0] for x in self.hists["bkgs"].values()],
@@ -138,7 +116,7 @@ class Fitter():
         ax[0].stairs(
             mc_error + mc,
             baseline=mc - mc_error,
-            label=f"Postfit Uncertainty",
+            label=f"{self.fit} Uncertainty",
             **error_band_args,
         )
         hep.histplot(
@@ -231,7 +209,7 @@ class Fitter():
 
         # Save Plot
         fpath_out = os.path.join(
-            CMSSW_BASE(),
+            CMSSW_BASE,
             f"src/UHH2/AZH/combine/plots/",
         )
         os.makedirs(fpath_out, exist_ok=True)
@@ -261,10 +239,10 @@ if __name__ == "__main__":
             channel="inv",
             region=region,
             unblind=False,
-            fit="postfit",
+            fit="prefit",
             hists={},
         )
 
-        #fitter.run_fits()
+        fitter.run_fits()
         fitter.load()
         fitter.plot()
