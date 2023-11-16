@@ -6,7 +6,8 @@ from combine import Combine
 import sys
 
 sys.path.append("../factory")
-from utils import TEMPLATES
+
+TEMPLATES = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/data/output_03_templates"
 
 
 if __name__ == "__main__":
@@ -20,7 +21,7 @@ if __name__ == "__main__":
 
     cards = [TEMPLATES+f"/UL17/AZH_{masses}_{var}_inv_{region}.dat" for region in REGIONS.keys()]
     outcard = TEMPLATES+f"/UL17/AZH_{masses}_{var}_inv_all.dat"
-    workspace = f"tmp/WS_{masses}_{var}_inv_all.root"
+    workspace = f"tmp/{masses}_{var}_inv_all.root"
     logfile = f"tmp/AZH_{masses}_{var}_inv_all.log"
     
     Combine.combine_cards(cards,outcard)
