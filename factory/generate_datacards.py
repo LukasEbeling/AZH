@@ -85,7 +85,7 @@ SHAPES_NP = {
     "pdf_WJets_bjet": ["WJets_bjet"],
     "pdf_WJets_ljet": ["WJets_ljet"],
 
-    # ?
+    # vjet scale factors
     "CMS_vjets_EWK_d1K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_EWK_d2K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
     "CMS_vjets_EWK_d3K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
@@ -212,13 +212,13 @@ class Datacard():
         if "TT" in self.processes:
             f.write("rate_TT rateParam * TT 1 [-2,2]")
         if "DYJets_bjet" in self.processes:
-            f.write("\nrate_Vbjet rateParam * DYJets_bjet 1 [-2,2]")
+            f.write("\nrate_Vjet rateParam * DYJets_bjet 1 [-2,2]")
         if "DYJets_ljet" in self.processes:
-            f.write("\nrate_Vljet rateParam * DYJets_ljet 1 [-2,2]")
+            f.write("\nrate_Vjet rateParam * DYJets_ljet 1 [-2,2]")
         if "WJets_bjet" in self.processes:
-            f.write("\nrate_Vbjet rateParam * WJets_bjet 1 [-2,2]")
+            f.write("\nrate_Vjet rateParam * WJets_bjet 1 [-2,2]")
         if "WJets_ljet" in self.processes:
-            f.write("\nrate_Vljet rateParam * WJets_ljet 1 [-2,2]")
+            f.write("\nrate_Vjet rateParam * WJets_ljet 1 [-2,2]")
         
 
     def generate_datacard(self):
