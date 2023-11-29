@@ -20,6 +20,9 @@ class PlotMetaDataMC(PlotMeta):
 
     OBS_XLABEL_MAP = {
         "MET": r"$p_t^{miss}$",
+        "Jet1Phi": r"$\phi$",
+        "Jet1Eta": r"$\eta$",
+        "Jet1Pt": r"$p_T$ [GeV]",
     }
 
 
@@ -235,7 +238,8 @@ if __name__ == "__main__":
     for region in REGIONS.keys():
         fitter = Fitter(
             signal="1000_400",
-            obs="MET",
+            #obs="MET",
+            obs="Jet1Pt",
             channel="inv",
             region=region,
             unblind=False,
