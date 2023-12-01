@@ -19,8 +19,8 @@ def plot_limits(channel="inv", var="MET", region="all", year="UL17", tanb=1):
     limit = Limit(channel,var,region,year)
     
     plot_range = range(500,2000,10)
-    #tan = [theory.get_inclusive(mA,400) for mA in plot_range]
-    tan = [theory.get_invisible(mA,400) for mA in plot_range]
+    tan = [theory.get_inclusive(mA,400) for mA in plot_range]
+    #tan = [theory.get_invisible(mA,400) for mA in plot_range]
 
     down2s = [limit.load(mA,mH,pct="2.5%") for mA,mH in masses]
     down1s = [limit.load(mA,mH,pct="16.0%") for mA,mH in masses]
@@ -49,5 +49,5 @@ def plot_limits(channel="inv", var="MET", region="all", year="UL17", tanb=1):
 
     
 if __name__ == "__main__":
-    plot_limits(tanb=0.5)
+    plot_limits(tanb=1)
 
