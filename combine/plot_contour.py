@@ -42,8 +42,8 @@ def plot_plane(tanb):
 
 
     theory_values = np.array(
-        #[theory.get_inclusive(MA, MH) for MA, MH in grid]
-        [theory.get_invisible(MA, MH) for MA, MH in grid]
+        [theory.get_inclusive(MA, MH) for MA, MH in grid]
+        #[theory.get_invisible(MA, MH) for MA, MH in grid]
     )
 
     theory_limit_ratio = theory_values / expected_values_interpolated
