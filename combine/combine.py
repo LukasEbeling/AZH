@@ -11,7 +11,8 @@ def execute(*cmds):
     )
     init = "source /afs/desy.de/user/e/ebelingl/combine_ini; "
     joined = "".join(cmds)
-    os.system(init+joined)
+    #os.system(init+joined)
+    os.system(joined)
 
 
 ### interface with combine tool ###
@@ -35,7 +36,7 @@ class Combine():
         HASH = workspace.replace(".root","").split("/")[-1]
         execute(
             f"combine -M AsymptoticLimits -m 125 --run blind "
-            f"-d {workspace} {option} --rMin -1 --rMax 1| grep Expected &> {logfile}; "
+            f"-d {workspace} {option} --rMin -1 --rMax 4| grep Expected &> {logfile}; "
         )
 
     # calculate impatcs 
