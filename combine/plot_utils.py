@@ -26,8 +26,8 @@ BACKGROUNDS = [
 REGIONS = {
     "SR_6J" : r"SR 6j",
     "SR_5J" : r"SR 5j", 
-    "IR_1B_5J" : r"0l 1b 5j",
-    "IR_1B_6J" : r"0l 1b 6j",
+    "SR_1B_5J" : r"0l 1b 5j",
+    "SR_1B_6J" : r"0l 1b 6j",
     "IR_0B_5J" : r"0l 0b 5j",
     "IR_0B_6J" : r"0l 0b 6j",
     "LR_2B_5J" : r"1l 2b 5j",  
@@ -36,6 +36,11 @@ REGIONS = {
     "LR_1B_6J" : r"1l 1b 6j",
     "LR_0B_5J" : r"1l 0b 5j",
     "LR_0B_6J" : r"1l 0b 6j",
+    "SR_DNN": r"SR node",
+    "TT_DNN": r"TT node",
+    "QCD_DNN": r"QCD node",
+    "DY_DNN": r"DYJets node",
+    "WJ_DNN": r"WJets node",
 }
 
 class PlotMeta:
