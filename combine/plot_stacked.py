@@ -17,26 +17,31 @@ plt.style.use(hep.style.CMS)
 #Config
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/"
 RECO_PATH = ANALYSIS + "data/output_02_reconstruction/"
-CACHE = ANALYSIS + "combine/cache/"
-MASSES = ["600_400","1000_400","2000_400"]
+CACHE = ANALYSIS + "data/output_03_templates/cache/"
+MASSES = ["1000_400"]
 CMAP = plt.cm.get_cmap("Set1")
 
 BACKGROUNDS = ["VV", "TTW", "TTZ", "DYJets_ljet", "DYJets_bjet", "WJets_ljet", "WJets_bjet", "QCD", "SingleTop","TT"]
 SIGNALS = [f"AZH_{mass}" for mass in MASSES]
 
 REGIONS = {
-    0: "SR_6J",
-    1: "SR_5J",
-    11: "IR_1B_5J",
-    12: "IR_1B_6J",
-    13: "IR_0B_5J",
-    14: "IR_0B_6J",
-    15: "LR_2B_5J",
-    16: "LR_2B_6J",
-    17: "LR_1B_5J",
-    18: "LR_1B_6J",
-    19: "LR_0B_5J",
-    20: "LR_0B_6J",
+    1: "SR_6J",
+    2: "SR_5J",
+    3: "SR_1B_5J",
+    4: "SR_1B_6J",
+    10: "IR_0B_5J",
+    11: "IR_0B_6J",
+    12: "LR_2B_5J",
+    13: "LR_2B_6J",
+    14: "LR_1B_5J",
+    15: "LR_1B_6J",
+    16: "LR_0B_5J",
+    17: "LR_0B_6J",
+    100: "SR_DNN",
+    101: "TT_DNN",
+    102: "WJ_DNN",
+    103: "DY_DNN",
+    104: "QCD_DNN",
 }
 
 OBSERVABLES = {
