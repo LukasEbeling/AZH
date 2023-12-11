@@ -39,7 +39,8 @@ class UHH2ToCombineFactory():
             for channel in ["inv"]
             for region in REGION_ID_MAP.keys()
             for year in config.years
-            for svar in svars + ["ellipses"]
+            for svar in svars
+            #for svar in svars + ["ellipses"]
             #if utils.is_valid_set(channel, region, svar)
         }
 
