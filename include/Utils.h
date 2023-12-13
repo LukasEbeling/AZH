@@ -33,18 +33,18 @@ enum class Channel {
 
 
 enum class Region {
-  SR_6J = 0,
-  SR_5J = 1, 
-  IR_1B_5J = 11,  //Invisible control region
-  IR_1B_6J = 12,
-  IR_0B_5J = 13,
-  IR_0B_6J = 14,
-  LR_2B_5J = 15,  //Leptonic control region
-  LR_2B_6J = 16,
-  LR_1B_5J = 17,
-  LR_1B_6J = 18,
-  LR_0B_5J = 19,
-  LR_0B_6J = 20,
+  SR_6J = 1,
+  SR_5J = 2, 
+  SR_1B_5J = 3,  //Invisible control region
+  SR_1B_6J = 4,
+  IR_0B_5J = 10,
+  IR_0B_6J = 11,
+  LR_2B_5J = 12,  //Leptonic control region
+  LR_2B_6J = 13,
+  LR_1B_5J = 14,
+  LR_1B_6J = 15,
+  LR_0B_5J = 16,
+  LR_0B_6J = 17,
   Invalid = 999,
 };
 
