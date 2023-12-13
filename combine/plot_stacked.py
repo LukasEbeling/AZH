@@ -209,7 +209,7 @@ def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
     axes.set_xlabel(get_xlabel(observable)[0])
 
     # Save Plot
-    folder = os.path.join(ANALYSIS,"plots",signal)
+    folder = os.path.join(ANALYSIS, "combine/plots",signal)
     if not os.path.exists(folder): os.makedirs(folder)
 
     image = REGIONS[region].replace(' ', '') + '_' + get_xlabel(observable)[1] + "_UL17"
