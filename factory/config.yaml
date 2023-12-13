@@ -15,28 +15,38 @@ backgrounds:
 
 svars:
   - MET
-  - m_H
-  #- mt_H
-  #- mt_A
-  - [jetsAk4CHS.m_pt, 1]
-  #- [jetsAk4CHS.m_pt, 2]
-  #- [jetsAk4CHS.m_pt, 3]
-  #- [jetsAk4CHS.m_pt, 4]
-  #- [jetsAk4CHS.m_pt, 5]
-  - [jetsAk4CHS.m_eta, 1]
-  #- [jetsAk4CHS.m_eta, 2]
-  #- [jetsAk4CHS.m_eta, 3]
-  #- [jetsAk4CHS.m_eta, 4]
-  #- [jetsAk4CHS.m_eta, 5]
-  - [jetsAk4CHS.m_phi, 1]
-  #- [jetsAk4CHS.m_phi, 2]
-  #- [jetsAk4CHS.m_phi, 3]
-  #- [jetsAk4CHS.m_phi, 4]
-  #- [jetsAk4CHS.m_phi, 5]
-
 
 branches:
+  - [jetsAk4CHS.m_pt, 1]
+  - [jetsAk4CHS.m_pt, 2]
+  - [jetsAk4CHS.m_pt, 3]
+  - [jetsAk4CHS.m_eta, 1]
+  - [jetsAk4CHS.m_eta, 2]
+  - [jetsAk4CHS.m_eta, 3]
+  - [jetsAk4CHS.m_phi, 1]
+  - [jetsAk4CHS.m_phi, 2]
+  - [jetsAk4CHS.m_phi, 3]
+  - [jetsAk4CHS.m_btag_DeepFlavour_probbb, 1]
+  - [jetsAk4CHS.m_btag_DeepFlavour_probbb, 2]
+  - [jetsAk4CHS.m_btag_DeepFlavour_probbb, 3]
+  - [jetsAk4CHS.m_btag_DeepFlavour_probb, 1]
+  - [jetsAk4CHS.m_btag_DeepFlavour_probb, 2]
+  - [jetsAk4CHS.m_btag_DeepFlavour_probb, 3]
+  - [jetsAk4CHS.m_btag_DeepFlavour_problepb, 1]
+  - [jetsAk4CHS.m_btag_DeepFlavour_problepb, 2]
+  - [jetsAk4CHS.m_btag_DeepFlavour_problepb, 3]
+  - m_H
+  - mt_A
+  - delta_phi
+  - delta_eta
+  - num_b
+  - num_l
+  - num_j
+  - HT
   - event_weight
+  - kfold
+  - node #later, re-run reco
+  - score #later
   - region
 
 #region_branch: region
@@ -68,10 +78,12 @@ variations:
 sample_variations:
   JES: ["_up","_down"]
   JER: ["_up","_down"]
+  #foo: [""]
 
 sample_var_whitelist:
   JES: "ALL PROCESSES"
   JER: "ALL PROCESSES"
+  #foo: ""
 
 angle_cut:
   active: False
