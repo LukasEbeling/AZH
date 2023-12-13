@@ -196,7 +196,7 @@ def plot_samples(region, signal, observable, binning=np.linspace(50, 750, 70)):
     label_bkg = [f"{b} ({y})" for b,y in zip(BACKGROUNDS,yields_bkg)]
     label_sig = f"{signal} ({yield_sig})" 
 
-    hep.cms.label(ax=axes,llabel='Work in progress',data=True, lumi=41.48, year=2017)
+    hep.cms.label(ax=axes,llabel='private work',data=True, lumi=41.5, year=2017)
 
     colors = [COLOR[process] for process in BACKGROUNDS]
 
