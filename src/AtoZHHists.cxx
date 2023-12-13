@@ -16,7 +16,7 @@ using namespace pdgIdUtils;
 HistSet::HistSet(Context & ctx, const string & dirname): Hists(ctx, dirname){
 
   book<TH1F>("N_Events", "N_{Events}", 1, -1, 1);  
-  book<TH1F>("missing_pt","Missing pt", 200, 0, 1000);
+  book<TH1F>("missing_pt","Missing pt", 150, 0, 1500);
   book<TH1F>("N_jets", "N_{jets}", 20, 0, 20);
   book<TH1F>("n_bjets_tight", "N_{b jets, tight}", 5, 0, 4);
   book<TH1F>("n_bjets_loose", "N_{b jets, loose}", 5, 0, 4);
