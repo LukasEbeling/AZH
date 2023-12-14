@@ -17,7 +17,7 @@ bool CLASS::process(Event & event) {
   mt_H = 0;
   m_H = 0;
 
-  bool has_five_jets = event.jets->size() == 5;
+  bool has_five_jets = event.jets->size() <= 5;
 
   LorentzVector H = {0,0,0,0};
   has_five_jets ? H = ProcessFiveJets(event) : H = ProcessMoreJets(event);
