@@ -1,5 +1,6 @@
 .vscode/*
 obj/*
+data/topology/*
 data/output_01_preselection/*
 data/output_02_reconstruction/*
 data/output_03_templates/*
