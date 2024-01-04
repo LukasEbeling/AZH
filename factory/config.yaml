@@ -15,10 +15,13 @@ backgrounds:
 
 svars:
   - MET
-
-branches:
   - [jetsAk4CHS.m_pt, 1]
   - [jetsAk4CHS.m_pt, 2]
+  - mt_A
+  - m_H
+  - HT
+
+branches:
   - [jetsAk4CHS.m_pt, 3]
   - [jetsAk4CHS.m_eta, 1]
   - [jetsAk4CHS.m_eta, 2]
@@ -35,18 +38,15 @@ branches:
   - [jetsAk4CHS.m_btag_DeepFlavour_problepb, 1]
   - [jetsAk4CHS.m_btag_DeepFlavour_problepb, 2]
   - [jetsAk4CHS.m_btag_DeepFlavour_problepb, 3]
-  - m_H
-  - mt_A
   - delta_phi
   - delta_eta
   - num_b
   - num_l
   - num_j
-  - HT
   - event_weight
   - kfold
-  - node #later, re-run reco
-  - score #later
+  - node 
+  - score 
   - region
 
 #region_branch: region
