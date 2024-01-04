@@ -1,0 +1,24 @@
+Requirements = ( OpSysAndVer == "CentOS7" )
+# Request_GPUs = 1
+universe          = vanilla
+# #Running in local mode with 8 cpu slots
+request_cpus      = 4
+initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/combine
+output            = $(initialdir)/condor_logs/plots.o
+error             = $(initialdir)/condor_logs/plots.e
+log               = $(initialdir)/condor_logs/plots.log
+#Requesting CPU and DISK Memory - default +RequestRuntime of 3h stays unaltered
+getenv            = True
+RequestMemory     = 4G
+RequestDisk       = 2G
+JobBatchName      = plot_data
+executable        = $(initialdir)/plot_data.py
+arguments         = $(signal) $(observable) $(fitting)
+queue signal, observable, fitting from (
+    600_400 MET --prefit
+    600_400 Jet1Pt --prefit
+    600_400 HT --prefit
+    1000_400 MET --prefit
+    1000_400 Jet1Pt --prefit
+    1000_400 HT --prefit
+)
