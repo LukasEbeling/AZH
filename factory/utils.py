@@ -26,11 +26,11 @@ REGION_ID_MAP = {
     "LR_1B_6J": 15,
     "LR_0B_5J": 16,
     "LR_0B_6J": 17,
-    "SR_DNN": 100,
-    "TT_DNN": 101,
-    "WJ_DNN": 102,
-    "DY_DNN": 103,
-    "QCD_DNN": 104,
+    #"SR_DNN": 100,
+    #"TT_DNN": 101,
+    #"WJ_DNN": 102,
+    #"DY_DNN": 103,
+    #"QCD_DNN": 104,
 }
 
 OUTPUT_MAP = {
@@ -51,6 +51,7 @@ OUTPUT_MAP = {
     "mt_H": "MTH",
     "m_H": "MH",
     "MET": "MET",
+    "HT":"HT",
 }
 
 class Ellipse():
