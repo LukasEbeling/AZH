@@ -16,6 +16,19 @@ from plot_utils import PlotMeta, CMSSW_BASE, REGIONS, BACKGROUNDS
 sys.path.append("../factory")
 from utils import TEMPLATES
 
+BKG_LABEL_MAP = {
+        "DYJets_bjet": r"Z/$\gamma$ + HF",
+        "DYJets_ljet": r"Z/$\gamma$ + LF",
+        "WJets_bjet": r"W + HF",
+        "WJets_ljet": r"W + LF",
+        "TT": r"TT",
+        "SingleTop": r"SingleTop",
+        "QCD": r"QCD",
+        "VV": r"VV",
+        "TTW": r"TTW",
+        "TTZ": r"TTZ"
+}
+
 class PlotMetaDataMC(PlotMeta):
 
     OBS_XLABEL_MAP = {
@@ -23,7 +36,9 @@ class PlotMetaDataMC(PlotMeta):
         "Jet1Phi": r"$\phi$",
         "Jet1Eta": r"$\eta$",
         "Jet1Pt": r"$p_T$ [GeV]",
+        "HT": r"$H_T$ [GeV]"
     }
+
 
 
 @dataclass
@@ -106,13 +121,14 @@ class Fitter():
         else:
             data = mc
             data_error = [sqrt(bin_entry) for bin_entry in data] #correct?
-
+        
         hep.histplot(
             [x[0] for x in self.hists["bkgs"].values()],
             bins=[x[1] for x in self.hists["bkgs"].values()][0],
             histtype="fill",
             stack=True,
-            label=list(self.hists["bkgs"].keys()),
+            #label=list(self.hists["bkgs"].keys()),
+            label = [BKG_LABEL_MAP[bkg] for bkg in self.hists["bkgs"].keys()],
             color=plot_meta.colors(self.hists["bkgs"].keys()),
             ax=ax[0],
         )
@@ -234,16 +250,25 @@ class Fitter():
         plt.close()
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='eg ./plot_data 1000_400 MET --prefit')
+    parser.add_argument('signal', type=str)
+    parser.add_argument('obs', type=str)
+    parser.add_argument('--prefit', action='store_true')
+
+    args = parser.parse_args()
+    signal = args.signal
+    observable = args.obs
+    fitting = "prefit" if args.prefit else "postfit"
 
     for region in REGIONS.keys():
         fitter = Fitter(
-            signal="1000_400",
+            signal=signal,
             #obs="MET",
-            obs="Jet1Pt",
+            obs=observable,
             channel="inv",
             region=region,
             unblind=False,
-            fit="prefit",
+            fit=fitting,
             hists={},
         )
 
