@@ -1,0 +1,23 @@
+Requirements = ( OpSysAndVer == "CentOS7" )
+# Request_GPUs = 1
+universe          = vanilla
+# #Running in local mode with 8 cpu slots
+request_cpus      = 4
+initialdir        = /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/dnn/
+output            = $(initialdir)/condor_logs/training.o
+error             = $(initialdir)/condor_logs/training.e
+log               = $(initialdir)/condor_logs/training.log
+#Requesting CPU and DISK Memory - default +RequestRuntime of 3h stays unaltered
+getenv            = True
+RequestMemory     = 4G
+RequestDisk       = 2G
+JobBatchName      = calc_impacts
+executable        = $(initialdir)/train_dnn.py
+arguments         = $(signal) $(kfold)
+queue signal, kfold from (
+    AZH_1000_400 1
+    AZH_1000_400 2
+    AZH_1000_400 3
+    AZH_1000_400 4
+    AZH_1000_400 5
+)
