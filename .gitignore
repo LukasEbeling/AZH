@@ -16,5 +16,6 @@ combine/UL17/*
 *.o
 *.e
 *.log
+*.keras
 2HDMC.txt
 */tmp/*
