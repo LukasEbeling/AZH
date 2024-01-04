@@ -13,7 +13,7 @@ from config import Configurator
 
 
 config = Configurator()
-VARS = ["MET","Jet1Pt","Jet1Eta","Jet1Phi","MH"]
+VARS = ["MET","Jet1Pt","Jet2Pt","mt_A","MH","HT"]
 CHANNELS = ["inv"]
 REGIONS = list(utils.REGION_ID_MAP.keys())
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
@@ -203,7 +203,7 @@ class Datacard():
         f.write(f"\n* autoMCStats 0")
 
     def write_scaling(self, f):
-        f.write("\nrate_BR_vv rateParam * AtoZH 0.2") #0.2 for inclusive xsec in AZH -> ttZ, 1 for xsec of AZH -> ttvv
+        f.write("\nrate_BR_vv rateParam * AtoZH 0.2") #0.2 for inclusive xsec in AZH->ttZ, 1 for xsec of AZH->ttvv
         f.write("\nnuisance edit freeze rate_BR_vv ifexists")
         f.write("\nlumiscale rateParam * * 1") #3.33 for full run 2
         f.write("\nnuisance edit freeze lumiscale ifexists")
