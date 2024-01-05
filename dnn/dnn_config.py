@@ -6,9 +6,9 @@ CMSSW_BASE = '/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/'
 CACHE = os.path.join(CMSSW_BASE, "src/UHH2/AZH/data/output_03_templates/cache")
 
 ### dnn structure ###
-NODES = 512
-EPOCHS = 10
-BATCHSIZE = 320
+NODES = 2**4
+EPOCHS = 2**7
+BATCHSIZE = 2**9
 
 ### targets for bkg processes ###
 TARGETS = {
