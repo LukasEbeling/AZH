@@ -52,6 +52,7 @@ OUTPUT_MAP = {
     "m_H": "MH",
     "MET": "MET",
     "HT":"HT",
+    "score": "score",
 }
 
 class Ellipse():
