@@ -592,6 +592,7 @@ class Binner():
             "m_H": np.append(np.linspace(200,1500,13),10000),
             "MET": np.append(np.linspace(170,800,10),10000),
             "HT": np.append(np.linspace(500,1800,13),10000),
+            "score": np.linspace(0,1,10)**0.5,
         },
         "SR_5J": {
             "mt_H": [-2,0]
