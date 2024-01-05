@@ -8,13 +8,13 @@ import numpy as np
 class DataLoader():
 
     ### load data set for given signal and variation ###
-    def __init__(self, signal: str, k: int, variation: str = 'nominal', shuffel: bool = False):
+    def __init__(self, signal: str, k: int, variation: str = 'nominal', shuffeled: bool = False):
 
         self.signal = signal
         self.variation = variation
 
         data = self.load()
-        if shuffel: data = shuffel(data)
+        if shuffeled: data = self.shuffel(data)
 
         self.full_set = data
         self.evalu_set = data[(data['kfold'] - k)%5 == 0]
@@ -96,8 +96,9 @@ class DataLoader():
     ### normalize values of observables to ensure comparability ###
     def normalize(self, df):
         for obs in OBSERVABLES:
-            df[obs] = df[obs] + min(df[obs])
-            df[obs] = df[obs]/np.mean(df[obs])
+            #df[obs] = df[obs] + min(df[obs])
+            #df[obs] = df[obs]/np.mean(df[obs])
+            df[obs] = (df[obs] - np.mean(df[obs]))/np.std(df[obs])
 
         return df
     
