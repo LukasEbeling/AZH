@@ -20,6 +20,7 @@ svars:
   - mt_A
   - m_H
   - HT
+  - score 
 
 branches:
   - [jetsAk4CHS.m_pt, 3]
@@ -46,7 +47,6 @@ branches:
   - event_weight
   - kfold
   - node 
-  - score 
   - region
 
 #region_branch: region
