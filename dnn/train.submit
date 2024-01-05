@@ -11,7 +11,7 @@ log               = $(initialdir)/condor_logs/training.log
 getenv            = True
 RequestMemory     = 4G
 RequestDisk       = 2G
-JobBatchName      = calc_impacts
+JobBatchName      = train_dnn
 executable        = $(initialdir)/train_dnn.py
 arguments         = $(signal) $(kfold)
 queue signal, kfold from (
