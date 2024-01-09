@@ -56,16 +56,9 @@ class InvPreselection: public AnalysisModule {
     // Histograms
     std::unique_ptr<Hists> h_unc_norm;
     std::unique_ptr<Hists> h_baseline;
-    std::unique_ptr<Hists> h_one_jet;
-    std::unique_ptr<Hists> h_two_jets;
-    std::unique_ptr<Hists> h_three_jets;
-    std::unique_ptr<Hists> h_four_jets;
-    std::unique_ptr<Hists> h_five_jets;
-    std::unique_ptr<Hists> h_six_jets;
-    std::unique_ptr<Hists> h_seven_jets;
-    std::unique_ptr<Hists> h_eight_jets;
     std::unique_ptr<Hists> h_trigger;
-    std::unique_ptr<Hists> h_met_150;
+    std::unique_ptr<Hists> h_met_170;
+    std::unique_ptr<Hists> h_five_jets;
 
     // Histograms for BTagging efficiency measurements
     std::unique_ptr<BTagMCEfficiencyHists> h_btag_eff;
@@ -77,16 +70,7 @@ class InvPreselection: public AnalysisModule {
     std::unique_ptr<CommonModules> common_modules;
     std::unique_ptr<AnalysisModule> clnr_jetpuid;
     std::unique_ptr<METTriggers> s_met_trigger;
-
-    // Studies on jet number
-    std::unique_ptr<Selection> s_njet_one;
-    std::unique_ptr<Selection> s_njet_two;
-    std::unique_ptr<Selection> s_njet_three;
-    std::unique_ptr<Selection> s_njet_four;
     std::unique_ptr<Selection> s_njet_five;
-    std::unique_ptr<Selection> s_njet_six;
-    std::unique_ptr<Selection> s_njet_seven;
-    std::unique_ptr<Selection> s_njet_eight;
 
     // Event Weighting
     unique_ptr<HEMSelection> sel_hem;
@@ -119,15 +103,8 @@ InvPreselection::InvPreselection(Context & ctx){
   electronId_loose = AndId<Electron>(ElectronEtaWindowId(), PtEtaSCCut(20, 2.4), ElectronTagID(eleTag));
 
   // Selections
-  s_njet_one.reset(new NJetSelection(1));
-  s_njet_two.reset(new NJetSelection(2));
-  s_njet_three.reset(new NJetSelection(3));
-  s_njet_four.reset(new NJetSelection(4));
-  s_njet_five.reset(new NJetSelection(5));
-  s_njet_six.reset(new NJetSelection(6));
-  s_njet_seven.reset(new NJetSelection(7));
-  s_njet_eight.reset(new NJetSelection(8));
   s_met_trigger.reset(new METTriggers(ctx));
+  s_njet_five.reset(new NJetSelection(5));
 
   // Event Weighting
   sel_hem.reset(new HEMSelection(ctx));
@@ -162,16 +139,9 @@ InvPreselection::InvPreselection(Context & ctx){
 
   // Histograms
   h_baseline.reset(new HistSet(ctx, "CutFlow_Baseline"));
-  h_one_jet.reset(new HistSet(ctx, "CutFlow_1Jet"));
-  h_two_jets.reset(new HistSet(ctx, "CutFlow_2Jet"));
-  h_three_jets.reset(new HistSet(ctx, "CutFlow_3Jet"));
-  h_four_jets.reset(new HistSet(ctx, "CutFlow_4Jet"));
-  h_five_jets.reset(new HistSet(ctx, "CutFlow_5Jet"));
-  h_six_jets.reset(new HistSet(ctx, "CutFlow_6Jet"));
-  h_seven_jets.reset(new HistSet(ctx, "CutFlow_7Jet"));
-  h_eight_jets.reset(new HistSet(ctx, "CutFlow_8Jet"));
   h_trigger.reset(new HistSet(ctx, "CutFlow_Triggered"));
-  h_met_150.reset(new HistSet(ctx, "CutFlow_MET>150"));
+  h_met_170.reset(new HistSet(ctx, "CutFlow_MET>170"));
+  h_five_jets.reset(new HistSet(ctx, "CutFlow_5Jet"));
   
   h_btag_eff.reset(new BTagMCEfficiencyHists(ctx, "2_BTagMCEff", bmedium));
   h_unc_norm.reset(new NormalisationHists(ctx, "UncNorms"));
@@ -227,21 +197,12 @@ bool InvPreselection::process(Event & event) {
 
   // Cut on missing transvers momentum
   double met = event.met->pt(); 
-  if (met<150) return false;
-  h_met_150->fill(event);
-
-  // Jet studies
-  if (s_njet_one->passes(event)) {h_one_jet->fill(event);}
-  if (s_njet_two->passes(event)) {h_two_jets->fill(event);}
-  if (s_njet_three->passes(event)) {h_three_jets->fill(event);}
-  if (s_njet_four->passes(event)) {h_four_jets->fill(event);}
-  if (s_njet_five->passes(event)) {h_five_jets->fill(event);}
-  if (s_njet_six->passes(event)) {h_six_jets->fill(event);}
-  if (s_njet_seven->passes(event)) {h_seven_jets->fill(event);}
-  if (s_njet_eight->passes(event)) {h_eight_jets->fill(event);}
+  if (met<170) return false;
+  h_met_170->fill(event);
 
   // Jet Selection
   if (!(s_njet_five->passes(event))) return false;
+  h_five_jets->fill(event);
 
   // Histogram for BTagging efficiencye
   // as close to final phase space as possible
