@@ -6,7 +6,9 @@
 
 #include "TH1F.h"
 #include "TH2F.h"
+
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 using namespace uhh2;
@@ -16,11 +18,13 @@ using namespace pdgIdUtils;
 HistSet::HistSet(Context & ctx, const string & dirname): Hists(ctx, dirname){
 
   book<TH1F>("N_Events", "N_{Events}", 1, -1, 1);  
-  book<TH1F>("missing_pt","Missing pt", 150, 0, 1500);
+  book<TH1F>("missing_pt","Missing pt", int(1500/20), 0, 1500);
   book<TH1F>("N_jets", "N_{jets}", 20, 0, 20);
-  book<TH1F>("n_bjets_tight", "N_{b jets, tight}", 5, 0, 4);
-  book<TH1F>("n_bjets_loose", "N_{b jets, loose}", 5, 0, 4);
-  book<TH1F>("n_bjets_medium", "N_{b jets, medium}", 5, 0, 4);    
+  book<TH1F>("N_lep", "N_{lep}", 5, 0, 5);
+  book<TH1F>("n_bjets_tight", "N_{b jets, tight}", 5, 0, 5);
+  book<TH1F>("n_bjets_loose", "N_{b jets, loose}", 5, 0, 5);
+  book<TH1F>("n_bjets_medium", "N_{b jets, medium}", 5, 0, 5);
+  book<TH1F>("delta_phi", "delta_phi",10,0,1*M_PI);    
 }
 
 
@@ -56,11 +60,32 @@ void HistSet::fill(const Event & event){
   hist("n_bjets_loose")->Fill(n_btag_jets_loose, weight);
   hist("n_bjets_medium")->Fill(n_btag_jets_medium, weight);
   hist("n_bjets_tight")->Fill(n_btag_jets_tight, weight);
+  hist("N_lep")->Fill((*event.electrons).size() + (*event.muons).size(),weight);
+  hist("delta_phi")->Fill(DeltaPhi(event),weight);
 }
 
 HistSet::~HistSet(){}
 
+// calculate Delta Phi (min angle between met and jets)
+double HistSet::DeltaPhi(const Event& event){
+  vector<Jet> jets = *event.jets;
+  if(jets.size() < 1) return -1;
 
+  double phi_m = event.met->phi();
+  double min_diff = M_PI;
+
+  for (Jet jet: jets){
+    if(jet.pt()<30) continue;
+    double phi_j = jet.phi();
+    double delta = abs(phi_m - phi_j);
+    if(delta > M_PI){delta = 2*M_PI - delta;}
+    if(delta < min_diff) min_diff = delta;
+  }
+
+  return min_diff;
+}
+
+// Set of Histogram only with total number of events
 SimpleHist::SimpleHist(Context & ctx, const string & dirname): Hists(ctx, dirname){
 
   book<TH1F>("N_Events", "N_{Events}", 1, -1, 1);

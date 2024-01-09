@@ -21,6 +21,9 @@ class HistSet: public uhh2::Hists {
     // Methods
     virtual void fill(const uhh2::Event & event) override;
     virtual ~HistSet();
+
+  private:
+    double DeltaPhi(const uhh2::Event & event);
 };
 
 class SimpleHist: public uhh2::Hists {
