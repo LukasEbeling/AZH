@@ -53,6 +53,10 @@ class InvTopology: public AnalysisModule {
     uhh2::Event::Handle<double> handle_met;
     uhh2::Event::Handle<double> handle_A_mt;
     uhh2::Event::Handle<double> handle_H_m;
+    uhh2::Event::Handle<double> handle_eta1;
+    uhh2::Event::Handle<double> handle_eta2;
+    uhh2::Event::Handle<double> handle_pt1;
+    uhh2::Event::Handle<double> handle_pt2;
     uhh2::Event::Handle<int> handle_num_jets;
     uhh2::Event::Handle<int> handle_num_lep;
     uhh2::Event::Handle<int> handle_num_btag;
@@ -147,6 +151,10 @@ InvTopology::InvTopology(Context & ctx){
   handle_num_jets = ctx.declare_event_output<int>("num_jets");
   handle_num_lep = ctx.declare_event_output<int>("num_leps");
   handle_num_btag = ctx.declare_event_output<int>("num_btags");
+  handle_eta1 = ctx.declare_event_output<double>("eta1");
+  handle_eta2 = ctx.declare_event_output<double>("eta2");
+  handle_pt1 = ctx.declare_event_output<double>("pt1");
+  handle_pt2 = ctx.declare_event_output<double>("pt2");
 
 
   // Common
@@ -227,6 +235,17 @@ bool InvTopology::process(Event & event) {
   if (s_bjet_one->passes(event)) btags = 1;
   if (s_bjet_two->passes(event)) btags = 2;
   event.set(handle_num_btag,btags);
+
+  //leading jets
+  vector<Jet> jets = *event.jets;
+  double pt1 = jets.size()<1 ? -100 : jets[0].pt();
+  double eta1 = jets.size()<1 ? -100 : jets[0].eta();
+  double pt2 = jets.size()<2 ? -100 : jets[1].pt();
+  double eta2 = jets.size()<2 ? -100 : jets[1].eta();
+  event.set(handle_eta1,eta1);
+  event.set(handle_eta2,eta2);
+  event.set(handle_pt1,pt1);
+  event.set(handle_pt2,pt2);
 
   //missing ET
   event.set(handle_met,event.met->pt());
