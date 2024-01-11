@@ -37,24 +37,25 @@ REGIONS = {
     15: "LR_1B_6J",
     16: "LR_0B_5J",
     17: "LR_0B_6J",
-    100: "SR_DNN",
-    101: "TT_DNN",
-    102: "WJ_DNN",
-    103: "DY_DNN",
-    104: "QCD_DNN",
+    #100: "SR_DNN",
+    #101: "TT_DNN",
+    #102: "WJ_DNN",
+    #103: "DY_DNN",
+    #104: "QCD_DNN",
 }
 
 OBSERVABLES = {
-    "MET": np.linspace(170,800,10),
+    #"MET": np.linspace(170,800,10),
     #"delta_m": np.linspace(200,1500,13),
     #"delta_mt": np.linspace(200,1500,13),
-    "m_H": np.linspace(200,1500,13),
+    #"m_H": np.linspace(200,1500,13),
     #"mt_A": np.linspace(500,1800,13),
     #"mt_H": np.linspace(200,1500,13),
     #"jetsAk4CHS/jetsAk4CHS.m_pt": np.linspace(80, 800, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_phi": np.linspace(-pi, pi, 21),
     #"jetsAk4CHS/jetsAk4CHS.m_eta": np.linspace(-3, 3, 21),
     #"event_weight": np.linspace(0,100,21), 
+    "score": np.linspace(0,1,10)**0.5,
 }
 
 COLOR = {
@@ -174,6 +175,7 @@ def get_xlabel(obs):
         "HT": (r"$H_T$ [GeV]","HT"),
         "delta_phi": (r"min $\Delta\phi$ [rad]","DeltaPhi"),
         "num_leptons": ("number of leptons", "LEP"),
+        "score": ("dnn signal score","score")
         }
     return x[obs.replace("Puppi", "CHS")]
 
