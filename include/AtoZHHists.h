@@ -13,6 +13,19 @@
  * pointers as member data instead, like in 'common/include/ElectronHists.h'.
  */
 
+class RecoHistSet: public uhh2::Hists {
+  public:
+    // use the same constructor arguments as Hists for forwarding:
+    RecoHistSet(uhh2::Context & ctx, const std::string & dirname);
+
+    // Methods
+    virtual void fill(const uhh2::Event & event) override;
+    virtual ~RecoHistSet();
+
+  private:
+    double DeltaPhi(const uhh2::Event & event);
+};
+
 class HistSet: public uhh2::Hists {
   public:
     // use the same constructor arguments as Hists for forwarding:
