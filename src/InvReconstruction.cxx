@@ -27,7 +27,6 @@ class InvReconstruction : public AnalysisModule{
 
 
   private:
-
   bool is_mc = false;
 
   //Methods
@@ -36,9 +35,13 @@ class InvReconstruction : public AnalysisModule{
   double DeltaPhi(Event& event);
   double DeltaEta(Event& event);
   double get_random(Event& event);
+  int get_jets(Event& event);
+  int get_leps(Event& event);
+  int get_btag(Event& event);
 
   //Handles
   Event::Handle<int> handle_region;
+  Event::Handle<int> handle_backup;
   Event::Handle<int> handle_node;
   Event::Handle<double> handle_HT;
   Event::Handle<double> handle_delta_phi;
@@ -58,19 +61,17 @@ class InvReconstruction : public AnalysisModule{
     
   //Histograms
   unique_ptr<Hists> h_base;
-  unique_ptr<Hists> h_met;
   unique_ptr<Hists> h_weight;
   unique_ptr<Hists> h_delta;
   unique_ptr<Hists> h_btag;
   unique_ptr<Hists> h_veto;
-  unique_ptr<Hists> h_6jets;
   unique_ptr<Hists> h_fake;
   unique_ptr<Hists> h_missed;    
 
   //Scale Factors  
   std::unique_ptr<AnalysisModule> sf_btagging;
   //std::unique_ptr<AnalysisModule> sf_leptons;
-    
+
   //Selection Modules
   std::unique_ptr<Selection> s_njet_six;
   std::unique_ptr<Selection> s_njet_sixplus;
@@ -92,22 +93,13 @@ InvReconstruction::InvReconstruction(Context& ctx){
   sf_btagging.reset(new MCBTagScaleFactor(ctx, BTag::DEEPJET, BTag::WP_MEDIUM, "jets", "mujets", "incl","BTagMCEffFile"));
   //sf_leptons.reset(new LeptonScaleFactors(ctx));
   
-  s_njet_six.reset(new NJetSelection(6,6));
-  s_njet_sixplus.reset(new NJetSelection(6));
-  s_njet_sevenplus.reset(new NJetSelection(7));
-  s_bjet_none.reset(new NJetSelection(0,-1,bmedium));
-  s_bjet_one.reset(new NJetSelection(1,1,bmedium));
-  s_bjet_two.reset(new NJetSelection(2,-1,bmedium));
-
-  h_base.reset(new SimpleHist(ctx, "CutFlow_Baseline"));
-  h_met.reset(new SimpleHist(ctx, "CutFlow_MET>170"));
-  h_weight.reset(new SimpleHist(ctx, "CutFlow_MET>170*"));
-  h_delta.reset(new SimpleHist(ctx, "CutFlow_deltaphi"));
-  h_btag.reset(new SimpleHist(ctx, "CutFlow_TwoB"));
-  h_veto.reset(new SimpleHist(ctx, "CutFlow_LeptonVeto"));
-  h_6jets.reset(new SimpleHist(ctx, "CutFlow_6Jets"));
-  h_fake.reset(new SimpleHist(ctx, "faked_leptons"));
-  h_missed.reset(new SimpleHist(ctx, "missed_leptons"));
+  h_base.reset(new RecoHistSet(ctx, "CutFlow_baseline"));
+  h_weight.reset(new RecoHistSet(ctx, "CutFlow_weights"));
+  h_delta.reset(new RecoHistSet(ctx, "CutFlow_deltaphi"));
+  h_btag.reset(new RecoHistSet(ctx, "CutFlow_btags"));
+  h_veto.reset(new RecoHistSet(ctx, "CutFlow_leptons"));
+  h_fake.reset(new RecoHistSet(ctx, "faked_leptons"));
+  h_missed.reset(new RecoHistSet(ctx, "missed_leptons"));
 
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
 
@@ -123,6 +115,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
   handle_delta_eta = ctx.declare_event_output<double>("delta_eta"); //leading two jets
   handle_score = ctx.declare_event_output<double>("score"); //dnn score
   handle_region = ctx.declare_event_output<int>("region");
+  handle_backup = ctx.declare_event_output<int>("backup"); //event region, if region overridded
   handle_node = ctx.declare_event_output<int>("node"); //dnn region
   handle_num_b = ctx.declare_event_output<int>("num_b");
   handle_num_l = ctx.declare_event_output<int>("num_l");
@@ -145,19 +138,23 @@ bool InvReconstruction::process(Event& event){
     if(leptons!=0&&(!HasGenLepton(event))) h_fake->fill(event);
   }
 
-  //Global cuts
-  h_base->fill(event);
+  /*
+  Cuts: trigger, jets, met, lep, btags, qcd
+  */
+
+  //MET cut -> move to preselection
   if (event.met->pt() < 170) return false;
-  h_met->fill(event);
+  h_base->fill(event);
+
+  //QCD cut
   if (DeltaPhi(event) < 0.5) return false;
   h_delta->fill(event);
   if (event.weight > 10) return false;
   h_weight->fill(event);
-
+  
   //cutflow of signal region
-  int lep = (*event.electrons).size() + (*event.muons).size();
-  if (lep==0) h_veto->fill(event);
-  if (lep==0 && !(s_bjet_none->passes(event))) h_btag->fill(event);
+  if (get_leps(event)==0) h_veto->fill(event);
+  if (get_leps(event)==0 && get_btag(event)>0) h_btag->fill(event);  
    
   //Assign regions
   bool valid_region = AssignRegion(event);
@@ -175,19 +172,11 @@ bool InvReconstruction::process(Event& event){
   double HT = 0;
   for(Jet jet: *event.jets){HT += jet.pt();}
 
-  int btags = 0;
-  if (s_bjet_one->passes(event)) btags = 1;
-  if (s_bjet_two->passes(event)) btags = 2;
-  
-  int jets = 5;
-  if (s_njet_six->passes(event)) jets = 6;
-  if (s_njet_sevenplus->passes(event)) jets = 7;
-
   event.set(handle_HT,HT);
   event.set(handle_met,event.met->pt());
-  event.set(handle_num_l,lep);
-  event.set(handle_num_b,btags);
-  event.set(handle_num_j,jets);
+  event.set(handle_num_l,get_leps(event));
+  event.set(handle_num_b,get_btag(event));
+  event.set(handle_num_j,get_jets(event));
   event.set(handle_delta_phi,DeltaPhi(event));
   event.set(handle_delta_eta,DeltaEta(event));
   event.set(handle_weight, event.weight);
@@ -199,15 +188,15 @@ bool InvReconstruction::process(Event& event){
 }
 
 bool InvReconstruction::AssignRegion(Event& event){
-  int leptons = (*event.electrons).size() + (*event.muons).size();
-  int btags = 0;
-  if (s_bjet_one->passes(event)) btags = 1;
-  if (s_bjet_two->passes(event)) btags = 2;
-  
-  int jets = 5;
-  if (s_njet_sixplus->passes(event)) jets = 6;
+  int j = get_jets(event);
+  int l = get_leps(event);
+  int b = get_btag(event);  
 
-  array<int,3> lbj = {leptons,btags,jets};
+  if (j>6) j=6;
+  if (l>1) l=1;
+  if (b>2) b=2;
+
+  array<int,3> lbj = {l,b,j};
   Region region = Region::Invalid;
 
   if(lbj==array<int,3>{0,2,6}) region = Region::SR_6J;    //Signal region
@@ -226,6 +215,7 @@ bool InvReconstruction::AssignRegion(Event& event){
   if(region==Region::Invalid) return false;
 
   event.set(handle_region, (int) region);
+  event.set(handle_backup, (int) region);
   return true;
 }
 
@@ -268,6 +258,25 @@ double InvReconstruction::get_random(Event &event) {
   double phi = event.jets->at(0).v4().phi();
   srand((int)(1000 * phi));
   return (rand() % 5) + 1;
+}
+
+int InvReconstruction::get_jets(Event &event) {
+  int jets = event.jets->size();
+  return jets;
+}
+
+int InvReconstruction::get_leps(Event &event) {
+  int leps = event.electrons->size() + event.muons->size();
+  //(*event.electrons).size() + (*event.muons).size();
+  return leps;
+}
+
+int InvReconstruction::get_btag(Event &event) {
+  int btags = 0;  
+  for(const Jet & jet : *event.jets) {
+    if(bmedium(jet, event)) btags+=1;
+  }
+  return btags;
 }
 
 UHH2_REGISTER_ANALYSIS_MODULE(InvReconstruction)
