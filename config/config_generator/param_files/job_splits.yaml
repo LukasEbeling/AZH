@@ -1,7 +1,7 @@
 Preselection:
   MC:
     n_events_break: "0"
-    file_split: "30"
+    file_split: "15"
   DATA:
     n_events_break: "0"
     file_split: "70"
