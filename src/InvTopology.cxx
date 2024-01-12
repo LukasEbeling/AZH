@@ -43,8 +43,16 @@ class InvTopology: public AnalysisModule {
     bool is_mc;
     Year year;
     const JetId jet_id = AndId<Jet>(PtEtaCut(30, 2.4), JetPFID(JetPFID::WP_TIGHT_LEPVETO_CHS));
-    MuonId muonId_loose;
-    ElectronId electronId_loose;  
+    const JetId bloose = BTag(BTag::DEEPJET, BTag::WP_LOOSE);
+    const JetId bmedium = BTag(BTag::DEEPJET, BTag::WP_MEDIUM);
+    const JetId btight = BTag(BTag::DEEPJET, BTag::WP_TIGHT);
+    
+    Muon::Selector muonIdTag = Muon::CutBasedIdLoose;
+    Muon::Selector muonIsoTag = Muon::PFIsoLoose;
+    Electron::tag eleTag = Electron::mvaEleID_Fall17_iso_V2_wp90;
+    
+    MuonId muonId_loose = AndId<Muon>(PtEtaCut(20, 2.4), MuonID(muonIdTag), MuonID(muonIsoTag));
+    ElectronId electronId_loose = AndId<Electron>(ElectronEtaWindowId(), PtEtaSCCut(20, 2.4), ElectronTagID(eleTag));
 
     // Handles
     uhh2::Event::Handle<double> handle_event_weight;
@@ -57,6 +65,7 @@ class InvTopology: public AnalysisModule {
     uhh2::Event::Handle<double> handle_eta2;
     uhh2::Event::Handle<double> handle_pt1;
     uhh2::Event::Handle<double> handle_pt2;
+    uhh2::Event::Handle<double> handle_HT;
     uhh2::Event::Handle<int> handle_num_jets;
     uhh2::Event::Handle<int> handle_num_lep;
     uhh2::Event::Handle<int> handle_num_btag;
@@ -103,19 +112,6 @@ InvTopology::InvTopology(Context & ctx){
   is_mc = ctx.get("dataset_type") == "MC";
   higgs_reconstructor.reset(new HiggsReconstructor(ctx));
 
-  // Cleaners
-  const JetId bmedium = BTag(BTag::DEEPJET, BTag::WP_MEDIUM);
-  const JetId btight = BTag(BTag::DEEPJET, BTag::WP_TIGHT);
-
-  // MuonId
-  Muon::Selector muonIdTag = Muon::CutBasedIdLoose;
-  Muon::Selector muonIsoTag = Muon::PFIsoLoose;
-  muonId_loose = AndId<Muon>(PtEtaCut(20, 2.4), MuonID(muonIdTag), MuonID(muonIsoTag));
-
-  // ElectronId
-  Electron::tag eleTag = Electron::mvaEleID_Fall17_iso_V2_wp90;
-  electronId_loose = AndId<Electron>(ElectronEtaWindowId(), PtEtaSCCut(20, 2.4), ElectronTagID(eleTag));
-
   // Selections
   s_njet_none.reset(new NJetSelection(0,0));
   s_njet_one.reset(new NJetSelection(1,1));
@@ -155,6 +151,7 @@ InvTopology::InvTopology(Context & ctx){
   handle_eta2 = ctx.declare_event_output<double>("eta2");
   handle_pt1 = ctx.declare_event_output<double>("pt1");
   handle_pt2 = ctx.declare_event_output<double>("pt2");
+  handle_HT = ctx.declare_event_output<double>("HT");
 
 
   // Common
@@ -215,6 +212,7 @@ bool InvTopology::process(Event & event) {
 
   //number of jets
   int num_jets = 8; //eight or more
+  vector<Jet> jets = *event.jets;
   if (s_njet_none->passes(event)) {num_jets = 0;}
   if (s_njet_one->passes(event)) {num_jets = 1;}
   if (s_njet_two->passes(event)) {num_jets = 2;}
@@ -223,21 +221,32 @@ bool InvTopology::process(Event & event) {
   if (s_njet_five->passes(event)) {num_jets = 5;}
   if (s_njet_six->passes(event)) {num_jets = 6;}
   if (s_njet_seven->passes(event)) {num_jets = 7;}
-  event.set(handle_num_jets, num_jets);
+  event.set(handle_num_jets, jets.size());
 
   //number of leptons
   int num_lep = (*event.electrons).size() + (*event.muons).size();
   event.set(handle_num_lep, num_lep);
 
-  //number of b-tags
+  //number of b-tags, HT
   int btags = 3; //three or more
   if (s_bjet_none->passes(event)) btags = 0;
   if (s_bjet_one->passes(event)) btags = 1;
   if (s_bjet_two->passes(event)) btags = 2;
-  event.set(handle_num_btag,btags);
+  
+  int n_btag_jets_loose = 0;
+  int n_btag_jets_medium = 0;
+  int n_btag_jets_tight = 0;
+  double HT = 0;
+  for(const Jet & jet : jets) {
+    HT += jet.pt();
+    if(bloose(jet, event)) ++n_btag_jets_loose;
+    if(bmedium(jet, event)) ++n_btag_jets_medium;
+    if(btight(jet, event)) ++n_btag_jets_tight;
+  }
+  event.set(handle_num_btag,n_btag_jets_medium);
+  event.set(handle_HT,HT);
 
   //leading jets
-  vector<Jet> jets = *event.jets;
   double pt1 = jets.size()<1 ? -100 : jets[0].pt();
   double eta1 = jets.size()<1 ? -100 : jets[0].eta();
   double pt2 = jets.size()<2 ? -100 : jets[1].pt();
