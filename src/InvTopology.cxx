@@ -22,6 +22,8 @@
 #include "UHH2/AZH/include/ScaleFactors.h"
 #include "UHH2/AZH/include/Utils.h"
 #include "UHH2/AZH/include/HiggsReco.h"
+#include "UHH2/AZH/include/METTriggers.h"
+
 
 
 using namespace std;
@@ -69,6 +71,7 @@ class InvTopology: public AnalysisModule {
     uhh2::Event::Handle<int> handle_num_jets;
     uhh2::Event::Handle<int> handle_num_lep;
     uhh2::Event::Handle<int> handle_num_btag;
+    uhh2::Event::Handle<int> handle_trigger;
 
 
     // Rochester corrections and leptons ID+ISO collections
@@ -90,6 +93,7 @@ class InvTopology: public AnalysisModule {
     std::unique_ptr<Selection> s_bjet_none;
     std::unique_ptr<Selection> s_bjet_one;
     std::unique_ptr<Selection> s_bjet_two;
+    std::unique_ptr<METTriggers> s_met_trigger;
 
     // Event Weighting
     unique_ptr<HEMSelection> sel_hem;
@@ -124,6 +128,7 @@ InvTopology::InvTopology(Context & ctx){
   s_bjet_none.reset(new NJetSelection(0,0,bmedium));
   s_bjet_one.reset(new NJetSelection(1,1,bmedium));
   s_bjet_two.reset(new NJetSelection(2,2,bmedium));
+  s_met_trigger.reset(new METTriggers(ctx));
 
   // Event Weighting
   sel_hem.reset(new HEMSelection(ctx));
@@ -147,6 +152,7 @@ InvTopology::InvTopology(Context & ctx){
   handle_num_jets = ctx.declare_event_output<int>("num_jets");
   handle_num_lep = ctx.declare_event_output<int>("num_leps");
   handle_num_btag = ctx.declare_event_output<int>("num_btags");
+  handle_trigger = ctx.declare_event_output<int>("triggered");
   handle_eta1 = ctx.declare_event_output<double>("eta1");
   handle_eta2 = ctx.declare_event_output<double>("eta2");
   handle_pt1 = ctx.declare_event_output<double>("pt1");
@@ -209,6 +215,11 @@ bool InvTopology::process(Event & event) {
   sf_puid->process(event);
   pdf_weights->process(event);
   ps_weights->process(event);
+
+  //trigger
+  int triggered = 0;
+  if ((s_met_trigger->passes(event))) triggered = 1;
+  event.set(handle_trigger,triggered);
 
   //number of jets
   int num_jets = 8; //eight or more
