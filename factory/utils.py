@@ -6,7 +6,7 @@ import numpy as np
 import scipy.integrate as integrate
 
 
-CMSSW_BASE = os.environ.get('CMSSW_BASE')
+CMSSW_BASE = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28"
 CACHE = os.path.join(CMSSW_BASE,"src/UHH2/AZH/data/output_03_templates/cache")
 TEMPLATES = os.path.join(CMSSW_BASE,"src/UHH2/AZH/data/output_03_templates")
 
