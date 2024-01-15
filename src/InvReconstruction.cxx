@@ -61,6 +61,7 @@ class InvReconstruction : public AnalysisModule{
     
   //Histograms
   unique_ptr<Hists> h_base;
+  unique_ptr<Hists> h_met;
   unique_ptr<Hists> h_weight;
   unique_ptr<Hists> h_delta;
   unique_ptr<Hists> h_btag;
@@ -94,6 +95,7 @@ InvReconstruction::InvReconstruction(Context& ctx){
   //sf_leptons.reset(new LeptonScaleFactors(ctx));
   
   h_base.reset(new RecoHistSet(ctx, "CutFlow_baseline"));
+  h_met.reset(new RecoHistSet(ctx, "CutFlow_ptmiss"));
   h_weight.reset(new RecoHistSet(ctx, "CutFlow_weights"));
   h_delta.reset(new RecoHistSet(ctx, "CutFlow_deltaphi"));
   h_btag.reset(new RecoHistSet(ctx, "CutFlow_btags"));
@@ -142,9 +144,11 @@ bool InvReconstruction::process(Event& event){
   Cuts: trigger, jets, met, lep, btags, qcd
   */
 
-  //MET cut -> move to preselection
-  if (event.met->pt() < 170) return false;
   h_base->fill(event);
+
+  //MET cut -> move to preselection
+  if (event.met->pt() < 220) return false;
+  h_met->fill(event);
 
   //QCD cut
   if (DeltaPhi(event) < 0.5) return false;
