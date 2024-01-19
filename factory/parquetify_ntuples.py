@@ -72,6 +72,7 @@ class Parquetifier():
             data_path = os.path.join(self.UHH_OUTPUT_PATH, "DATA", year, f"DATA.{year}.root")
             with uproot.open(data_path) as f:
                 for x in self.variables_to_load:
+                    if "Gen" in x: continue
                     key, branch = self._tree_to_np_array(f, x)
                     pa_table = pa.table({"foo": branch})
                     pq.write_table(pa_table, f"{CACHE}/data_{year}_{key}.parquet")
@@ -138,7 +139,7 @@ class Parquetifier():
                     if sel_gen is not None:
                         branch = branch[sel_gen]
                     pa_table = pa.table({"foo": branch})
-                    #key = key.replace("/",".")
+                    key = key.replace("/",".")
                     pq.write_table(pa_table, f"{CACHE}/mc_{year}_{sample}{jet_flav}_{variation}_{key}.parquet")
 
     @property
@@ -167,7 +168,7 @@ class Parquetifier():
                         if sel_gen is not None:
                             branch = branch[sel_gen]
                         pa_table = pa.table({"foo": branch})
-                        #key = key.replace("/",".")
+                        key = key.replace("/",".")
                         pq.write_table(pa_table, f"{CACHE}/mc_{year}_{sample}{jet_flav}_nominal_{key}.parquet")
 
                     # Variations
@@ -244,7 +245,7 @@ class Parquetifier():
                     if "ak4chs_" in key:
                         continue
                     pa_table = pa.table({"foo": concat_variation(sample, sample_variation, key)})
-                    #key = key.replace("/",".")
+                    key = key.replace("/",".")
                     pq.write_table(pa_table, f"{CACHE}/mc_UL16_{sample}_{sample_variation}_{key}.parquet")
 
 
