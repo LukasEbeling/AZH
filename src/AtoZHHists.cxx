@@ -93,7 +93,7 @@ RecoHistSet::RecoHistSet(Context & ctx, const string & dirname): Hists(ctx, dirn
   book<TH1F>("n_bjets_tight", "N_{b jets, tight}", 5, 0, 5);
   book<TH1F>("n_bjets_loose", "N_{b jets, loose}", 5, 0, 5);
   book<TH1F>("n_bjets_medium", "N_{b jets, medium}", 5, 0, 5);
-  book<TH1F>("delta_phi", "delta_phi",10,0,1*M_PI);    
+  book<TH1F>("delta_phi", "delta_phi",30,0,1*M_PI);    
   book<TH1F>("HT", "HT",int(1000/20), 0, 1000);    
 }
 
