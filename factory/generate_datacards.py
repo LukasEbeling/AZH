@@ -13,7 +13,7 @@ from config import Configurator
 
 
 config = Configurator()
-VARS = ["MET","Jet1Pt","Jet2Pt","mt_A","MH","HT"]
+VARS = ["MET","Jet1Pt","Jet2Pt","MTA","MH","HT","2Ellipses"]
 CHANNELS = ["inv"]
 REGIONS = list(utils.REGION_ID_MAP.keys())
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
@@ -127,7 +127,7 @@ class Datacard():
             raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), root_fpath)
         with uproot.open(root_fpath) as f:
             keys = f.keys()
-        self.processes = [x for x in config.backgrounds if any([(f"{x}" in k) for k in keys])]
+        self.processes = [x for x in config.backgrounds if any([(f"{x};" in k) for k in keys])]
         self.processes = ["AtoZH"] + self.processes
 
     def write_block_header(self, f, block_name: str):
@@ -256,6 +256,7 @@ if __name__ == "__main__":
         YEARS = ["UL16", "UL17", "UL18"]
 
     ll = [VARS, YEARS, config.signals, CHANNELS, REGIONS]
+    #ll = [VARS, YEARS, ['AZH_1000_400'], CHANNELS, REGIONS]
     i = 0
     for svar, year, mass_point, channel, region in product(*ll):
         if not utils.is_valid_set(channel, region, svar):
