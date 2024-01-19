@@ -11,36 +11,36 @@ CMSSW_BASE = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28"
 ANALYSIS = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH"
 
 BACKGROUNDS = [
-    "VV", 
-    "TTW", 
-    "TTZ", 
-    "DYJets_ljet", 
-    "DYJets_bjet", 
-    "WJets_ljet", 
     "WJets_bjet", 
+    "WJets_ljet", 
+    "DYJets_bjet", 
+    "DYJets_ljet", 
+    "VV", 
     "QCD", 
     "SingleTop",
+    "TTW", 
+    "TTZ", 
     "TT"
 ]
 
 REGIONS = {
-    "SR_6J" : r"SR 6j",
-    "SR_5J" : r"SR 5j", 
-    "SR_1B_5J" : r"0l 1b 5j",
-    "SR_1B_6J" : r"0l 1b 6j",
-    "IR_0B_5J" : r"0l 0b 5j",
-    "IR_0B_6J" : r"0l 0b 6j",
-    "LR_2B_5J" : r"1l 2b 5j",  
-    "LR_2B_6J" : r"1l 2b 6j",
-    "LR_1B_5J" : r"1l 1b 5j",
-    "LR_1B_6J" : r"1l 1b 6j",
-    "LR_0B_5J" : r"1l 0b 5j",
-    "LR_0B_6J" : r"1l 0b 6j",
-    "SR_DNN": r"SR node",
-    "TT_DNN": r"TT node",
-    "QCD_DNN": r"QCD node",
-    "DY_DNN": r"DYJets node",
-    "WJ_DNN": r"WJets node",
+    "SR_6J" : r"SR (l=0 b=2+ j=6+)",
+    "SR_5J" : r"SR (l=0 b=2+ j=5)", 
+    "SR_1B_5J" : r"SR (l=0 b=1 j=5)",
+    "SR_1B_6J" : r"CR (l=0 b=1 j=6+)",
+    "IR_0B_5J" : r"CR (l=0 b=0 j=5)",
+    "IR_0B_6J" : r"CR (l=0 b=0 j=6+)",
+    "LR_2B_5J" : r"CR (l=1+ b=2+ j=5)",  
+    "LR_2B_6J" : r"CR (l=1+ b=2+ j=6+)",
+    "LR_1B_5J" : r"CR (l=1+ b=1 j=5)",
+    "LR_1B_6J" : r"CR (l=1+ b=1 j=6+)",
+    "LR_0B_5J" : r"CR (l=1+ b=0 j=5)",
+    "LR_0B_6J" : r"CR (l=1+ b=0 j=6+)",
+    #"SR_DNN": r"SR node",
+    #"TT_DNN": r"TT node",
+    #"QCD_DNN": r"QCD node",
+    #"DY_DNN": r"DYJets node",
+    #"WJ_DNN": r"WJets node",
 }
 
 class PlotMeta:
@@ -58,8 +58,8 @@ class PlotMeta:
         "UL16": 2016,
     }
 
-    CMAP = plt.cm.get_cmap("Set1")
-    #CMAP = plt.cm.get_cmap("Set3")
+    #CMAP = plt.cm.get_cmap("Set1")
+    CMAP = plt.cm.get_cmap("Set3")
 
     LLABEL = "Private work"
 
@@ -73,7 +73,7 @@ class PlotMeta:
         return self.OBS_XLABEL_MAP[obs]
 
     def colors(self, processes: list):
-        id_map = {
+        id_map_alt = {
             "AtoZH": 5,
             "DYJets": 0,
             "DYJets_ljet": 0,
@@ -89,22 +89,25 @@ class PlotMeta:
             "WJets_bjet": 3,
         }
 
-        id_map_alt = {
-            "AtoZH": 8,
-            "DYJets": 0,
-            "DYJets_ljet": 9,
-            "DYJets_bjet": 10,
+        id_map = {
+            "AtoZH": 0,
             "TT": 1,
-            "TTZ": 2,
-            "QCD": 3,
+            "TTZ": 13,
+            "TTW": 9,
+            "SingleTop": 19,
+            "QCD": 6,
             "VV": 4,
-            "SingleTop": 5,
-            "TTW": 6,
+            "DYJets": 0,
+            "DYJets_ljet": 7,
+            "DYJets_bjet": 18,
             "WJets": 0,
-            "WJets_ljet": 9,
-            "WJets_bjet": 10,
+            "WJets_ljet": 15,
+            "WJets_bjet": 2,
         }
-        return [self.CMAP.colors[id_map[p]] for p in processes]
+        CMAP1 = plt.cm.get_cmap("Set1")
+        CMAP2 = plt.cm.get_cmap("Set3")
+        color = CMAP1.colors + CMAP2.colors
+        return [color[id_map[p]] for p in processes]
 
 
     single_region_map = {
