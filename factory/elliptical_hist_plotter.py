@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 import numpy as np
 
-sys.path.append("../plots/")
+sys.path.append("../combine/")
 import plot_utils  # noqa
 
 
 CMSSW_BASE = os.environ.get("CMSSW_BASE")
-OUTPUT_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/plots/ellipses")
+OUTPUT_PATH = os.path.join(CMSSW_BASE, "src/UHH2/AZH/factory/plots/")
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 
 
