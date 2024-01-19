@@ -20,27 +20,23 @@ svars:
   - mt_A
   - m_H
   - HT
-  - score 
+  #- score 
 
 branches:
-  - GenParticles.m_pt
-  - GenParticles.m_eta
-  - GenParticles.m_phi
-  - GenParticles.m_energy
-  - GenParticles.m_pdgId
-  - slimmedMETs_GenMET/m_pt
-  #- slimmedGenJets/slimmedGenJets.m_pt
-  #- slimmedGenJets/slimmedGenJets.m_eta
-  #- slimmedGenJets/slimmedGenJets.m_phi
-  #- slimmedGenJets/slimmedGenJets.m_energy
-  - slimmedGenJets.m_pt
-  - slimmedGenJets.m_eta
-  - slimmedGenJets.m_phi
-  - slimmedGenJets.m_energy
-  - jetsAk4CHS.m_pt
-  - jetsAk4CHS.m_eta
-  - jetsAk4CHS.m_phi
-  - jetsAk4CHS.m_energy
+  #- GenParticles.m_pt #gen info for gen studies
+  #- GenParticles.m_eta
+  #- GenParticles.m_phi
+  #- GenParticles.m_energy
+  #- GenParticles.m_pdgId
+  #- slimmedMETs_GenMET/m_pt
+  #- slimmedGenJets.m_pt
+  #- slimmedGenJets.m_eta
+  #- slimmedGenJets.m_phi
+  #- slimmedGenJets.m_energy
+  #- jetsAk4CHS.m_pt
+  #- jetsAk4CHS.m_eta
+  #- jetsAk4CHS.m_phi
+  #- jetsAk4CHS.m_energy
   - [jetsAk4CHS.m_pt, 3]
   - [jetsAk4CHS.m_eta, 1]
   - [jetsAk4CHS.m_eta, 2]
