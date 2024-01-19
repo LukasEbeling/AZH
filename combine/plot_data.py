@@ -16,6 +16,8 @@ from plot_utils import PlotMeta, CMSSW_BASE, REGIONS, BACKGROUNDS
 sys.path.append("../factory")
 from utils import TEMPLATES
 
+plt.style.use(hep.style.CMS)
+
 BKG_LABEL_MAP = {
         "DYJets_bjet": r"Z/$\gamma$ + HF",
         "DYJets_ljet": r"Z/$\gamma$ + LF",
@@ -32,11 +34,14 @@ BKG_LABEL_MAP = {
 class PlotMetaDataMC(PlotMeta):
 
     OBS_XLABEL_MAP = {
-        "MET": r"$p_t^{miss}$",
+        "MET": r"$p_T^{miss}$ [GeV]",
+        "mt_A": r"$m_{T,A}$ [GeV]",
+        "m_H": r"$m_{H}$ [GeV]",
         "Jet1Phi": r"$\phi$",
         "Jet1Eta": r"$\eta$",
         "Jet1Pt": r"$p_T$ [GeV]",
-        "HT": r"$H_T$ [GeV]"
+        "HT": r"$H_T$ [GeV]",
+        "2DEllipses": r"projection",
     }
 
 
@@ -57,9 +62,11 @@ class Fitter():
         card = f"{TEMPLATES}/UL17/{basename}.dat"
         workspace = f"tmp/{basename}.root"
         shapes = f"tmp/shapes.{basename}.root"
-        Combine.create_workspace(card,workspace)
-        Combine.fit(card,workspace,shapes)
-        Combine.save_shapes(card,workspace,shapes)
+        
+        combine = Combine(initilize=True)
+        combine.create_workspace(card,workspace)
+        combine.fit(card,workspace,shapes)
+        combine.save_shapes(card,workspace,shapes)
 
 
     def load(self):
@@ -154,7 +161,7 @@ class Fitter():
             self.hists["AtoZH"],
             histtype="step",
             yerr=False,
-            label=r"AZH at $1$pb" + "\n" + rf"$m_{{A(H)}}={mA}({mH})$GeV",
+            label=r"AZH at $1$pb" + "\n" + rf"$m_{{A(H)}} = {mA} ({mH})$ GeV",
             linewidth=2.5,
             alpha=0.85,
             color="tab:red",
