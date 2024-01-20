@@ -15,10 +15,10 @@ JobBatchName      = plot_data
 executable        = $(initialdir)/plot_data.py
 arguments         = $(signal) $(observable) $(fitting)
 queue signal, observable, fitting from (
-    600_400 MET --prefit
-    600_400 Jet1Pt --prefit
-    600_400 HT --prefit
     1000_400 MET --prefit
     1000_400 Jet1Pt --prefit
     1000_400 HT --prefit
+    1000_400 MTA --prefit
+    1000_400 MH --prefit
+    1000_400 2DEllipses --prefit
 )
