@@ -26,3 +26,8 @@ for variation in "_JESup" "_JESdown" "_JERup" "_JERdown" "_JESnominal_JERnominal
         done
 
     done
+
+cd $CMSSW_BASE/src/UHH2/AZH/data/output_02_reconstruction/DATA/UL17/
+hadd -f DATA_UL17.root uhh2.AnalysisModuleRunner.DATA.MET_Run*
+
+cd $CMSSW_BASE/src/UHH2/AZH/
