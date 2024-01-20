@@ -14,8 +14,8 @@ ELLIPSE_X = "MET"
 ELLIPSE_Y = "m_H"
 
 REGION_ID_MAP = {
-    "SR_6J": 1,
-    "SR_5J": 2,
+    "SR_2B_6J": 1,
+    "SR_2B_5J": 2,
     "SR_1B_5J": 3,
     "SR_1B_6J": 4,
     "IR_0B_5J": 10,
@@ -108,7 +108,7 @@ class Ellipse():
     def rescale_to_nstd(self, x_vals, y_vals, weights):
         target = integrate.quad(normal_distribution, -self.n_std, self.n_std)[0]
         pct_in = self.pct_points_in(x_vals, y_vals, weights)
-        required_accuracy = 1.5  # in percent
+        required_accuracy = 5  # in percent
         f_scale = 1
         i = 1
         while abs(target - pct_in) * 100 > required_accuracy:
