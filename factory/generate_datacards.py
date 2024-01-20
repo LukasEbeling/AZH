@@ -13,7 +13,7 @@ from config import Configurator
 
 
 config = Configurator()
-VARS = ["MET","Jet1Pt","Jet2Pt","MTA","MH","HT","2Ellipses"]
+VARS = ["MET","Jet1Pt","Jet2Pt","MTA","MH","HT","2DEllipses"]
 CHANNELS = ["inv"]
 REGIONS = list(utils.REGION_ID_MAP.keys())
 ALL_PROCESSES = ["AtoZH"] + config.backgrounds
