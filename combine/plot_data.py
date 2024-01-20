@@ -35,8 +35,8 @@ class PlotMetaDataMC(PlotMeta):
 
     OBS_XLABEL_MAP = {
         "MET": r"$p_T^{miss}$ [GeV]",
-        "mt_A": r"$m_{T,A}$ [GeV]",
-        "m_H": r"$m_{H}$ [GeV]",
+        "MTA": r"$m_{T,A}$ [GeV]",
+        "MH": r"$m_{H}$ [GeV]",
         "Jet1Phi": r"$\phi$",
         "Jet1Eta": r"$\eta$",
         "Jet1Pt": r"$p_T$ [GeV]",
@@ -132,6 +132,7 @@ class Fitter():
         hep.histplot(
             [x[0] for x in self.hists["bkgs"].values()],
             bins=[x[1] for x in self.hists["bkgs"].values()][0],
+            #bins=[x[1] for x in self.hists["bkgs"].values()],
             histtype="fill",
             stack=True,
             #label=list(self.hists["bkgs"].keys()),
@@ -226,8 +227,8 @@ class Fitter():
         ax[0].set_ylabel("Events")
         #ax[0].set_ylim(ymin=1e-2, ymax=np.max(mc) * 900)
         ax[0].set_ylim(ymin=0, ymax=np.max(mc) + 100)
-        ax[0].set_xlim(bins[0],bins[-2]) #crop overflow bin
-        ax[1].set_xlim(bins[0],bins[-2]) #crop overflow bin
+        if self.obs != "2DEllipses": ax[0].set_xlim(bins[0],bins[-2]) #crop overflow bin
+        if self.obs != "2DEllipses": ax[1].set_xlim(bins[0],bins[-2]) #crop overflow bin
         ax[1].set_xlabel(plot_meta.xlabel(self.obs))
 
         ax[0].grid()
