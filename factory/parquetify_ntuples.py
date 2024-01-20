@@ -69,7 +69,7 @@ class Parquetifier():
 
         for year in self.ul_years:
             print(f"Loading {year} DATA")
-            data_path = os.path.join(self.UHH_OUTPUT_PATH, "DATA", year, f"DATA.{year}.root")
+            data_path = os.path.join(self.UHH_OUTPUT_PATH, "DATA", year, f"DATA_{year}.root")
             with uproot.open(data_path) as f:
                 for x in self.variables_to_load:
                     if "Gen" in x: continue
