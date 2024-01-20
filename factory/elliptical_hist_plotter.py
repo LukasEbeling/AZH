@@ -28,7 +28,7 @@ class EllipticalHistPlotter():
     def plot(self):
         for sample_set in self.sample_sets:
             self._plot_plane_with_bins(sample_set)
-            self._plot_twod_unrolled_bins(sample_set)
+            #self._plot_twod_unrolled_bins(sample_set)
 
     def _plot_skeleton(self, ul_year):
         fig, ax = plt.subplots(dpi=300)
@@ -89,8 +89,8 @@ class EllipticalHistPlotter():
 
         ax.set_xlim(0)
         ax.set_ylim(50)
-        ax.set_xlabel(r"missing $p_T$", size=25)
-        ax.set_ylabel(r"$\Delta m_T$", size=25)
+        ax.set_xlabel(r"$p_T^{miss}$ [GeV]", size=25)
+        ax.set_ylabel(r"$m_H$ [GeV]", size=25)
         ax.legend(
             [ell.get_plt_patch(c) for ell, c in zip(sample_set.set_binning, self.ell_colors)],
             [rf"{ell.n_std}$\sigma$" for ell in sample_set.set_binning],
@@ -106,7 +106,7 @@ class EllipticalHistPlotter():
             + sample_set.set_params["region"]
             + f"_{ul_year}"
         )
-        plt.savefig(fname_out + ".png")
+        #plt.savefig(fname_out + ".png")
         plt.savefig(fname_out + ".pdf")
         plt.close()
 
