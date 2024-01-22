@@ -108,10 +108,10 @@ class Ellipse():
     def rescale_to_nstd(self, x_vals, y_vals, weights):
         target = integrate.quad(normal_distribution, -self.n_std, self.n_std)[0]
         pct_in = self.pct_points_in(x_vals, y_vals, weights)
-        required_accuracy = 5  # in percent
         f_scale = 1
         i = 1
-        while abs(target - pct_in) * 100 > required_accuracy:
+        accuracy = 2 #in percent
+        while abs(target - pct_in) * 100 > accuracy:
             self.rescale_axes(f_scale)
             pct_in = self.pct_points_in(x_vals, y_vals, weights)
             if i > 1900:
@@ -121,7 +121,10 @@ class Ellipse():
             else:
                 f_scale = (target / pct_in) ** 0.5
 
-            assert (i < 2000), "Rescaling got stuck"
+            if i > 2000: accuracy = 5
+            if i > 2500: accuracy = 10
+
+            assert (i < 3000), "Rescaling got stuck"
             i += 1
 
 
