@@ -590,7 +590,7 @@ class Binner():
             "mt_A": np.append(list(range(450,2000+1,50)),10000),
             "mt_H": np.append(list(range(200,1500+1,50)),10000),
             "m_H": np.append(list(range(200,1500+1,50)),10000),
-            "MET": np.append(list(range(220,1220+1,40)),10000),
+            "MET": np.append(list(range(220,1020+1,40)),10000),
             "HT": np.append(list(range(200,1500+1,50)),10000),
             "score": np.linspace(0,1,10)**0.5,
         },
@@ -673,6 +673,6 @@ class Binner():
         width, height = 2 * np.sqrt(vals * chi2.ppf(z, df=2))
 
         ell = Ellipse(mean_x, mean_y, width, height, angle, n_std)
-        ell.rescale_to_nstd(x, y, w)
+        ell.rescale_to_nstd(x, y, w) 
 
         return ell
