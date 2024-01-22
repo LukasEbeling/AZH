@@ -210,7 +210,7 @@ class Datacard():
 
     def write_bkg_rate_params(self, f):
         if "TT" in self.processes:
-            f.write("rate_TT rateParam * TT 1 [-2,2]")
+            f.write("\nrate_TT rateParam * TT 1 [-2,2]")
         if "DYJets_bjet" in self.processes:
             f.write("\nrate_Vjet rateParam * DYJets_bjet 1 [-2,2]")
         if "DYJets_ljet" in self.processes:
@@ -229,9 +229,9 @@ class Datacard():
             self.write_processes(f)
             self.write_lnN_systematics(f)
             self.write_shape_systematics(f)
+            self.write_auto_mc_stats(f)
             self.write_bkg_rate_params(f)
             self.write_scaling(f)
-            self.write_auto_mc_stats(f)
 
 
 def parse_args():
