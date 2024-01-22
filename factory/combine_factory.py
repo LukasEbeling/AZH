@@ -1,7 +1,7 @@
 #!/nfs/dust/cms/user/ebelingl/anaconda3/envs/py311/bin/python
 import argparse
 
-#from elliptical_hist_plotter import EllipticalHistPlotter
+from elliptical_hist_plotter import EllipticalHistPlotter
 from ntuple_loader import NTupleLoader
 import utils
 from utils import REGION_ID_MAP
@@ -40,7 +40,7 @@ class UHH2ToCombineFactory():
             for region in REGION_ID_MAP.keys()
             for year in config.years
             for svar in svars
-            #for svar in svars + ["ellipses"]
+            for svar in svars + ["ellipses"]
             #if utils.is_valid_set(channel, region, svar)
         }
 
@@ -59,7 +59,8 @@ class UHH2ToCombineFactory():
             elliptical_binning = ("ellipse" in sample_set.set_params["svar"])
             if (elliptical_binning and in_control_region):                
                 control_region = sample_set.set_params["region"]
-                signal_region = "SR_5J" if "5J" in control_region else "SR_6J"                
+                signal_region = "SR_2B_5J" if "5J" in control_region else "SR_2B_6J"
+                #signal_region = control_region.replace("LR","SR").replace("IR","SR")                
                 sr_set_name = set_name.replace(control_region, signal_region) 
                 ellipses = self.sample_sets[sr_set_name].set_binning
                 sample_set.set_sample_bins(ellipses)
@@ -93,4 +94,4 @@ if __name__ == "__main__":
 
     file_factory = UHH2ToCombineFactory(signal)
     file_factory.run_factory()
-    #file_factory.plot_elliptical_binnings()
+    file_factory.plot_elliptical_binnings()
