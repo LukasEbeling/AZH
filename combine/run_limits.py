@@ -25,7 +25,6 @@ if __name__ == "__main__":
     logfile = f"AZH_{masses}_{var}_inv_all.log"
     
     combine = Combine(initilize=True)
-    #combine = Combine()
     combine.combine_cards(cards,outcard)
     combine.create_workspace(outcard,workspace)
     combine.run_blind(workspace,logfile)
