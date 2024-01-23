@@ -21,9 +21,20 @@ if __name__ == "__main__":
 
     cards = [TEMPLATES+f"/UL17/AZH_{masses}_{var}_inv_{region}.dat" for region in REGIONS.keys()]
     outcard = TEMPLATES+f"/UL17/AZH_{masses}_{var}_inv_all.dat"
-    workspace = f"tmp/{masses}_{var}_inv_all.root"
-    logfile = f"tmp/AZH_{masses}_{var}_inv_all.log"
+    workspace = f"{masses}_{var}_inv_all.root"
+    logfile = f"AZH_{masses}_{var}_inv_all.log"
     
-    Combine.combine_cards(cards,outcard)
-    Combine.create_workspace(outcard,workspace)
-    Combine.run_blind(workspace,logfile)
+    combine = Combine(initilize=True)
+    #combine = Combine()
+    combine.combine_cards(cards,outcard)
+    combine.create_workspace(outcard,workspace)
+    combine.run_blind(workspace,logfile)
+
+
+    # individual signal regions
+    for region in ['SR_2B_6J','SR_2B_5J','SR_1B_6J','SR_1B_5J']:
+        card = TEMPLATES+f"/UL17/AZH_{masses}_{var}_inv_{region}.dat"
+        workspace = f"AZH_{masses}_{var}_inv_{region}.root"
+        logfile = f"AZH_{masses}_{var}_inv_{region}.log"
+        combine.create_workspace(card,workspace)
+        combine.run_blind(workspace,logfile)
