@@ -16,9 +16,13 @@ executable        = $(initialdir)/plot_data.py
 arguments         = $(signal) $(observable) $(fitting)
 queue signal, observable, fitting from (
     1000_400 MET --prefit
-    1000_400 Jet1Pt --prefit
-    1000_400 HT --prefit
     1000_400 MTA --prefit
     1000_400 MH --prefit
     1000_400 2DEllipses --prefit
+    800_400 MET --prefit
+    800_400 MTA --prefit
+    800_400 MH --prefit
+    800_400 2DEllipses --prefit
+    500_400 MET --prefit
+    600_400 MET --prefit
 )
