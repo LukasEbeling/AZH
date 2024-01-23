@@ -24,7 +24,8 @@ def plot_plane(tanb):
         ]
     )
 
-    fig, ax = plt.subplots(figsize=(11, 8))
+    fig, ax = plt.subplots(figsize=(12, 8))
+    hep.cms.label(ax=ax,llabel='Private work',data=True, lumi=41.48, year="2017")
 
     limit = Limit()
     theory = Theory(tanb)
