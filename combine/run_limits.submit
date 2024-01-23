@@ -12,6 +12,6 @@ getenv            = True
 RequestMemory     = 4G
 RequestDisk       = 2G
 JobBatchName      = calc_limits
-executable        = $(initialdir)/run_limits.sh
+executable        = $(initialdir)/run_limits.py
 arguments         = $(masspoint) MET
 queue masspoint from /nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_10_6_28/src/UHH2/AZH/config/signals.txt
