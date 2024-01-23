@@ -41,7 +41,7 @@ class PlotMetaDataMC(PlotMeta):
         "Jet1Eta": r"$\eta$",
         "Jet1Pt": r"$p_T$ [GeV]",
         "HT": r"$H_T$ [GeV]",
-        "2DEllipses": r"projection",
+        "2DEllipses": r"ellipsis",
     }
 
 
@@ -60,8 +60,10 @@ class Fitter():
     def run_fits(self):
         basename = f"AZH_{self.signal}_{self.obs}_{self.channel}_{self.region}"
         card = f"{TEMPLATES}/UL17/{basename}.dat"
-        workspace = f"tmp/{basename}.root"
-        shapes = f"tmp/shapes.{basename}.root"
+        #workspace = f"tmp/{basename}.root"
+        workspace = f"{basename}.root"
+        #shapes = f"tmp/shapes.{basename}.root"
+        shapes = f"shapes.{basename}.root"
         
         combine = Combine(initilize=True)
         combine.create_workspace(card,workspace)
@@ -128,11 +130,10 @@ class Fitter():
         else:
             data = mc
             data_error = [sqrt(bin_entry) for bin_entry in data] #correct?
-        
+
         hep.histplot(
             [x[0] for x in self.hists["bkgs"].values()],
-            bins=[x[1] for x in self.hists["bkgs"].values()][0],
-            #bins=[x[1] for x in self.hists["bkgs"].values()],
+            bins=bins,
             histtype="fill",
             stack=True,
             #label=list(self.hists["bkgs"].keys()),
@@ -159,10 +160,11 @@ class Fitter():
         mA = self.signal.split("_")[0]
         mH = self.signal.split("_")[1]
         hep.histplot(
-            self.hists["AtoZH"],
+            self.hists["AtoZH"][0]*5, #rescale to AZH->ttvv at 1pb
+            bins=bins,
             histtype="step",
             yerr=False,
-            label=r"AZH at $1$pb" + "\n" + rf"$m_{{A(H)}} = {mA} ({mH})$ GeV",
+            label=r"AZH $\rightarrow$ $t \bar t \nu \bar \nu$ at $1$pb" + "\n" + rf"$m_{{A(H)}} = {mA} ({mH})$ GeV",
             linewidth=2.5,
             alpha=0.85,
             color="tab:red",
@@ -205,13 +207,13 @@ class Fitter():
                 1 + mc_error / mc, baseline=1 - mc_error / mc, **error_band_args
             )
             ax[1].axhline(1, color="grey", linestyle="--")
-            ax[1].set_ylabel("Data/MC")
+            ax[1].set_ylabel("data/pred")
             ax[1].set_ylim([0.5, 1.5])
 
         # Plot Settings
         #title = rf"$\it{{{self.region}}}$  $\it{{{self.channel}}}$ $\it{{Channel}}$"
         title = REGIONS[self.region]
-        #ax[0].set_yscale("log")
+        ax[0].set_yscale("log")
         handles, labels = ax[0].get_legend_handles_labels()
         legend = ax[0].legend(
             reversed(handles),
@@ -224,9 +226,9 @@ class Fitter():
             frameon=True,
         )
         legend.get_frame().set_facecolor('white')
-        ax[0].set_ylabel("Events")
-        #ax[0].set_ylim(ymin=1e-2, ymax=np.max(mc) * 900)
-        ax[0].set_ylim(ymin=0, ymax=np.max(mc) + 100)
+        ax[0].set_ylabel("events")
+        ax[0].set_ylim(ymin=1e-1, ymax=np.max(mc) * 900)
+        #ax[0].set_ylim(ymin=0, ymax=np.max(mc) + 100)
         if self.obs != "2DEllipses": ax[0].set_xlim(bins[0],bins[-2]) #crop overflow bin
         if self.obs != "2DEllipses": ax[1].set_xlim(bins[0],bins[-2]) #crop overflow bin
         ax[1].set_xlabel(plot_meta.xlabel(self.obs))
@@ -243,18 +245,18 @@ class Fitter():
         fname = (
             self.channel
             + "_"
-            + self.region
+            + self.signal
             + "_"
             + self.obs
             + "_"
-            + self.signal
+            + self.region
             + "_"
             + self.fit
         )
         if pulls:
             fname += "_pulls"
-        plt.savefig(fpath_out + f"{fname}.png")
-        #plt.savefig(fpath_out + f"{fname}.pdf")
+        plt.savefig(fpath_out + f"{fname}.png",bbox_inches="tight")
+        #plt.savefig(fpath_out + f"{fname}.pdf",bbox_inches="tight")
         plt.close()
 
 if __name__ == "__main__":
