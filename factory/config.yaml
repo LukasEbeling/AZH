@@ -15,11 +15,11 @@ backgrounds:
 
 svars:
   - MET
-  - [jetsAk4CHS.m_pt, 1]
-  - [jetsAk4CHS.m_pt, 2]
+  #- [jetsAk4CHS.m_pt, 1]
+  #- [jetsAk4CHS.m_pt, 2]
   - mt_A
   - m_H
-  - HT
+  #- HT
   #- score 
 
 branches:
