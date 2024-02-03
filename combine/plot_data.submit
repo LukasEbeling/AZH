@@ -19,10 +19,16 @@ queue signal, observable, fitting from (
     1000_400 MTA --prefit
     1000_400 MH --prefit
     1000_400 2DEllipses --prefit
-    800_400 MET --prefit
-    800_400 MTA --prefit
-    800_400 MH --prefit
-    800_400 2DEllipses --prefit
-    500_400 MET --prefit
     600_400 MET --prefit
+    600_400 MTA --prefit
+    600_400 MH --prefit
+    600_400 2DEllipses --prefit
+    500_400 MET --prefit
+    500_400 MTA --prefit
+    500_400 MH --prefit
+    500_400 2DEllipses --prefit
+    2000_400 MET --prefit
+    2000_400 MTA --prefit
+    2000_400 MH --prefit
+    2000_400 2DEllipses --prefit
 )
