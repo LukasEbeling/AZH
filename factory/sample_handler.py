@@ -143,7 +143,8 @@ class SampleSet():
             bkg_vals += bkg_s.svar_hist[0]
 
         is_signal_region = "SR" in self.set_params["region"]
-        if not (bkg_vals > 0).all() and not is_signal_region:
+        #if not (bkg_vals > 0).all() and not is_signal_region:
+        if not (bkg_vals > 0).all():
             bkg_vals = self._merge_bins(bkg_vals)
 
         assert (bkg_vals > 0).all(), (
@@ -571,38 +572,6 @@ class Binner():
     of Signal, Sensitive Variable and Region.
     """
 
-    binning_map = {
-        "stddevs_ellipses": np.array([0.5, 1, 1.5, 2, 2.5, 3]),
-        #"stddevs_ellipses": np.linspace(0.1,3,15),
-        "defaults": {
-            "z_pt_reco": np.linspace(0, 800, 14),
-            "jetsAk4CHS.m_phi_1": np.linspace(-3, 3, 30),
-            "jetsAk4CHS.m_pt_1": list(range(50,650+1,50)),
-            "jetsAk4CHS.m_pt_2": list(range(50,650+1,50)),
-            "jetsAk4CHS.m_pt_3": list(range(50,650+1,50)),
-            "jetsAk4CHS.m_pt_4": list(range(50,650+1,50)),
-            "jetsAk4CHS.m_eta_1": np.linspace(-2.4, 2.4, 9),
-            "slimmedElectronsUSER.m_pt_1": np.linspace(20, 550, 16),
-            "slimmedElectronsUSER.m_pt_2": np.linspace(20, 550, 16),
-            "slimmedMuonsUSER.m_pt_1": np.linspace(20, 550, 16),
-            "slimmedMuonsUSER.m_pt_2": np.linspace(20, 550, 16),
-            "z_mass_reco": np.linspace(40, 140, 16),
-            "mt_A": np.append(list(range(450,2000+1,50)),10000),
-            "mt_H": np.append(list(range(200,1500+1,50)),10000),
-            "m_H": np.append(list(range(200,1500+1,50)),10000),
-            "MET": np.append(list(range(220,1020+1,40)),10000),
-            "HT": np.append(list(range(200,1500+1,50)),10000),
-            "score": np.linspace(0,1,10)**0.5,
-        },
-        "SR_5J": {
-            "mt_H": [-2,0]
-        },
-        "CR": {
-            "foo": np.linspace(0, 5000, 2),
-            "bar": np.linspace(0, 5000, 2),
-        },
-    }
-
     def __init__(self, signal_sample: Sample, set_params: dict):
         self.signal_sample = signal_sample
         self.signal = set_params["signal"]
@@ -612,6 +581,34 @@ class Binner():
         self.svar = set_params["svar"]
         self.tree = signal_sample.tree
         self.sel = signal_sample.sel
+
+        #mA = int(self.signal.split("_")[1])
+        #mH = int(self.signal.split("_")[2])
+        #dm = mA - mH
+
+        self.binning_map = {
+            "stddevs_ellipses": np.array([0.5, 1, 1.5, 2, 2.5, 3]),
+            "defaults": {
+                "MET": [220,270,320,370,420,520,620,820],
+                "m_H": [200,300,400,500,600,700,800,1000,1200,1600],
+                "mt_A": [500,600,700,800,900,1000,1200,1400,1800,2200],
+                "jetsAk4CHS.m_phi_1": np.linspace(-3, 3, 30),
+                "jetsAk4CHS.m_pt_1": list(range(50,650+1,50)),
+                "jetsAk4CHS.m_pt_2": list(range(50,650+1,50)),
+                "jetsAk4CHS.m_pt_3": list(range(50,650+1,50)),
+                "jetsAk4CHS.m_pt_4": list(range(50,650+1,50)),
+                "jetsAk4CHS.m_eta_1": np.linspace(-2.4, 2.4, 9),
+                "HT": np.append(list(range(200,1500+1,50)),10000),
+                "score": np.linspace(0,1,10)**0.5,
+            },
+            "SR_5J": {
+                "mt_H": [-2,0]
+            },
+            "CR": {
+                "foo": np.linspace(0, 5000, 2),
+                "bar": np.linspace(0, 5000, 2),
+            },
+        }
 
     def _get_binning_oned(self):
         try:
