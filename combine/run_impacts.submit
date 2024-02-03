@@ -13,7 +13,7 @@ RequestMemory     = 4G
 RequestDisk       = 2G
 JobBatchName      = calc_impacts
 executable        = $(initialdir)/run_impacts.py
-arguments         = $(masspoint) MET
-queue masspoint from (
-    1000_400
+arguments         = $(masspoint) $(var) $(inject)
+queue masspoint, var, inject from (
+    1000_400 MET 0.16
 )
