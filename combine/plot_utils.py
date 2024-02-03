@@ -20,14 +20,14 @@ BACKGROUNDS = [
     "SingleTop",
     "TTW", 
     "TTZ", 
-    "TT"
+    "TT",
 ]
 
 REGIONS = {
     "SR_2B_6J" : r"SR (l=0 b=2+ j=6+)",
     "SR_2B_5J" : r"SR (l=0 b=2+ j=5)", 
+    "SR_1B_6J" : r"SR (l=0 b=1 j=6+)",
     "SR_1B_5J" : r"SR (l=0 b=1 j=5)",
-    "SR_1B_6J" : r"CR (l=0 b=1 j=6+)",
     "IR_0B_5J" : r"CR (l=0 b=0 j=5)",
     "IR_0B_6J" : r"CR (l=0 b=0 j=6+)",
     "LR_2B_5J" : r"CR (l=1+ b=2+ j=5)",  
