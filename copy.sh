@@ -1,1 +1,0 @@
-cp combine/plots/*MET* /afs/desy.de/user/e/ebelingl/Documents/upload/data/.
