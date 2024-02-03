@@ -40,7 +40,7 @@ class Combine():
 
     # create workspace from datacard
     def create_workspace(self, card, workspace):
-        if os.path.exists(workspace): return
+        #if os.path.exists(workspace): return
         print(f"text2workspace.py {card} -m 125 -o {workspace};")
         self.execute(f"text2workspace.py {card} -m 125 -o {workspace}; ")
 
@@ -88,6 +88,8 @@ class Combine():
         r_max = max(2*r_in,2)
 
         HASH = workspace.replace(".root","").split("/")[-1]
+        CMSSW_combine = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_11_3_4"
+
         
         self.execute(
             f"combine -M MultiDimFit {workspace} -n .{HASH}.nominal "
@@ -100,9 +102,9 @@ class Combine():
             f"-n .{HASH}.freezeall -m 125 --rMin -1 --rMax {r_max} --algo grid --points 30 "
             f"--freezeParameters allConstrainedNuisances --snapshotName MultiDimFit -t -1 --setParameters r={r_in}; "
 
-            f"python ${CMSSW_BASE}/src/CombineHarvester/CombineTools/scripts/plot1DScan.py "
+            f"python {CMSSW_combine}/src/CombineHarvester/CombineTools/scripts/plot1DScan.py "
             f"higgsCombine.{HASH}.nominal.MultiDimFit.mH125.root --others "
-            f"'higgsCombine.{HASH}.freezeall.MultiDimFit.mH125.root:FreezeAll:{r_max}' -o {outfile}; "
+            f"higgsCombine.{HASH}.freezeall.MultiDimFit.mH125.root:FreezeAll:{r_max} -o {outfile}; "
 
             f"rm higgsCombine.{HASH}*; "
         )
