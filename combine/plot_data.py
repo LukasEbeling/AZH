@@ -23,12 +23,12 @@ BKG_LABEL_MAP = {
         "DYJets_ljet": r"Z/$\gamma$ + LF",
         "WJets_bjet": r"W + HF",
         "WJets_ljet": r"W + LF",
-        "TT": r"TT",
-        "SingleTop": r"SingleTop",
+        "SingleTop": r"single $t$",
         "QCD": r"QCD",
-        "VV": r"VV",
-        "TTW": r"TTW",
-        "TTZ": r"TTZ"
+        "VV": r"diboson",
+        "TTW": r"$t \bar t W$",
+        "TTZ": r"$t \bar t Z$",
+        "TT": r"$t \bar t$",
 }
 
 class PlotMetaDataMC(PlotMeta):
@@ -112,6 +112,8 @@ class Fitter():
 
         # Histogram
         bins = self.hists["data"].to_numpy()[1]
+        bin_widths = np.diff(bins)
+
         error_band_args = {
             "edges": bins,
             "facecolor": "none",
@@ -130,9 +132,10 @@ class Fitter():
         else:
             data = mc
             data_error = [sqrt(bin_entry) for bin_entry in data] #correct?
+            data = data * (-100)
 
         hep.histplot(
-            [x[0] for x in self.hists["bkgs"].values()],
+            [x[0]/bin_widths for x in self.hists["bkgs"].values()],
             bins=bins,
             histtype="fill",
             stack=True,
@@ -142,15 +145,15 @@ class Fitter():
             ax=ax[0],
         )
         ax[0].stairs(
-            mc_error + mc,
-            baseline=mc - mc_error,
+            (mc_error + mc)/bin_widths,
+            baseline=(mc - mc_error)/bin_widths,
             label=f"{self.fit} Uncertainty",
             **error_band_args,
         )
         hep.histplot(
-            data,
+            data/bin_widths,
             bins=bins,
-            yerr=data_error,
+            yerr=data_error/bin_widths,
             histtype="errorbar",
             markersize=13,
             color="k",
@@ -160,7 +163,7 @@ class Fitter():
         mA = self.signal.split("_")[0]
         mH = self.signal.split("_")[1]
         hep.histplot(
-            self.hists["AtoZH"][0]*5, #rescale to AZH->ttvv at 1pb
+            self.hists["AtoZH"][0]*5/bin_widths, #rescale to AZH->ttvv at 1pb
             bins=bins,
             histtype="step",
             yerr=False,
@@ -219,18 +222,21 @@ class Fitter():
             reversed(handles),
             reversed(labels),
             loc="upper right",
-            ncol=2,
+            ncol=3,
             title=title,
             fontsize=18,
             title_fontsize=18,
             frameon=True,
         )
-        legend.get_frame().set_facecolor('white')
-        ax[0].set_ylabel("events")
-        ax[0].set_ylim(ymin=1e-1, ymax=np.max(mc) * 900)
+        #legend.get_frame().set_facecolor('white')
+        if self.obs == "2DEllipses": ax[0].set_ylabel("events/bin")
+        else: ax[0].set_ylabel("events/GeV")
+        ax[0].set_ylim(ymin=1e-2, ymax=np.max(mc/bin_widths) * 900)
         #ax[0].set_ylim(ymin=0, ymax=np.max(mc) + 100)
-        if self.obs != "2DEllipses": ax[0].set_xlim(bins[0],bins[-2]) #crop overflow bin
-        if self.obs != "2DEllipses": ax[1].set_xlim(bins[0],bins[-2]) #crop overflow bin
+        max_bin = bins[-1] if bins[-1] < 10000 else bins[-2] #crop overflow bin
+        print(max_bin)
+        ax[0].set_xlim(bins[0],max_bin) 
+        ax[1].set_xlim(bins[0],max_bin)
         ax[1].set_xlabel(plot_meta.xlabel(self.obs))
 
         ax[0].grid()
