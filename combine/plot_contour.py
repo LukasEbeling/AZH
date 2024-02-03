@@ -67,11 +67,13 @@ def plot_plane(tanb):
 
     ax.scatter(mass_points[:, 0], mass_points[:, 1], color="orange")
 
-    fig.colorbar(contour, ax=ax, label=r"$\sigma_{Theory}/\sigma_{Expected}$")
+    fig.colorbar(contour, ax=ax, label=r"$\sigma_{theory}/\sigma_{expected}$")
     ax.set_xlabel(r"m$_{A}$ [GeV]")
     ax.set_ylabel(r"m$_{H}$ [GeV]")
     ax.set_xlim(500, 2000)
     ax.set_ylim(400, 1600)
+    ax.legend(title=r"2HDM type II ($\tan \beta$="+f"{tanb})",fontsize=18,title_fontsize=18,loc="upper left")
+
 
     os.makedirs("limits",exist_ok=True)
     plt.savefig(f"limits/mass_plane_{tanb}.png")
