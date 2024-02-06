@@ -38,6 +38,7 @@ class InvReconstruction : public AnalysisModule{
   int get_jets(Event& event);
   int get_leps(Event& event);
   int get_btag(Event& event);
+  void find_bjet(Event& event);
 
   //Handles
   Event::Handle<int> handle_region;
@@ -54,6 +55,9 @@ class InvReconstruction : public AnalysisModule{
   Event::Handle<double> handle_mt_diff;
   Event::Handle<double> handle_m_diff;
   Event::Handle<double> handle_score;
+  Event::Handle<double> handle_b_pt;
+  Event::Handle<double> handle_b_phi;
+  Event::Handle<double> handle_b_eta;
   Event::Handle<int> handle_num_l;
   Event::Handle<int> handle_num_b;
   Event::Handle<int> handle_num_j;
@@ -116,6 +120,9 @@ InvReconstruction::InvReconstruction(Context& ctx){
   handle_delta_phi = ctx.declare_event_output<double>("delta_phi"); //min delta phi
   handle_delta_eta = ctx.declare_event_output<double>("delta_eta"); //leading two jets
   handle_score = ctx.declare_event_output<double>("score"); //dnn score
+  handle_b_pt = ctx.declare_event_output<double>("b_pt");
+  handle_b_phi = ctx.declare_event_output<double>("b_phi");
+  handle_b_eta = ctx.declare_event_output<double>("b_eta");
   handle_region = ctx.declare_event_output<int>("region");
   handle_backup = ctx.declare_event_output<int>("backup"); //event region, if region overridded
   handle_node = ctx.declare_event_output<int>("node"); //dnn region
@@ -159,6 +166,9 @@ bool InvReconstruction::process(Event& event){
   //cutflow of signal region
   if (get_leps(event)==0) h_veto->fill(event);
   if (get_leps(event)==0 && get_btag(event)>0) h_btag->fill(event);  
+
+  //find jet with highest score
+  find_bjet(event);
    
   //Assign regions
   bool valid_region = AssignRegion(event);
@@ -283,4 +293,24 @@ int InvReconstruction::get_btag(Event &event) {
   return btags;
 }
 
+void InvReconstruction::find_bjet(Event &event) { 
+  double score = 0;
+  double pt = -1000;
+  double eta = -1000;
+  double phi = -1000;
+  for(const Jet & jet : *event.jets) {
+    if(jet.btag_DeepJet()>score){
+      score = jet.btag_DeepJet();
+      pt = jet.pt();
+      phi = jet.phi();
+      eta = jet.eta();
+    }
+  }
+  event.set(handle_b_pt, pt);
+  event.set(handle_b_eta, eta);
+  event.set(handle_b_phi, phi);
+}
+
 UHH2_REGISTER_ANALYSIS_MODULE(InvReconstruction)
+
+
