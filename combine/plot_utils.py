@@ -24,18 +24,18 @@ BACKGROUNDS = [
 ]
 
 REGIONS = {
-    "SR_2B_6J" : r"SR (l=0 b=2+ j=6+)",
-    "SR_2B_5J" : r"SR (l=0 b=2+ j=5)", 
-    "SR_1B_6J" : r"SR (l=0 b=1 j=6+)",
-    "SR_1B_5J" : r"SR (l=0 b=1 j=5)",
-    "IR_0B_5J" : r"CR (l=0 b=0 j=5)",
-    "IR_0B_6J" : r"CR (l=0 b=0 j=6+)",
-    "LR_2B_5J" : r"CR (l=1+ b=2+ j=5)",  
-    "LR_2B_6J" : r"CR (l=1+ b=2+ j=6+)",
-    "LR_1B_5J" : r"CR (l=1+ b=1 j=5)",
-    "LR_1B_6J" : r"CR (l=1+ b=1 j=6+)",
-    "LR_0B_5J" : r"CR (l=1+ b=0 j=5)",
-    "LR_0B_6J" : r"CR (l=1+ b=0 j=6+)",
+    "SR_2B_6J" : r"SR 0l-2b-6j",
+    "SR_2B_5J" : r"SR 0l-2b-5j", 
+    "SR_1B_6J" : r"SR 0l-1b-6j",
+    "SR_1B_5J" : r"SR 0l-1b-5j",
+    "IR_0B_5J" : r"CR 0l-0b-5j",
+    "IR_0B_6J" : r"CR 0l-0b-6j",
+    "LR_2B_5J" : r"CR 1l-2b-5j",  
+    "LR_2B_6J" : r"CR 1l-2b-6j",
+    "LR_1B_5J" : r"CR 1l-1b-5j",
+    "LR_1B_6J" : r"CR 1l-1b-6j",
+    "LR_0B_5J" : r"CR 1l-0b-5j",
+    "LR_0B_6J" : r"CR 1l-0b-6j",
     #"SR_DNN": r"SR node",
     #"TT_DNN": r"TT node",
     #"QCD_DNN": r"QCD node",
@@ -174,6 +174,28 @@ class Limit:
         limit_value = float(re.findall(r"\d+.\d+", limit_line.split("<")[1])[0])
         return limit_value
 
+class BestLimit:
+
+    def __init__(self, channel="inv", region="all", year="UL17"):
+        self.channel = channel
+        self.region = region
+        self.year = year
+
+    def load(self, mA, mH, pct = "50.0%"):
+        channel = self.channel
+        region = self.region
+        year = self.year
+
+        median_met = Limit(channel,"MET",region,year).load(mA,mH,"50.0%")
+        median_mh = Limit(channel,"MH",region,year).load(mA,mH,"50.0%")
+        median_mt = Limit(channel,"MTA",region,year).load(mA,mH,"50.0%")
+        median_2d = Limit(channel,"2DEllipses",region,year).load(mA,mH,"50.0%")
+        index = np.argmin((median_met,median_mh,median_mt,median_2d),axis=0)
+        limit_met = Limit(channel,"MET",region,year).load(mA,mH,pct)
+        limit_mh = Limit(channel,"MH",region,year).load(mA,mH,pct)
+        limit_mt = Limit(channel,"MTA",region,year).load(mA,mH,pct)
+        limit_2d = Limit(channel,"2DEllipses",region,year).load(mA,mH,pct)
+        return (limit_met,limit_mh,limit_mt,limit_2d)[index]
 
 def load_masses():
     with open(
