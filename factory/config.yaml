@@ -15,11 +15,21 @@ backgrounds:
 
 svars:
   - MET
-  #- [jetsAk4CHS.m_pt, 1]
-  #- [jetsAk4CHS.m_pt, 2]
+  - [jetsAk4CHS.m_pt, 1]
+  - [jetsAk4CHS.m_pt, 2]
+  - [jetsAk4CHS.m_eta, 1]
+  - [jetsAk4CHS.m_eta, 2]
+  - [jetsAk4CHS.m_phi, 1]
+  - [jetsAk4CHS.m_phi, 2]
   - mt_A
   - m_H
-  #- HT
+  - num_b
+  - num_l
+  - num_j
+  - b_pt
+  - b_eta
+  - b_phi
+  - HT
   #- score 
 
 branches:
@@ -38,8 +48,6 @@ branches:
   #- jetsAk4CHS.m_phi
   #- jetsAk4CHS.m_energy
   - [jetsAk4CHS.m_pt, 3]
-  - [jetsAk4CHS.m_eta, 1]
-  - [jetsAk4CHS.m_eta, 2]
   - [jetsAk4CHS.m_eta, 3]
   - [jetsAk4CHS.m_phi, 1]
   - [jetsAk4CHS.m_phi, 2]
@@ -55,9 +63,6 @@ branches:
   - [jetsAk4CHS.m_btag_DeepFlavour_problepb, 3]
   - delta_phi
   - delta_eta
-  - num_b
-  - num_l
-  - num_j
   - event_weight
   - kfold
   - node 
