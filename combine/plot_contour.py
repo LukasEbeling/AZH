@@ -6,10 +6,12 @@ import mplhep as hep
 import os
 
 from matplotlib.tri import Triangulation, LinearTriInterpolator
-from plot_utils import Theory, Limit, load_masses
+from plot_utils import Theory, BestLimit, load_masses
 
 plt.style.use(hep.style.CMS)
 
+LUMI = 41.48
+#LUMI = 138
 
 def plot_plane(tanb):
 
@@ -25,9 +27,9 @@ def plot_plane(tanb):
     )
 
     fig, ax = plt.subplots(figsize=(12, 8))
-    hep.cms.label(ax=ax,llabel='Private work',data=True, lumi=41.48, year="2017")
+    hep.cms.label(ax=ax,llabel='Private work',data=True, lumi=LUMI, year="2017")
 
-    limit = Limit()
+    limit = BestLimit()
     theory = Theory(tanb)
 
     expected_values = np.array(
@@ -67,17 +69,20 @@ def plot_plane(tanb):
 
     ax.scatter(mass_points[:, 0], mass_points[:, 1], color="orange")
 
-    fig.colorbar(contour, ax=ax, label=r"$\sigma_{theory}/\sigma_{expected}$")
-    ax.set_xlabel(r"m$_{A}$ [GeV]")
-    ax.set_ylabel(r"m$_{H}$ [GeV]")
+    cbar = fig.colorbar(contour, ax=ax)
+    cbar.ax.tick_params(labelsize=25)
+    cbar.set_label(r"$\sigma_{theory}/\sigma_{expected}$", fontsize=30)
+    ax.set_xlabel(r"m$_{A}$ [GeV]",fontsize=30)
+    ax.set_ylabel(r"m$_{H}$ [GeV]",fontsize=30)
     ax.set_xlim(500, 2000)
     ax.set_ylim(400, 1600)
     ax.legend(title=r"2HDM type II ($\tan \beta$="+f"{tanb})",fontsize=18,title_fontsize=18,loc="upper left")
-
+    plt.xticks(fontsize=25)
+    plt.yticks(fontsize=25)
 
     os.makedirs("limits",exist_ok=True)
-    plt.savefig(f"limits/mass_plane_{tanb}.png")
-    plt.savefig(f"limits/mass_plane_{tanb}.pdf")
+    plt.savefig(f"limits/plane_{tanb}.png",bbox_inches='tight')
+    plt.savefig(f"limits/plane_{tanb}.pdf",bbox_inches='tight')
     plt.close()
 
 
