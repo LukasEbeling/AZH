@@ -19,4 +19,5 @@ combine/UL17/*
 *.keras
 2HDMC.txt
 */tmp/*
+*/tmp_old/*
 notes.txt
