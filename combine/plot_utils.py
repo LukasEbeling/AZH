@@ -169,7 +169,8 @@ class Limit:
     def load(self, mA, mH, pct = "50.0%"):
         file = f"tmp/AZH_{mA}_{mH}_{self.var}_{self.channel}_{self.region}.log"
         with open(file, "r") as f:
-            limit_line = [x for x in f if pct in x][0]
+            lines = f.readlines()
+            limit_line = [l for l in lines if pct in l][0]
 
         limit_value = float(re.findall(r"\d+.\d+", limit_line.split("<")[1])[0])
         return limit_value

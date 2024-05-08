@@ -13,12 +13,8 @@ RequestMemory     = 4G
 RequestDisk       = 2G
 JobBatchName      = plot_data
 executable        = $(initialdir)/plot_data.py
-arguments         = $(signal) $(observable) $(fitting)
-queue signal, observable, fitting from (
-    MET
-    MTA
-    MH
-    2DEllipses
+arguments         = 1000_400 $(observable) $(fitting)
+queue observable, fitting from (
     MET --prefit
     MTA --prefit
     MH --prefit

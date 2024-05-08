@@ -36,7 +36,7 @@ def plot_limits(channel="inv", region="all", year="UL17", MH=400, tanb=1):
     fig, axes = plt.subplots(figsize=(12, 8))
     hep.cms.label(ax=axes,llabel='Private work',data=True, lumi=LUMI, year="2017")
             
-    axes.plot(list(plot_range),tan,color="red",label=r"2HDM type II (tan$\beta$="+str(tanb)+")")
+    axes.plot(list(plot_range),tan,color="red",label=r"theory $\sigma \times$BR"+"\n"+r"(tan$\beta$="+str(tanb)+")")
     axes.fill_between(points, down2s, up2s, color=BRAZILIAN_GOLD, label="2 std. deviation")
     axes.fill_between(points, down1s, up1s, color=BRAZILIAN_GREEN, label="1 std. deviation")
     axes.plot(points,median,color="black",marker = "o",label="median expected")
@@ -162,7 +162,7 @@ def compare_vars(channel="inv", region="all", year="UL17", MH=400):
 if __name__ == "__main__":
     compare_vars(MH=400)
     compare_vars(MH=600)
-    compare_regions()
+    #compare_regions()
     plot_limits(tanb=0.5,MH=400)
     plot_limits(tanb=0.5,MH=600)
     plot_limits(tanb=0.5,MH=800)

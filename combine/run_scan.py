@@ -15,7 +15,7 @@ if __name__ == "__main__":
     parser.add_argument("masses")
     parser.add_argument("var")
     args = parser.parse_args()
-    masses = args.masses; var = args.var   
+    masses = args.masses; var = args.var
     
     masses = masses.replace("MA-","").replace("MH-","")
 
@@ -27,5 +27,5 @@ if __name__ == "__main__":
     combine = Combine(initilize=True)
     combine.combine_cards(cards,outcard)
     combine.create_workspace(outcard,workspace)
-    combine.log_likely_scan(workspace,output,r_in=0.16)
+    combine.log_likely_scan(workspace,output,0)
 

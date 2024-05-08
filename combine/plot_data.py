@@ -37,11 +37,20 @@ class PlotMetaDataMC(PlotMeta):
         "MET": r"$p_T^{miss}$ [GeV]",
         "MTA": r"$m_{T,A}$ [GeV]",
         "MH": r"$m_{H}$ [GeV]",
-        "Jet1Phi": r"$\phi$",
-        "Jet1Eta": r"$\eta$",
-        "Jet1Pt": r"$p_T$ [GeV]",
+        "Jet1Phi": r"leading jet $\phi$",
+        "Jet1Eta": r"leading jet $\eta$",
+        "Jet1Pt": r"leading jet $p_T$ [GeV]",
+        "Jet2Phi": r"subleading jet $\phi$",
+        "Jet2Eta": r"subleading jet $\eta$",
+        "Jet2Pt": r"subleading jet $p_T$ [GeV]",
         "HT": r"$H_T$ [GeV]",
         "2DEllipses": r"ellipsis",
+        "num_b": r"N_b",
+        "num_j": r"N_{jets}",
+        "num_l": r"N_{lep}",
+        "b_pt": r"highest b-score $p_T$",
+        "b_eta": r"highest b-score $\eta$",
+        "b_phi": r"highest b-score $\phi$",
     }
 
 
@@ -67,7 +76,7 @@ class Fitter():
         
         combine = Combine(initilize=True)
         combine.create_workspace(card,workspace)
-        combine.fit(card,workspace,shapes)
+        combine.fit_blind(card,workspace)
         combine.save_shapes(card,workspace,shapes)
 
 
@@ -96,7 +105,7 @@ class Fitter():
         fig, ax = plt.subplots(
             nrows=2,
             ncols=1,
-            figsize=(12, 10),
+            figsize=(10, 10),
             gridspec_kw={"height_ratios": (4, 1)},
             sharex=True,
         )
@@ -150,29 +159,31 @@ class Fitter():
             label=f"{self.fit} Uncertainty",
             **error_band_args,
         )
-        hep.histplot(
-            data/bin_widths,
-            bins=bins,
-            yerr=data_error/bin_widths,
-            histtype="errorbar",
-            markersize=13,
-            color="k",
-            label="Data",
-            ax=ax[0],
-        )
+        if "SR" not in self.region:
+            hep.histplot(
+                data/bin_widths,
+                bins=bins,
+                yerr=data_error/bin_widths,
+                histtype="errorbar",
+                markersize=13,
+                color="k",
+                label="data",
+                ax=ax[0],
+            )
         mA = self.signal.split("_")[0]
         mH = self.signal.split("_")[1]
-        hep.histplot(
-            self.hists["AtoZH"][0]*5/bin_widths, #rescale to AZH->ttvv at 1pb
-            bins=bins,
-            histtype="step",
-            yerr=False,
-            label=r"AZH $\rightarrow$ $t \bar t \nu \bar \nu$ at $1$pb" + "\n" + rf"$m_{{A(H)}} = {mA} ({mH})$ GeV",
-            linewidth=2.5,
-            alpha=0.85,
-            color="tab:red",
-            ax=ax[0],
-        )
+        if "SR" in self.region:
+            hep.histplot(
+                self.hists["AtoZH"][0]*5/bin_widths, #rescale to AZH->ttvv at 1pb
+                bins=bins,
+                histtype="step",
+                yerr=False,
+                label=rf"$m_{{A(H)}} = {mA} ({mH})$ GeV",
+                linewidth=2.5,
+                alpha=0.85,
+                color="tab:red",
+                ax=ax[0],
+            )
 
         # Ratio
         pulls = False
@@ -210,7 +221,7 @@ class Fitter():
                 1 + mc_error / mc, baseline=1 - mc_error / mc, **error_band_args
             )
             ax[1].axhline(1, color="grey", linestyle="--")
-            ax[1].set_ylabel("data/pred")
+            ax[1].set_ylabel("data/pred",fontsize=25)
             ax[1].set_ylim([0.5, 1.5])
 
         # Plot Settings
@@ -229,18 +240,22 @@ class Fitter():
             frameon=True,
         )
         #legend.get_frame().set_facecolor('white')
-        if self.obs == "2DEllipses": ax[0].set_ylabel("events/bin")
-        else: ax[0].set_ylabel("events/GeV")
+        if self.obs == "2DEllipses": ax[0].set_ylabel("events/bin",fontsize=25)
+        else: ax[0].set_ylabel("events/GeV",fontsize=25)
         ax[0].set_ylim(ymin=1e-2, ymax=np.max(mc/bin_widths) * 900)
+        if self.obs in ["beta","bphi","Jet1Eta","Jet2Eta","Jet1Phi","Jet2Phi","2DEllipses"]: 
+            ax[0].set_ylim(ymin=1e-2, ymax=np.max(mc/bin_widths) * 90000)
         #ax[0].set_ylim(ymin=0, ymax=np.max(mc) + 100)
         max_bin = bins[-1] if bins[-1] < 10000 else bins[-2] #crop overflow bin
-        print(max_bin)
         ax[0].set_xlim(bins[0],max_bin) 
         ax[1].set_xlim(bins[0],max_bin)
         ax[1].set_xlabel(plot_meta.xlabel(self.obs))
 
         ax[0].grid()
         ax[1].grid()
+        ax[0].tick_params(axis='y', labelsize=20)
+        ax[1].tick_params(axis='y', labelsize=20)
+        ax[1].tick_params(axis='x', labelsize=20, pad=10)
 
         # Save Plot
         fpath_out = os.path.join(
@@ -288,6 +303,6 @@ if __name__ == "__main__":
             hists={},
         )
 
-        fitter.run_fits()
+        #fitter.run_fits()
         fitter.load()
         fitter.plot()

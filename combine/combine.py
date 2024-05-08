@@ -29,6 +29,7 @@ class Combine():
         joined = cd + joined       
         if self.initilize: joined = init+joined
         os.system(joined)
+        #print(joined+"\n")
 
     # combine a list of given datacards
     def combine_cards(self, card_list, card_name):
@@ -41,7 +42,6 @@ class Combine():
     # create workspace from datacard
     def create_workspace(self, card, workspace):
         #if os.path.exists(workspace): return
-        print(f"text2workspace.py {card} -m 125 -o {workspace};")
         self.execute(f"text2workspace.py {card} -m 125 -o {workspace}; ")
 
     # calculate expected limit from workspace
@@ -63,7 +63,7 @@ class Combine():
         )
 
     # run fit diagnostics
-    def fit(self, card,workspace,output): 
+    def fit_blind(self,card,workspace): 
         HASH = card.replace(".dat","").split("/")[-1]
         
         self.execute(
@@ -71,9 +71,19 @@ class Combine():
             f"-n _{HASH} -m 125 -v 1 --rMin -1 --rMax 1 "
             "--expectSignal 0.0 -t -1 --saveWithUncertainties --cminDefaultMinimizerStrategy 0 --saveShapes; "
         )
-    
-    def save_shapes(self, card,workspace,output):
+
+    def fit_control(self,card,workspace):
         HASH = card.replace(".dat","").split("/")[-1]
+        
+        self.execute(
+            f"combine -M FitDiagnostics -d {workspace} "
+            f"-n _{HASH} -m 125 -v 1 --rMin -1 --rMax 1 "
+            "--expectSignal 0.0 --saveWithUncertainties --cminDefaultMinimizerStrategy 0 --saveShapes; "
+        )
+    
+    def save_shapes(self,card,workspace,output):
+        HASH = workspace.replace(".root","").split("/")[-1]
+        print(HASH)
 
         self.execute(
             f"PostFitShapesFromWorkspace -d {card} -w {workspace} "
@@ -85,7 +95,9 @@ class Combine():
 
     # perform a log likelyhood scan of poi
     def log_likely_scan(self, workspace, outfile, r_in=0):
-        r_max = max(2*r_in,2)
+        #r_max = max(2*r_in,2)
+        r_max = 1
+        r_min = -1
 
         HASH = workspace.replace(".root","").split("/")[-1]
         CMSSW_combine = "/nfs/dust/cms/user/ebelingl/uhh2_106X_v2/CMSSW_11_3_4"
@@ -93,18 +105,18 @@ class Combine():
         
         self.execute(
             f"combine -M MultiDimFit {workspace} -n .{HASH}.nominal "
-            f"-m 125 --rMin -1 --rMax {r_max} --algo grid --points 30 -t -1 --setParameters r={r_in}; "
+            f"-m 125 --rMin {r_min} --rMax {r_max} --algo grid --points 30 -t -1 --setParameters r={r_in}; "
 
             f"combine -M MultiDimFit {workspace} -n .{HASH}.snapshot "
-            f"-m 125 --rMin -1 --rMax {r_max} --saveWorkspace -t -1 --setParameters r={r_in}; "
+            f"-m 125 --rMin {r_min} --rMax {r_max} --saveWorkspace -t -1 --setParameters r={r_in}; "
 
             f"combine -M MultiDimFit higgsCombine.{HASH}.snapshot.MultiDimFit.mH125.root "
-            f"-n .{HASH}.freezeall -m 125 --rMin -1 --rMax {r_max} --algo grid --points 30 "
+            f"-n .{HASH}.freezeall -m 125 --rMin {r_min} --rMax {r_max} --algo grid --points 30 "
             f"--freezeParameters allConstrainedNuisances --snapshotName MultiDimFit -t -1 --setParameters r={r_in}; "
 
             f"python {CMSSW_combine}/src/CombineHarvester/CombineTools/scripts/plot1DScan.py "
             f"higgsCombine.{HASH}.nominal.MultiDimFit.mH125.root --others "
             f"higgsCombine.{HASH}.freezeall.MultiDimFit.mH125.root:FreezeAll:{r_max} -o {outfile}; "
 
-            f"rm higgsCombine.{HASH}*; "
+            #f"rm higgsCombine.{HASH}*; "
         )

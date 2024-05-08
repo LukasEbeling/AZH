@@ -111,8 +111,8 @@ SHAPES_NP = {
     "CMS_vjets_QCD_NLO_d3K": ["DYJets_bjet","DYJets_ljet","WJets_bjet","WJets_ljet"],
 
     # jet energy correction and resolution
-    "JER": ALL_PROCESSES,
-    "JES": ALL_PROCESSES,
+    #"JER": ALL_PROCESSES,
+    #"JES": ALL_PROCESSES,
 }
 
 # Chars per column
